@@ -19,15 +19,35 @@ def request(table, method="POST", payload=None):
         return response.read()
 
 
+def migrate_rows(table, rows):
+    if rows:
+        request(table, payload=rows)
+        print(f"{table}: {len(rows)} registros")
+
+
 def main():
     db = sqlite3.connect("portal.db")
+    db.row_factory = sqlite3.Row
     row = db.execute("SELECT data FROM portal_state WHERE id = 1").fetchone()
     if not row:
         raise SystemExit("portal.db não possui portal_state")
     state = json.loads(row[0])
     request("portal_state", payload={"id": 1, "data": state})
     print(f"Estado migrado: {len(state.get('tasks', []))} demandas")
-    print("Usuários e permissões devem ser migrados pelo administrador após configurar o backend.")
+    migrate_rows("sectors", [dict(item) for item in db.execute("SELECT id, name, description, created_at FROM sectors")])
+    migrate_rows("users", [dict(item) for item in db.execute("SELECT id, username, display_name, password_hash, role, sector_id, created_at FROM users")])
+    screens = []
+    for item in db.execute("SELECT id, name, kind, sector, description, content, created_at FROM screens"):
+        screen = dict(item)
+        try:
+            screen["content"] = json.loads(screen.get("content") or "{}")
+        except json.JSONDecodeError:
+            screen["content"] = {}
+        screens.append(screen)
+    migrate_rows("screens", screens)
+    migrate_rows("user_screens", [dict(item) for item in db.execute("SELECT user_id, screen_id FROM user_screens")])
+    migrate_rows("user_sectors", [dict(item) for item in db.execute("SELECT user_id, sector_id FROM user_sectors")])
+    print("Sessões não foram migradas; todos precisarão entrar novamente.")
 
 
 if __name__ == "__main__":
