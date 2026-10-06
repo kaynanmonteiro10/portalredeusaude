@@ -1,0 +1,12 @@
+services:
+  portal:
+    build:
+      context: .
+      dockerfile: dockerfile
+    container_name: portal-organizacao
+    restart: unless-stopped
+    ports:
+      - "5500:5500"
+      - "5443:5443"
+    volumes:
+      - ./portal.db:/app/portal.db

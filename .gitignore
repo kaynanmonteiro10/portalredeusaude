@@ -1,0 +1,8 @@
+portal-key.pem
+portal-cert.pem
+portal.db
+__pycache__/
+.venv/
+.mcp.json
+*.exe
+Gerador de Planilhas de Importação/_internal/

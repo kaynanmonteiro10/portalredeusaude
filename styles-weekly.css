@@ -1,0 +1,26 @@
+/* Relatório Semanal */
+.report-people{grid-column:1 / -1;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--report-gap)}
+.weekly-hero{display:flex;justify-content:space-between;align-items:end;gap:20px;padding:26px 28px;background:#163f46;color:#fff;border-radius:var(--card-radius);margin-bottom:16px}
+.weekly-hero .eyebrow{color:#a9e1d9}
+.weekly-hero h2{margin:4px 0 8px}
+.weekly-hero .panel-help{color:#c7dcdd;max-width:520px;margin:0}
+.week-nav{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.week-arrow{border:0;background:#ffffff1f;color:#fff;width:34px;height:34px;border-radius:9px;font-size:20px;line-height:1;cursor:pointer}
+.week-arrow:hover{background:#ffffff33}
+.week-label-box{display:flex;flex-direction:column;align-items:center;min-width:130px}
+.week-label-box strong{font:600 15px 'Space Grotesk';white-space:nowrap}
+.week-tag{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#a9e1d9;background:#ffffff1a;border-radius:9px;padding:2px 8px;margin-top:4px}
+.week-nav .button{padding:9px 12px;font-size:12px}
+.weekly-stats{grid-template-columns:repeat(3,1fr)}
+.weekly-add{margin-top:0}
+.quick-add{display:flex;gap:12px;align-items:end;flex-wrap:wrap}
+.quick-add label{margin:0;flex:1;min-width:200px}
+.quick-add label:first-child{flex:0 0 190px}
+.quick-add .button{padding:12px 18px}
+.weekly-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.kind-empresa{color:#2f6b62;background:#e2f4ee}
+.kind-estabelecimento{color:#376395;background:#eaf1fa}
+.weekly-table td:nth-child(1){white-space:nowrap}
+.week-day{display:block;color:var(--muted);font-size:10px;text-transform:capitalize}
+.week-actions{text-align:right;width:40px}
+@media(max-width:760px){.weekly-hero{display:block}.week-nav{margin-top:18px;flex-wrap:wrap}.weekly-stats{grid-template-columns:1fr}.quick-add label,.quick-add label:first-child{flex:1 1 100%}.weekly-actions{justify-content:flex-start}}
