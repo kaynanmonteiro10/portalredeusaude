@@ -171,12 +171,13 @@ class handler(BaseHTTPRequestHandler):
             if path == "/api/login":
                 ensure_seed()
                 username = str(payload.get("username", "")).strip()
-                users = db_request("users", query={"username": f"eq.{urllib.parse.quote(username.lower())}", "select": "*"})
-                if not users or not verify_password(str(payload.get("password", "")), users[0]["password_hash"]):
+                users = db_request("users", query={"select": "*"})
+                user = next((item for item in users if item["username"].lower() == username.lower()), None)
+                if not user or not verify_password(str(payload.get("password", "")), user["password_hash"]):
                     return self.send_json({"error": "Usuário ou senha incorretos."}, 401)
                 token = secrets.token_hex(32)
-                db_request("sessions", "POST", payload={"token": token, "user_id": users[0]["id"]})
-                return self.send_json({"token": token, "user": user_payload(users[0])})
+                db_request("sessions", "POST", payload={"token": token, "user_id": user["id"]})
+                return self.send_json({"token": token, "user": user_payload(user)})
             if path == "/api/logout":
                 token = self.headers.get("Authorization", "").replace("Bearer ", "", 1).strip()
                 if token: db_request("sessions", "DELETE", query={"token": f"eq.{token}"})
