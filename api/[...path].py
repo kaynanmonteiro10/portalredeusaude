@@ -83,8 +83,14 @@ def current_user(handler):
 def user_payload(user):
     sector_id = user.get("sector_id")
     sectors = db_request("sectors", query={"select": "*", "order": "name.asc"})
-    selected = [item for item in sectors if item["id"] == sector_id] if sector_id else []
-    return {"id": user["id"], "username": user["username"], "displayName": user["display_name"], "role": user["role"], "sectorId": sector_id, "sectorName": selected[0]["name"] if selected else "", "sectorIds": [item["id"] for item in selected], "sectors": selected, "screens": [], "allowedScreens": ["*"] if user["role"] == "admin" else ["tasksScreen", "learningScreen"], "teammates": []}
+    links = db_request("user_sectors", query={"user_id": f"eq.{user['id']}", "select": "sector_id"})
+    sector_ids = list(dict.fromkeys([item["sector_id"] for item in links] + ([sector_id] if sector_id else [])))
+    selected = [item for item in sectors if item["id"] in sector_ids]
+    screen_links = db_request("user_screens", query={"user_id": f"eq.{user['id']}", "select": "screen_id"})
+    screens = [item["screen_id"] for item in screen_links]
+    allowed = ["*"] if user["role"] == "admin" else list(dict.fromkeys(["tasksScreen", "learningScreen", *screens]))
+    teammates = db_request("users", query={"role": "eq.user", "select": "id,display_name,sector_id"})
+    return {"id": user["id"], "username": user["username"], "displayName": user["display_name"], "role": user["role"], "sectorId": sector_id, "sectorName": selected[0]["name"] if selected else "", "sectorIds": sector_ids, "sectors": selected, "screens": screens, "allowedScreens": allowed, "teammates": [{"id": item["id"], "displayName": item["display_name"], "sectorId": item.get("sector_id")} for item in teammates if item["id"] != user["id"]]}
 
 
 def read_state():
@@ -182,18 +188,87 @@ class handler(BaseHTTPRequestHandler):
                 token = self.headers.get("Authorization", "").replace("Bearer ", "", 1).strip()
                 if token: db_request("sessions", "DELETE", query={"token": f"eq.{token}"})
                 return self.send_json({"ok": True})
+            user = current_user(self)
+            if not user or user["role"] != "admin":
+                return self.send_json({"error": "Somente o administrador pode fazer isso."}, 403)
+            if path == "/api/users":
+                username = str(payload.get("username", "")).strip()
+                if not username or len(str(payload.get("password", ""))) < 4:
+                    return self.send_json({"error": "Informe usuário e senha com pelo menos 4 caracteres."}, 400)
+                if db_request("users", query={"username": f"eq.{urllib.parse.quote(username)}", "select": "id"}):
+                    return self.send_json({"error": "Este usuário já existe."}, 409)
+                user_id = str(uuid.uuid4())
+                role = payload.get("role", "user")
+                sectors = payload.get("sectorIds") or []
+                db_request("users", "POST", payload={"id": user_id, "username": username, "display_name": str(payload.get("displayName", username)).strip(), "password_hash": hash_password(str(payload["password"])), "role": role, "sector_id": sectors[0] if sectors and role == "user" else None})
+                for sector_id in sectors: db_request("user_sectors", "POST", payload={"user_id": user_id, "sector_id": sector_id})
+                for screen_id in payload.get("screens", []): db_request("user_screens", "POST", payload={"user_id": user_id, "screen_id": screen_id})
+                created = db_request("users", query={"id": f"eq.{user_id}", "select": "*"})[0]
+                return self.send_json({"user": user_payload(created)}, 201)
+            if path == "/api/sectors":
+                name = str(payload.get("name", "")).strip()
+                if not name: return self.send_json({"error": "Informe o nome do setor."}, 400)
+                sector_id = f"setor-{uuid.uuid4().hex[:10]}"
+                db_request("sectors", "POST", payload={"id": sector_id, "name": name, "description": str(payload.get("description", ""))})
+                return self.send_json({"sector": db_request("sectors", query={"id": f"eq.{sector_id}", "select": "*"})[0]}, 201)
+            if path == "/api/screens":
+                screen_id = f"setor-{uuid.uuid4().hex[:10]}"
+                sector_id = str(payload.get("sectorId", ""))
+                sector = db_request("sectors", query={"id": f"eq.{sector_id}", "select": "name"})
+                if not sector: return self.send_json({"error": "Setor não encontrado."}, 400)
+                db_request("screens", "POST", payload={"id": screen_id, "name": str(payload.get("name", "")).strip(), "kind": "sector", "sector": sector[0]["name"], "description": str(payload.get("description", "")), "content": {"notes": "", "items": []}})
+                return self.send_json({"screen": db_request("screens", query={"id": f"eq.{screen_id}", "select": "*"})[0]}, 201)
+            if path == "/api/tasks/assign-sector":
+                state = read_state(); sector_id = str(payload.get("sectorId", "")); scope = payload.get("scope", "unassigned"); updated = 0
+                for task in state.get("tasks", []):
+                    if scope == "all" or not task.get("sectorId"):
+                        task["sectorId"] = sector_id; updated += 1
+                state["tasks"] = state.get("tasks", []); db_request("portal_state", "PATCH", query={"id": "eq.1"}, payload={"data": state, "updated_at": now_iso()})
+                return self.send_json({"updated": updated})
             return self.send_json({"error": "Rota não encontrada"}, 404)
         except Exception as error:
             return self.send_json({"error": str(error)}, 500)
 
     def do_PUT(self):
         try:
-            if urllib.parse.urlparse(self.path).path != "/api/state": return self.send_json({"error": "Rota não encontrada"}, 404)
-            if not current_user(self): return self.send_json({"error": "Entre com sua conta para continuar."}, 401)
-            merged = merge_state(read_state(), self.body())
-            rows = db_request("portal_state", query={"id": "eq.1", "select": "id"})
-            if rows: db_request("portal_state", "PATCH", query={"id": "eq.1"}, payload={"data": merged, "updated_at": now_iso()})
-            else: db_request("portal_state", "POST", payload={"id": 1, "data": merged})
-            return self.send_json({"saved": True})
+            path = urllib.parse.urlparse(self.path).path
+            user = current_user(self)
+            if not user: return self.send_json({"error": "Entre com sua conta para continuar."}, 401)
+            if path == "/api/state":
+                merged = merge_state(read_state(), self.body())
+                rows = db_request("portal_state", query={"id": "eq.1", "select": "id"})
+                if rows: db_request("portal_state", "PATCH", query={"id": "eq.1"}, payload={"data": merged, "updated_at": now_iso()})
+                else: db_request("portal_state", "POST", payload={"id": 1, "data": merged})
+                return self.send_json({"saved": True})
+            if user["role"] != "admin": return self.send_json({"error": "Somente o administrador pode fazer isso."}, 403)
+            payload = self.body()
+            if path.startswith("/api/users/"):
+                user_id = path.rsplit("/", 1)[1]
+                changes = {"display_name": str(payload.get("displayName", "")).strip(), "role": payload.get("role", "user"), "sector_id": (payload.get("sectorIds") or [None])[0]}
+                if payload.get("password"): changes["password_hash"] = hash_password(str(payload["password"]))
+                db_request("users", "PATCH", query={"id": f"eq.{user_id}"}, payload=changes)
+                db_request("user_sectors", "DELETE", query={"user_id": f"eq.{user_id}"})
+                db_request("user_screens", "DELETE", query={"user_id": f"eq.{user_id}"})
+                for sector_id in payload.get("sectorIds", []): db_request("user_sectors", "POST", payload={"user_id": user_id, "sector_id": sector_id})
+                for screen_id in payload.get("screens", []): db_request("user_screens", "POST", payload={"user_id": user_id, "screen_id": screen_id})
+                return self.send_json({"user": user_payload(db_request("users", query={"id": f"eq.{user_id}", "select": "*"})[0])})
+            if path.startswith("/api/screens/"):
+                screen_id = path.rsplit("/", 1)[1]
+                db_request("screens", "PATCH", query={"id": f"eq.{screen_id}"}, payload={"content": payload.get("content") or {}})
+                return self.send_json({"screen": db_request("screens", query={"id": f"eq.{screen_id}", "select": "*"})[0]})
+            return self.send_json({"error": "Rota não encontrada"}, 404)
+        except Exception as error:
+            return self.send_json({"error": str(error)}, 500)
+
+    def do_DELETE(self):
+        try:
+            user = current_user(self)
+            if not user or user["role"] != "admin": return self.send_json({"error": "Somente o administrador pode fazer isso."}, 403)
+            path = urllib.parse.urlparse(self.path).path
+            resource, item_id = path.split("/api/", 1)[1].split("/", 1)
+            table = {"users": "users", "sectors": "sectors", "screens": "screens"}.get(resource)
+            if not table: return self.send_json({"error": "Rota não encontrada"}, 404)
+            db_request(table, "DELETE", query={"id": f"eq.{item_id}"})
+            return self.send_json({"deleted": True})
         except Exception as error:
             return self.send_json({"error": str(error)}, 500)
