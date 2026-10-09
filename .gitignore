@@ -1,6 +1,7 @@
 portal-key.pem
 portal-cert.pem
 portal.db
+portal.db.before-*.bak
 __pycache__/
 .venv/
 .mcp.json
