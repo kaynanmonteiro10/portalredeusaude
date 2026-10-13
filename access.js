@@ -1,7 +1,7 @@
 window.$ = window.$ || ((selector) => document.querySelector(selector));
 if (window.location.search && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
 const SESSION_KEY = 'portal-session-v1';
-const SHARED_SCREENS = ['tasksScreen', 'learningScreen'];
+const SHARED_SCREENS = ['tasksScreen', 'learningScreen', 'setor-bd0faac86b'];
 const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5500' : '';
 window.PORTAL_API_BASE = API_BASE;
 
@@ -141,9 +141,17 @@ async function saveSectorContent(screenId, content) {
 }
 
 function screenChecksHtml(selected = []) {
+  // Mostra todas as telas que NÃO são compartilhadas automaticamente com todos
   const extras = Access.screens.filter(screen => !SHARED_SCREENS.includes(screen.id));
-  if (!extras.length) return '<p class="panel-help">Crie uma tela de setor ao lado para poder atribuí-la.</p>';
-  return extras.map(screen => `<label class="check-label"><input type="checkbox" name="userScreen" value="${escapeHtml(screen.id)}" ${selected.includes(screen.id) ? 'checked' : ''}><span><strong>${escapeHtml(screen.name)}</strong> · ${escapeHtml(screen.sector || screen.kind)}</span></label>`).join('');
+  if (!extras.length) return '<p class="panel-help">Nenhuma tela adicional disponível. Crie uma tela de setor ao lado.</p>';
+  // Agrupa por tipo para facilitar a leitura
+  const builtins = extras.filter(s => s.kind === 'builtin');
+  const sectors  = extras.filter(s => s.kind !== 'builtin');
+  const row = screen => `<label class="check-label"><input type="checkbox" name="userScreen" value="${escapeHtml(screen.id)}" ${selected.includes(screen.id) ? 'checked' : ''}><span><strong>${escapeHtml(screen.name)}</strong> · ${escapeHtml(screen.sector || screen.kind)}</span></label>`;
+  let html = '';
+  if (builtins.length) html += `<p class="eyebrow" style="margin:10px 0 4px">TELAS NATIVAS</p>` + builtins.map(row).join('');
+  if (sectors.length)  html += `<p class="eyebrow" style="margin:10px 0 4px">TELAS DE SETOR</p>` + sectors.map(row).join('');
+  return html;
 }
 
 async function loadAdminLists() {

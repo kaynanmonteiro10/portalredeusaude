@@ -13,6 +13,7 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "https://bhkqeulrcrnthvdafigy.supa
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "")
 DEFAULT_SECTOR_ID = "cadastro-faturamento"
 DEFAULT_SECTOR_NAME = "Cadastro e Faturamento"
+SHARED_SCREENS = ["tasksScreen", "learningScreen", "setor-bd0faac86b"]
 BUILTIN_SCREENS = (
     ("mergeScreen", "Mala Direta", "Cadastro e Faturamento", "Montar competências e histórico de cobranças."),
     ("boardScreen", "Quadro de Planilhas", "Cadastro e Faturamento", "Processamento de planilhas do sistema Python."),
@@ -88,7 +89,7 @@ def user_payload(user):
     selected = [item for item in sectors if item["id"] in sector_ids]
     screen_links = db_request("user_screens", query={"user_id": f"eq.{user['id']}", "select": "screen_id"})
     screens = [item["screen_id"] for item in screen_links]
-    allowed = ["*"] if user["role"] == "admin" else list(dict.fromkeys(["tasksScreen", "learningScreen", *screens]))
+    allowed = ["*"] if user["role"] == "admin" else list(dict.fromkeys([*SHARED_SCREENS, *screens]))
     teammates = db_request("users", query={"role": "eq.user", "select": "id,display_name,sector_id"})
     return {"id": user["id"], "username": user["username"], "displayName": user["display_name"], "role": user["role"], "sectorId": sector_id, "sectorName": selected[0]["name"] if selected else "", "sectorIds": sector_ids, "sectors": selected, "screens": screens, "allowedScreens": allowed, "teammates": [{"id": item["id"], "displayName": item["display_name"], "sectorId": item.get("sector_id")} for item in teammates if item["id"] != user["id"]]}
 
