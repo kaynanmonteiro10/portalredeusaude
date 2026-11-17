@@ -105,3 +105,58 @@ def validate_company_exists(empresa_codigo_or_name):
     except Exception as e:
         # Se a tabela não existir ou houver erro, não falha a validação
         return True, f"Verificação de empresa não disponível ({str(e)[:30]})"
+
+
+def validate_adesao_with_s4e(lote, empresa, data_entrada_iso, vidas_count, http_session=None):
+    """
+    Valida uma adesão com verificação opcional contra S4E.
+    
+    Se http_session for fornecida, tenta verificar a empresa no S4E.
+    Caso contrário, valida apenas critérios locais.
+    
+    Args:
+        lote: str - código do lote
+        empresa: str - nome ou código da empresa
+        data_entrada_iso: str - data no formato ISO (YYYY-MM-DD)
+        vidas_count: int - quantidade de vidas
+        http_session: s4e_connector.S4EHttp (opcional) - sessão S4E para verificação
+    
+    Returns:
+        dict: { "valid": bool, "errors": [...], "warnings": [...] }
+    """
+    # Começa com validação local
+    result = validate_adesao(lote, empresa, data_entrada_iso, vidas_count)
+    
+    # Se houver erros locais, retorna sem fazer chamadas S4E
+    if result["errors"]:
+        return result
+    
+    # Se tiver sessão S4E, tenta verificar a empresa lá
+    if http_session:
+        try:
+            # Importa s4e_connector apenas se necessário
+            from s4e_connector import fetch_contacts, ConnectorError
+            
+            # Tenta extrair código da empresa se estiver em formato "123 - Nome"
+            import re
+            code_match = re.match(r"^\s*(\d+)\s*-", str(empresa or ""))
+            if code_match:
+                code = code_match.group(1)
+                try:
+                    # Verifica se a empresa existe em S4E
+                    contacts = fetch_contacts(http_session, code, "")
+                    # Se fetch_contacts não lançar erro, empresa existe
+                    result["warnings"].append(f"Empresa verificada no S4E (código {code})")
+                except ConnectorError as s4e_err:
+                    result["warnings"].append(f"Aviso S4E: {str(s4e_err)[:50]}")
+                except Exception:
+                    # Erros de rede ou parsing não invalidam a adesão
+                    pass
+        except ImportError:
+            # s4e_connector não disponível, apenas validação local
+            pass
+        except Exception:
+            # Qualquer erro em verificação S4E não deve quebrar a validação
+            pass
+    
+    return result

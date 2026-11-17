@@ -11671,7 +11671,8 @@ render();fromHash();
                     "timestamp": now_iso()
                 }
                 
-                status_conferencia = "validado" if validation["valid"] and not validation["warnings"] else ("erro" if validation["errors"] else "validado")
+                # Status logic: valid+no_warnings → validado, valid+warnings → alerta, else → erro
+                status_conferencia = "validado" if (validation["valid"] and not validation["warnings"]) else ("alerta" if (validation["valid"] and validation["warnings"]) else "erro")
                 notas = payload.get("notas", "")
                 
                 db.execute(
