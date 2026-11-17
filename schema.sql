@@ -1,4 +1,4 @@
--- Plantão de Demandas — SQLite
+-- Intranet Rede Saúde — SQLite
 -- O servidor Python (portal_server.py) cria estas tabelas sozinho.
 
 CREATE TABLE IF NOT EXISTS portal_state (
@@ -40,3 +40,24 @@ CREATE TABLE IF NOT EXISTS user_screens (
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (screen_id) REFERENCES screens(id)
 );
+
+CREATE TABLE IF NOT EXISTS adesoes (
+  id TEXT PRIMARY KEY,
+  lote TEXT NOT NULL,
+  empresa TEXT NOT NULL,
+  data_entrada TEXT NOT NULL,
+  vidas INTEGER,
+  valor REAL,
+  tipo TEXT CHECK (tipo IN ('WEB', 'CRM')),
+  situacao TEXT DEFAULT 'ativo',
+  conferencia_status TEXT DEFAULT 'pendente' CHECK (conferencia_status IN ('pendente', 'validado', 'erro')),
+  conferencia_resultado TEXT,
+  conferido_em TEXT,
+  conferido_por TEXT,
+  notas_conferencia TEXT,
+  criado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  atualizado_em TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_adesoes_data_entrada ON adesoes(data_entrada);
+CREATE INDEX IF NOT EXISTS idx_adesoes_tipo ON adesoes(tipo);
+CREATE INDEX IF NOT EXISTS idx_adesoes_conferencia_status ON adesoes(conferencia_status);
