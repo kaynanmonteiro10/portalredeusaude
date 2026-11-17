@@ -71,6 +71,12 @@ body[data-theme="dark"] .ad-badge.pendente{background:#263558;color:#a9c2ff}
 @keyframes dots{0%,20%{content:"."}40%{content:".."}60%{content:"..."}}
 .ad-badge-type{display:inline-block;margin-left:6px;border-radius:999px;background:#e7efef;color:#4e6167;padding:2px 7px;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
 body[data-theme="dark"] .ad-badge-type{background:#2c3d43;color:#b3d1d5}
+.ad-pagination{display:flex;gap:6px;align-items:center;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.ad-page-btn{border:1px solid var(--ad-line);background:var(--ad-surface);color:var(--ad-accent);padding:8px 12px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.ad-page-btn:hover{background:var(--ad-accent);color:#fff;border-color:var(--ad-accent)}
+.ad-page-num{padding:8px 12px;font-size:12px;font-weight:600;color:var(--ad-muted)}
+.ad-page-active{color:var(--ad-accent);font-weight:800;background:var(--ad-bg);padding:8px 12px;border-radius:6px}
+.ad-page-ellipsis{color:var(--ad-muted);padding:0 4px}
 body[data-theme="dark"] #adesiScreen{--ad-ink:#d9e8e5;--ad-muted:#95adaa;--ad-line:#304c4b;--ad-surface:#1b3336;--ad-bg:#152b2e;--ad-accent:#57c6ac}
 body[data-theme="dark"] .ad-table th{background:var(--ad-bg);color:var(--ad-muted)}
 body[data-theme="dark"] .ad-panel{background:var(--ad-surface);border-color:var(--ad-line)}

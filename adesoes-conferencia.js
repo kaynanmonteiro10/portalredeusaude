@@ -21,6 +21,7 @@
   function statusBadge(status) {
     const badges = {
       'validado': '<span class="ad-badge conferido">✅ Conferido</span>',
+      'alerta': '<span class="ad-badge alerta">⚠️ Alerta</span>',
       'erro': '<span class="ad-badge problema">❌ Problema</span>',
       'pendente': '<span class="ad-badge pendente">🔵 Pendente</span>',
     };
@@ -136,7 +137,7 @@
     modal.showModal && modal.showModal();
   }
 
-  async function load() {
+  async function load(pageNum = 1) {
     state.loading = true;
     byId('adTableBody').innerHTML = '<tr><td colspan="10" class="ad-loading">Carregando…</td></tr>';
 
@@ -146,16 +147,64 @@
       const tipo = byId('adTipo').value;
       const search = byId('adSearch')?.value || '';
 
-      const data = await api(`/api/adesoes?mes=${mes}&ano=${ano}${tipo ? `&tipo=${tipo}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
+      const data = await api(`/api/adesoes?mes=${mes}&ano=${ano}&page=${pageNum}&pageSize=50${tipo ? `&tipo=${tipo}` : ''}${search ? `&search=${encodeURIComponent(search)}` : ''}`);
       state.data = data;
 
       renderKpis(data);
       renderTable(data.adesoes);
+      renderPagination(data.page, data.pages);
     } catch (error) {
       byId('adTableBody').innerHTML = `<tr><td colspan="10" class="ad-empty"><p>Erro ao carregar: ${esc(error.message)}</p></td></tr>`;
     } finally {
       state.loading = false;
     }
+  }
+
+  function renderPagination(currentPage, totalPages) {
+    const container = byId('adPaginationContainer');
+    if (!container) return;
+    
+    if (totalPages <= 1) {
+      container.innerHTML = '';
+      return;
+    }
+
+    let html = '<div class="ad-pagination">';
+    
+    if (currentPage > 1) {
+      html += `<button type="button" class="ad-page-btn" data-page="1">Primeira</button>`;
+      html += `<button type="button" class="ad-page-btn" data-page="${currentPage - 1}">Anterior</button>`;
+    }
+
+    const startPage = Math.max(1, currentPage - 2);
+    const endPage = Math.min(totalPages, currentPage + 2);
+
+    if (startPage > 1) html += '<span class="ad-page-ellipsis">…</span>';
+
+    for (let i = startPage; i <= endPage; i++) {
+      if (i === currentPage) {
+        html += `<span class="ad-page-num ad-page-active">${i}</span>`;
+      } else {
+        html += `<button type="button" class="ad-page-btn" data-page="${i}">${i}</button>`;
+      }
+    }
+
+    if (endPage < totalPages) html += '<span class="ad-page-ellipsis">…</span>';
+
+    if (currentPage < totalPages) {
+      html += `<button type="button" class="ad-page-btn" data-page="${currentPage + 1}">Próxima</button>`;
+      html += `<button type="button" class="ad-page-btn" data-page="${totalPages}">Última</button>`;
+    }
+
+    html += '</div>';
+    container.innerHTML = html;
+
+    container.querySelectorAll('.ad-page-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const pageNum = parseInt(btn.dataset.page, 10);
+        load(pageNum);
+      });
+    });
   }
 
   async function conferirTodos() {
@@ -176,6 +225,81 @@
     } finally {
       state.conferindo = false;
       byId('adConferirTodosBtn').disabled = false;
+    }
+  }
+
+  async function exportarExcel() {
+    if (!state.data || !state.data.adesoes || !state.data.adesoes.length) {
+      alert('Nenhum dado para exportar');
+      return;
+    }
+
+    try {
+      const ExcelJS = window.ExcelJS;
+      if (!ExcelJS) {
+        alert('ExcelJS não está disponível');
+        return;
+      }
+
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Adesões');
+
+      // Headers
+      ws.columns = [
+        { header: 'Lote', key: 'lote', width: 15 },
+        { header: 'Empresa', key: 'empresa', width: 25 },
+        { header: 'Vidas', key: 'vidas', width: 10 },
+        { header: 'Valor', key: 'valor', width: 15 },
+        { header: 'Data Entrada', key: 'dataEntrada', width: 15 },
+        { header: 'Data Adesão', key: 'dataAdesao', width: 15 },
+        { header: 'Tipo', key: 'tipo', width: 10 },
+        { header: 'Status Conferência', key: 'statusConferencia', width: 18 },
+        { header: 'Situação', key: 'situacao', width: 12 },
+        { header: 'Conferido em', key: 'conferidoEm', width: 18 },
+        { header: 'Observações', key: 'notasConferencia', width: 30 }
+      ];
+
+      // Style header row
+      ws.getRow(1).font = { bold: true };
+      ws.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF0B8F87' } };
+      ws.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+
+      // Add data rows
+      state.data.adesoes.forEach(adesao => {
+        const row = ws.addRow({
+          lote: adesao.lote,
+          empresa: adesao.empresa,
+          vidas: adesao.vidas || 0,
+          valor: adesao.valor || 0,
+          dataEntrada: adesao.dataEntrada || '',
+          dataAdesao: adesao.dataAdesao || '',
+          tipo: adesao.tipo,
+          statusConferencia: adesao.statusConferencia,
+          situacao: adesao.situacao,
+          conferidoEm: adesao.conferidoEm || '',
+          notasConferencia: adesao.notasConferencia || ''
+        });
+
+        // Color rows based on type
+        if (adesao.tipo === 'CRM') {
+          row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F4FF' } };
+        } else if (adesao.tipo === 'WEB') {
+          row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0FAF5' } };
+        }
+      });
+
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `adesoes-${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      alert('Erro ao exportar: ' + error.message);
     }
   }
 
@@ -216,6 +340,7 @@
     window.adSearchTimeout = setTimeout(load, 300);
   });
   byId('adConferirTodosBtn')?.addEventListener('click', conferirTodos);
+  byId('adExportarBtn')?.addEventListener('click', exportarExcel);
 
   byId('adTableBody')?.addEventListener('click', e => {
     if (e.target.dataset.adDetail) {

@@ -9491,7 +9491,7 @@ class PortalHandler(BaseHTTPRequestHandler):
                         where_parts.append("tipo = ?")
                         params.append(tipo)
                     
-                    if conferencia_status in ("pendente", "validado", "erro"):
+                    if conferencia_status in ("pendente", "validado", "alerta", "erro"):
                         where_parts.append("conferencia_status = ?")
                         params.append(conferencia_status)
                     
@@ -9506,9 +9506,35 @@ class PortalHandler(BaseHTTPRequestHandler):
                         params
                     ).fetchall()
                     
-                    total = len(rows)
+                    try:
+                        page = max(1, int((query.get("page") or ["1"])[0]))
+                    except (TypeError, ValueError):
+                        page = 1
+                    
+                    try:
+                        page_size = int((query.get("pageSize") or ["50"])[0])
+                    except (TypeError, ValueError):
+                        page_size = 50
+                    
+                    page_size = max(1, min(200, page_size))
+                    offset = (page - 1) * page_size
+                    
+                    # Get total count without limit
+                    total_result = db.execute(
+                        f"SELECT COUNT(*) as cnt FROM adesoes {where_clause}",
+                        params
+                    ).fetchone()
+                    total = total_result["cnt"] if total_result else 0
+                    
+                    # Get paginated rows
+                    rows = db.execute(
+                        f"SELECT * FROM adesoes {where_clause} ORDER BY data_adesao DESC LIMIT ? OFFSET ?",
+                        params + [page_size, offset]
+                    ).fetchall()
+                    
                     conferidos = sum(1 for r in rows if r["conferencia_status"] == "validado")
-                    alertas = sum(1 for r in rows if r["conferencia_status"] == "erro")
+                    alertas = sum(1 for r in rows if r["conferencia_status"] == "alerta")
+                    problemas = sum(1 for r in rows if r["conferencia_status"] == "erro")
                     pendentes = sum(1 for r in rows if r["conferencia_status"] == "pendente")
                     
                     adesoes = [{
@@ -9531,7 +9557,11 @@ class PortalHandler(BaseHTTPRequestHandler):
                         "total": total,
                         "conferidos": conferidos,
                         "alertas": alertas,
+                        "problemas": problemas,
                         "pendentes": pendentes,
+                        "page": page,
+                        "pageSize": page_size,
+                        "pages": (total + page_size - 1) // page_size if total > 0 else 1,
                     })
             except Exception as exc:
                 self.send_json({"error": str(exc)[:200]}, 500)
@@ -11721,9 +11751,8 @@ render();fromHash();
                         status = "erro"
                         problemas += 1
                     else:
-                        status = "validado"
+                        status = "alerta"
                         alertas += 1
-                        conferidos += 1
                     
                     db.execute(
                         """UPDATE adesoes SET conferencia_status = ?, conferencia_resultado = ?, 
