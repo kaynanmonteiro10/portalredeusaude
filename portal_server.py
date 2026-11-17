@@ -9548,6 +9548,7 @@ class PortalHandler(BaseHTTPRequestHandler):
                         "tipo": r["tipo"],
                         "situacao": r["situacao"],
                         "statusConferencia": r["conferencia_status"],
+                        "conferencia_resultado": r["conferencia_resultado"],
                         "notasConferencia": r["notas_conferencia"],
                         "conferidoEm": r["conferido_em"],
                     } for r in rows]
