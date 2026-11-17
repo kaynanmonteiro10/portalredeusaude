@@ -11657,13 +11657,20 @@ render();fromHash();
                     self.send_json({"error": "Adesão não encontrada."}, 404)
                     return
                 
-                from adesoes_validation import validate_adesao
+                from adesoes_validation import validate_adesao_with_s4e
                 
-                validation = validate_adesao(
+                # Obtém sessão S4E para verificação de empresa
+                try:
+                    http_session = s4e.ensure_session()
+                except Exception:
+                    http_session = None
+                
+                validation = validate_adesao_with_s4e(
                     adesao["lote"],
                     adesao["empresa"],
                     adesao["data_entrada"],
-                    adesao["vidas"] or 0
+                    adesao["vidas"] or 0,
+                    http_session=http_session
                 )
                 
                 resultado = {
@@ -11695,82 +11702,118 @@ render();fromHash();
             mes = (query.get("mes") or [""])[0].strip()
             ano = (query.get("ano") or [""])[0].strip()
             
+            def run_batch_reconciliation():
+                """Executa a reconciliação em background com progresso."""
+                from adesoes_validation import validate_adesao_with_s4e
+                
+                # Obtém sessão S4E uma vez para reutilizar
+                try:
+                    http_session = s4e.ensure_session()
+                except Exception:
+                    http_session = None
+                
+                with connection() as db:
+                    user_record = db.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
+                    
+                    where_parts = []
+                    params = []
+                    
+                    if mes and ano:
+                        try:
+                            mes_int = int(mes)
+                            ano_int = int(ano)
+                            if 1 <= mes_int <= 12 and 1000 <= ano_int <= 9999:
+                                start = f"{ano_int:04d}-{mes_int:02d}-01"
+                                if mes_int == 12:
+                                    end = f"{ano_int+1:04d}-01-01"
+                                else:
+                                    end = f"{ano_int:04d}-{mes_int+1:02d}-01"
+                                where_parts.append("data_adesao >= ? AND data_adesao < ?")
+                                params.extend([start, end])
+                        except (ValueError, TypeError):
+                            pass
+                    
+                    where_clause = " WHERE " + " AND ".join(where_parts) if where_parts else ""
+                    rows = db.execute(f"SELECT id FROM adesoes {where_clause}", params).fetchall()
+                    
+                    total = len(rows)
+                    processados = 0
+                    conferidos = 0
+                    alertas = 0
+                    problemas = 0
+                    
+                    for idx, row in enumerate(rows):
+                        adesao = db.execute("SELECT * FROM adesoes WHERE id = ?", (row["id"],)).fetchone()
+                        if not adesao:
+                            continue
+                        
+                        # Valida com S4E se disponível
+                        validation = validate_adesao_with_s4e(
+                            adesao["lote"],
+                            adesao["empresa"],
+                            adesao["data_entrada"],
+                            adesao["vidas"] or 0,
+                            http_session=http_session
+                        )
+                        
+                        resultado = {
+                            "validation": validation,
+                            "timestamp": now_iso()
+                        }
+                        
+                        if validation["valid"] and not validation["warnings"]:
+                            status = "validado"
+                            conferidos += 1
+                        elif validation["errors"]:
+                            status = "erro"
+                            problemas += 1
+                        else:
+                            status = "alerta"
+                            alertas += 1
+                        
+                        db.execute(
+                            """UPDATE adesoes SET conferencia_status = ?, conferencia_resultado = ?, 
+                            conferido_em = ?, conferido_por = ?, atualizado_em = ?
+                            WHERE id = ?""",
+                            (status, json.dumps(resultado, ensure_ascii=False), now_iso(), user["id"], now_iso(), adesao["id"])
+                        )
+                        processados += 1
+                        
+                        # Commit a cada 10 registros para evitar lock prolongado
+                        if processados % 10 == 0:
+                            db.commit()
+                    
+                    db.commit()
+                    
+                    return {
+                        "processados": processados,
+                        "conferidos": conferidos,
+                        "alertas": alertas,
+                        "problemas": problemas
+                    }
+            
             with connection() as db:
                 user = require_admin(db, self)
                 if not user:
                     return
                 
-                where_parts = []
-                params = []
+                # Roda reconciliação em thread para não bloquear
+                executor = ThreadPoolExecutor(max_workers=1)
+                future = executor.submit(run_batch_reconciliation)
                 
-                if mes and ano:
-                    try:
-                        mes_int = int(mes)
-                        ano_int = int(ano)
-                        if 1 <= mes_int <= 12 and 1000 <= ano_int <= 9999:
-                            start = f"{ano_int:04d}-{mes_int:02d}-01"
-                            if mes_int == 12:
-                                end = f"{ano_int+1:04d}-01-01"
-                            else:
-                                end = f"{ano_int:04d}-{mes_int+1:02d}-01"
-                            where_parts.append("data_adesao >= ? AND data_adesao < ?")
-                            params.extend([start, end])
-                    except (ValueError, TypeError):
-                        pass
-                
-                where_clause = " WHERE " + " AND ".join(where_parts) if where_parts else ""
-                rows = db.execute(f"SELECT id FROM adesoes {where_clause}", params).fetchall()
-                
-                from adesoes_validation import validate_adesao
-                
-                processados = 0
-                conferidos = 0
-                alertas = 0
-                problemas = 0
-                
-                for row in rows:
-                    adesao = db.execute("SELECT * FROM adesoes WHERE id = ?", (row["id"],)).fetchone()
-                    if not adesao:
-                        continue
-                    
-                    validation = validate_adesao(
-                        adesao["lote"],
-                        adesao["empresa"],
-                        adesao["data_entrada"],
-                        adesao["vidas"] or 0
-                    )
-                    
-                    resultado = {
-                        "validation": validation,
-                        "timestamp": now_iso()
-                    }
-                    
-                    if validation["valid"] and not validation["warnings"]:
-                        status = "validado"
-                        conferidos += 1
-                    elif validation["errors"]:
-                        status = "erro"
-                        problemas += 1
-                    else:
-                        status = "alerta"
-                        alertas += 1
-                    
-                    db.execute(
-                        """UPDATE adesoes SET conferencia_status = ?, conferencia_resultado = ?, 
-                        conferido_em = ?, conferido_por = ?, atualizado_em = ?
-                        WHERE id = ?""",
-                        (status, json.dumps(resultado, ensure_ascii=False), now_iso(), user["id"], now_iso(), adesao["id"])
-                    )
-                    processados += 1
-                
-                db.commit()
-                
-                self.send_json({
-                    "processados": processados,
-                    "conferidos": conferidos,
-                    "alertas": alertas,
-                    "problemas": problemas
-                })
+                try:
+                    result = future.result(timeout=600)  # Timeout de 10 minutos
+                    self.send_json(result)
+                except Exception as e:
+                    self.send_json({
+                        "error": f"Erro ao processar adesões: {str(e)[:100]}",
+                        "processados": 0,
+                        "conferidos": 0,
+                        "alertas": 0,
+                        "problemas": 0
+                    }, 500)
+                finally:
+                    executor.shutdown(wait=False)
             return
         if path == "/api/cobranca/clear":
             with connection() as db:

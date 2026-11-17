@@ -210,21 +210,31 @@
   async function conferirTodos() {
     if (state.conferindo) return;
     state.conferindo = true;
-    byId('adConferirTodosBtn').disabled = true;
+    const btn = byId('adConferirTodosBtn');
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Processando...';
 
     try {
       const mes = byId('adMes').value;
       const ano = byId('adAno').value;
 
       const result = await api(`/api/adesoes/conferir-todos?mes=${mes}&ano=${ano}`, { method: 'GET' });
-      alert(`Conferência concluída:\n${result.processados} processadas\n${result.conferidos} conferidas\n${result.alertas} com alertas\n${result.problemas} com problemas`);
-
+      
+      let message = `✅ Conferência concluída!\n\n`;
+      message += `Processadas: ${result.processados}\n`;
+      message += `✅ Conferidas: ${result.conferidos}\n`;
+      message += `⚠️ Com alertas: ${result.alertas}\n`;
+      message += `❌ Com problemas: ${result.problemas}`;
+      
+      alert(message);
       await load();
     } catch (error) {
-      alert('Erro: ' + error.message);
+      alert('Erro ao processar adesões: ' + error.message);
     } finally {
       state.conferindo = false;
-      byId('adConferirTodosBtn').disabled = false;
+      btn.disabled = false;
+      btn.textContent = originalText;
     }
   }
 

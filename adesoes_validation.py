@@ -127,10 +127,6 @@ def validate_adesao_with_s4e(lote, empresa, data_entrada_iso, vidas_count, http_
     # Começa com validação local
     result = validate_adesao(lote, empresa, data_entrada_iso, vidas_count)
     
-    # Se houver erros locais, retorna sem fazer chamadas S4E
-    if result["errors"]:
-        return result
-    
     # Se tiver sessão S4E, tenta verificar a empresa lá
     if http_session:
         try:
@@ -146,11 +142,28 @@ def validate_adesao_with_s4e(lote, empresa, data_entrada_iso, vidas_count, http_
                     # Verifica se a empresa existe em S4E
                     contacts = fetch_contacts(http_session, code, "")
                     # Se fetch_contacts não lançar erro, empresa existe
-                    result["warnings"].append(f"Empresa verificada no S4E (código {code})")
+                    result["s4e_verified"] = True
                 except ConnectorError as s4e_err:
-                    result["warnings"].append(f"Aviso S4E: {str(s4e_err)[:50]}")
-                except Exception:
+                    # Se empresa não encontrada no S4E, é um erro
+                    error_msg = str(s4e_err)
+                    if "não encontrado" in error_msg.lower() or "not found" in error_msg.lower():
+                        result["errors"].append(f"Empresa não encontrada no S4E (código {code})")
+                    else:
+                        result["warnings"].append(f"Aviso S4E: {error_msg[:50]}")
+                except Exception as e:
                     # Erros de rede ou parsing não invalidam a adesão
+                    result["warnings"].append(f"Aviso ao verificar S4E: {str(e)[:50]}")
+            else:
+                # Se não conseguiu extrair código, tenta pelo nome
+                try:
+                    # Tenta verificar pelo nome da empresa
+                    results = fetch_contacts(http_session, "", str(empresa)[:30])
+                    if results:
+                        result["s4e_verified"] = True
+                    else:
+                        result["warnings"].append(f"Empresa '{empresa}' não encontrada no S4E")
+                except Exception:
+                    # Erros ao verificar pelo nome não invalidam
                     pass
         except ImportError:
             # s4e_connector não disponível, apenas validação local
