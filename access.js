@@ -1506,7 +1506,16 @@ importDatabaseBtn?.addEventListener('click', async () => {
       },
       body: file,
     });
-    const data = await response.json().catch(() => ({}));
+    const raw = await response.text();
+    let data = {};
+    try {
+      data = raw ? JSON.parse(raw) : {};
+    } catch {
+      if (!response.ok) {
+        throw new Error(`O servidor não reconheceu a importação (HTTP ${response.status}). Atualize o código no notebook servidor e reinicie o portal.`);
+      }
+      throw new Error('O servidor respondeu em um formato inválido.');
+    }
     if (!response.ok) throw new Error(data.error || 'Não foi possível importar o banco.');
     if (importDatabaseStatus) {
       importDatabaseStatus.textContent = `Banco importado. Cópia anterior: ${data.backup || 'não informada'}. Recarregando o portal...`;
