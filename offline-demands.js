@@ -39,10 +39,16 @@
   function load(userId) {
     const text = root.localStorage.getItem(key(userId));
     if (!text) return empty();
-    const value = JSON.parse(text);
-    if (value.version !== VERSION || !Array.isArray(value.outbox) || !Array.isArray(value.conflicts)) throw new Error('Cache de demandas inválido');
-    value.snapshot = sanitize(value.snapshot);
-    return value;
+    try {
+      const value = JSON.parse(text);
+      if (value.version !== VERSION || !Array.isArray(value.outbox) || !Array.isArray(value.conflicts)) throw new Error('Cache de demandas inválido');
+      value.snapshot = sanitize(value.snapshot);
+      return value;
+    } catch (cause) {
+      root.localStorage.removeItem(key(userId));
+      root.console?.warn?.('Cache local de demandas descartado:', cause);
+      return empty();
+    }
   }
   function sanitize(value) {
     if (!value || !Array.isArray(value.tasks)) throw new Error('Snapshot de demandas inválido');
