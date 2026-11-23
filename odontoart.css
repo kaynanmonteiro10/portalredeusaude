@@ -1,0 +1,360 @@
+/* Odontoart — controle mensal do plano PJ Top Individual com Odontologia.
+   Escopado em #odontoartScreen para não tocar em nenhuma outra tela. */
+#odontoartScreen {
+  --od-ink: #14282c;
+  --od-soft: #5d7a80;
+  --od-line: #dbe7e8;
+  --od-bg: #f4f9f9;
+  --od-ok: #0f8f8a;
+  --od-warn: #b7791f;
+  padding: 26px clamp(16px, 3vw, 34px) 44px;
+  background: var(--od-bg);
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  overflow-y: auto;
+  height: 100%;
+  box-sizing: border-box;
+  color: var(--od-ink);
+}
+
+#odontoartScreen .od-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  background: linear-gradient(135deg, #0d3f42, #14666a 62%, #1d8f86);
+  border-radius: 18px;
+  padding: 24px 26px;
+  color: #f2fbfa;
+  box-shadow: 0 18px 34px -24px rgba(13, 63, 66, .8);
+}
+
+#odontoartScreen .od-eyebrow {
+  margin: 0 0 8px;
+  font: 700 9.5px/1 'Montserrat', sans-serif;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #9fd8d2;
+}
+
+#odontoartScreen .od-header h2 {
+  margin: 0;
+  font: 700 clamp(24px, 3vw, 32px)/1.1 'Space Grotesk', sans-serif;
+  letter-spacing: -.02em;
+}
+
+#odontoartScreen .od-header p {
+  margin: 8px 0 0;
+  font-size: 13px;
+  color: #c8e6e3;
+  max-width: 52ch;
+  line-height: 1.5;
+}
+
+#odontoartScreen .od-header-tools {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+#odontoartScreen .od-header-tools label {
+  display: grid;
+  gap: 6px;
+  font: 700 9.5px/1 'Montserrat', sans-serif;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #9fd8d2;
+}
+
+#odontoartScreen .od-header-tools select {
+  height: 40px;
+  min-width: 172px;
+  border: 1px solid rgba(255, 255, 255, .3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  padding: 0 11px;
+  font: 500 13px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+
+#odontoartScreen .od-header-tools select option { color: #14282c; }
+
+#odontoartScreen .od-header-tools .button {
+  height: 40px;
+  background: #f2fbfa;
+  color: #0d3f42;
+  border: 1px solid rgba(255, 255, 255, .4);
+  font-weight: 700;
+}
+
+#odontoartScreen .od-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(184px, 1fr));
+  gap: 12px;
+}
+
+#odontoartScreen .od-kpi {
+  background: #fff;
+  border: 1px solid var(--od-line);
+  border-left: 3px solid #cfe0e0;
+  border-radius: 14px;
+  padding: 15px 17px;
+  display: grid;
+  gap: 5px;
+}
+
+#odontoartScreen .od-kpi.is-ok { border-left-color: var(--od-ok); }
+#odontoartScreen .od-kpi.is-warn { border-left-color: var(--od-warn); background: #fdf9f0; }
+
+#odontoartScreen .od-kpi span {
+  font: 700 9.5px/1 'Montserrat', sans-serif;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: #7d949e;
+}
+
+#odontoartScreen .od-kpi strong {
+  font: 700 25px/1.1 'Space Grotesk', sans-serif;
+  letter-spacing: -.02em;
+}
+
+#odontoartScreen .od-kpi small { font-size: 11.5px; color: #7d949e; }
+
+#odontoartScreen .od-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--od-soft);
+  line-height: 1.5;
+}
+
+#odontoartScreen .od-panel {
+  background: #fff;
+  border: 1px solid var(--od-line);
+  border-radius: 16px;
+  padding: 18px 20px;
+  box-shadow: 0 14px 26px -26px rgba(20, 40, 44, .7);
+}
+
+#odontoartScreen .od-panel > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+#odontoartScreen .od-panel > header p {
+  margin: 0 0 4px;
+  font: 700 9.5px/1 'Montserrat', sans-serif;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: #7d949e;
+}
+
+#odontoartScreen .od-panel > header h3 {
+  margin: 0;
+  font: 600 16px/1.2 'Space Grotesk', sans-serif;
+  letter-spacing: -.01em;
+}
+
+#odontoartScreen .od-count {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #4d6a68;
+  background: #eef4f4;
+  border-radius: 999px;
+  padding: 5px 11px;
+  white-space: nowrap;
+}
+
+#odontoartScreen .od-table {
+  overflow: auto;
+  max-height: 440px;
+  border: 1px solid var(--od-line);
+  border-radius: 12px;
+}
+
+#odontoartScreen table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+#odontoartScreen thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f7fbfb;
+  text-align: left;
+  padding: 9px 12px;
+  font: 700 9.5px/1.4 'Montserrat', sans-serif;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: #7d949e;
+  border-bottom: 1px solid var(--od-line);
+  white-space: nowrap;
+}
+
+#odontoartScreen tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #eff5f5;
+  vertical-align: middle;
+}
+
+#odontoartScreen tbody tr:last-child td { border-bottom: 0; }
+#odontoartScreen tbody tr:hover td { background: #f9fcfc; }
+#odontoartScreen .od-num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+#odontoartScreen .od-empty {
+  color: #9aacb2;
+  font-size: 12px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+#odontoartScreen .od-total td {
+  border-top: 2px solid var(--od-line);
+  background: #f7fbfb;
+  font-weight: 700;
+}
+
+#odontoartScreen .od-faixa {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font: 700 9.5px/1.7 'Montserrat', sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  background: #eef4f4;
+  color: #4d6a68;
+  white-space: nowrap;
+}
+
+#odontoartScreen .od-faixa.f1 { background: #e7f2fd; color: #2563a8; }
+#odontoartScreen .od-faixa.f2 { background: #fdf2e0; color: #a06a12; }
+#odontoartScreen .od-faixa.f3 { background: #e6f5f4; color: #0f8f8a; }
+
+#odontoartScreen .od-loading {
+  padding: 40px 0;
+  text-align: center;
+  color: var(--od-soft);
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  #odontoartScreen { padding: 16px 12px 30px; }
+  #odontoartScreen .od-header { padding: 20px; }
+  #odontoartScreen .od-header-tools { width: 100%; }
+  #odontoartScreen .od-header-tools label { flex: 1; }
+  #odontoartScreen .od-header-tools select { width: 100%; min-width: 0; }
+  #odontoartScreen .od-kpis { grid-template-columns: 1fr 1fr; }
+  #odontoartScreen .od-table { max-height: 340px; }
+}
+
+/* Como funciona — as regras escritas na tela */
+#odontoartScreen .od-como-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(238px, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+#odontoartScreen .od-como-grid article {
+  background: #f7fbfb;
+  border: 1px solid var(--od-line);
+  border-left: 3px solid #1d8f86;
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+#odontoartScreen .od-como-grid h4 {
+  margin: 0 0 6px;
+  font: 700 11px/1.3 'Montserrat', sans-serif;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #14666a;
+}
+
+#odontoartScreen .od-como-grid p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #3f5b60;
+}
+
+#odontoartScreen .od-como-grid strong { color: var(--od-ink); }
+
+/* ---------- Conferência, quadro por empresa e estados (v2) ---------- */
+#odontoartScreen .od-cols {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+#odontoartScreen .od-cols .od-panel { margin: 0; }
+#odontoartScreen .od-block { margin-top: 16px; }
+
+#odontoartScreen .od-hint {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--od-muted, #6b7280);
+  max-width: 88ch;
+}
+
+#odontoartScreen .od-nome { font-weight: 600; }
+#odontoartScreen .od-empresa { color: var(--od-muted, #6b7280); font-size: 12.5px; }
+#odontoartScreen .od-mono {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--od-muted, #6b7280);
+}
+
+#odontoartScreen .od-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(220, 38, 38, .1);
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+#odontoartScreen .od-selo {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+#odontoartScreen .od-selo.is-pago { background: rgba(22, 163, 74, .13); color: #15803d; }
+#odontoartScreen .od-selo.is-aberto { background: rgba(234, 88, 12, .14); color: #c2410c; }
+
+#odontoartScreen .od-motivo {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(234, 88, 12, .1);
+  color: #c2410c;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+#odontoartScreen .od-ok { color: #15803d; font-weight: 700; }
+#odontoartScreen .od-warn { color: #c2410c; font-weight: 700; }
+#odontoartScreen .od-sem-titulo { background: rgba(234, 88, 12, .045); }
+
+#odontoartScreen .od-conferencia table { min-width: 560px; }
+
+@media (max-width: 900px) {
+  #odontoartScreen .od-cols { grid-template-columns: 1fr; }
+}

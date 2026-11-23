@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% set passo_atual = 1 %}
+{% block content %}
+<div class="card">
+  <h1>Passo 1 — Planilha de origem</h1>
+  <p>Selecione a <strong>planilha 1</strong> (o export bruto com as colunas
+     "Nome Fantasia", "CPF_CNPJ", "Grupo Empresa", "Valor Parcela" etc).</p>
+
+  <form action="{{ url_for('upload1') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="planilha1" accept=".xlsx" required>
+    <br><br>
+    <button type="submit">Enviar e continuar →</button>
+  </form>
+</div>
+{% endblock %}

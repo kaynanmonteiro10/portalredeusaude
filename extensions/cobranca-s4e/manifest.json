@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Cobrança S4E — Rede Saúde",
+  "version": "1.0.0",
+  "description": "Lê os títulos de empresas em atraso no S4E (somente leitura) e envia a fila de cobrança para o portal local.",
+  "permissions": ["storage", "tabs"],
+  "host_permissions": [
+    "https://redesaude.s4e.com.br/*",
+    "http://192.168.1.11/*",
+    "https://192.168.1.11/*",
+    "http://127.0.0.1/*",
+    "https://127.0.0.1/*",
+    "http://localhost/*",
+    "https://localhost/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Cobrança S4E"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://192.168.1.11/*",
+        "https://192.168.1.11/*",
+        "http://127.0.0.1/*",
+        "https://127.0.0.1/*",
+        "http://localhost/*",
+        "https://localhost/*"
+      ],
+      "js": ["portal-bridge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://redesaude.s4e.com.br/*"],
+      "js": ["s4e-content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ]
+}

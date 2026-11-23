@@ -1,0 +1,748 @@
+{
+  "apuracao": "Novembro/2026",
+  "cenarioAtivo": [
+    {
+      "recebedor": "RS",
+      "valor": 28522.95
+    },
+    {
+      "recebedor": "SIND. ASSEIO",
+      "valor": 1318.8
+    },
+    {
+      "recebedor": "SEAC RJ",
+      "valor": 879.2
+    },
+    {
+      "recebedor": "Fecomercio",
+      "valor": 565.5
+    },
+    {
+      "recebedor": "Sintrasece",
+      "valor": 565.5
+    },
+    {
+      "recebedor": "SINALSUL",
+      "valor": 38.0
+    },
+    {
+      "recebedor": "SITIAL",
+      "valor": 38.0
+    }
+  ],
+  "cenarioTodasRegras": [
+    {
+      "recebedor": "RS",
+      "valor": 375743.75
+    },
+    {
+      "recebedor": "BOLSÃO",
+      "valor": 220472.87
+    },
+    {
+      "recebedor": "SINTEG",
+      "valor": 175183.32
+    },
+    {
+      "recebedor": "ALMIR",
+      "valor": 14242.51
+    },
+    {
+      "recebedor": "SINDIMOTOS",
+      "valor": 3423.27
+    },
+    {
+      "recebedor": "FUNDO MARKETING",
+      "valor": 2280.29
+    },
+    {
+      "recebedor": "PARACATU",
+      "valor": 1964.46
+    },
+    {
+      "recebedor": "SIND. ASSEIO",
+      "valor": 1318.8
+    },
+    {
+      "recebedor": "SINALSUL",
+      "valor": 974.86
+    },
+    {
+      "recebedor": "JOSE ALBERTO",
+      "valor": 936.86
+    },
+    {
+      "recebedor": "SINATC",
+      "valor": 936.86
+    },
+    {
+      "recebedor": "SEAC RJ",
+      "valor": 879.2
+    },
+    {
+      "recebedor": "Fecomercio",
+      "valor": 565.5
+    },
+    {
+      "recebedor": "Sintrasece",
+      "valor": 565.5
+    },
+    {
+      "recebedor": "SITIAL",
+      "valor": 38.0
+    }
+  ],
+  "totalAtivo": 31927.95,
+  "totalTodas": 799526.05,
+  "porGrupoTodas": [
+    {
+      "grupo": "SINTEG",
+      "faturado": 583944.4,
+      "recebedores": [
+        {
+          "recebedor": "BOLSÃO",
+          "valor": 219335.25
+        },
+        {
+          "recebedor": "RS",
+          "valor": 175183.32
+        },
+        {
+          "recebedor": "SINTEG",
+          "valor": 175183.32
+        },
+        {
+          "recebedor": "ALMIR",
+          "valor": 14242.51
+        }
+      ],
+      "total": 583944.4
+    },
+    {
+      "grupo": "NOVA IGUAÇU ESP.",
+      "faturado": 57015.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 57015.0
+        }
+      ],
+      "total": 57015.0
+    },
+    {
+      "grupo": "CARGA CCT-ACT ESP.",
+      "faturado": 45292.5,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 45292.5
+        }
+      ],
+      "total": 45292.5
+    },
+    {
+      "grupo": "FRETAMENTO ESP.",
+      "faturado": 25311.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 25311.0
+        }
+      ],
+      "total": 25311.0
+    },
+    {
+      "grupo": "SEAC RJ",
+      "faturado": 20661.2,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 18463.2
+        },
+        {
+          "recebedor": "SIND. ASSEIO",
+          "valor": 1318.8
+        },
+        {
+          "recebedor": "SEAC RJ",
+          "valor": 879.2
+        }
+      ],
+      "total": 20661.2
+    },
+    {
+      "grupo": "SINDIMOTOS",
+      "faturado": 14761.9,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 7920.75
+        },
+        {
+          "recebedor": "SINDIMOTOS",
+          "valor": 3423.27
+        },
+        {
+          "recebedor": "FUNDO MARKETING",
+          "valor": 2280.29
+        },
+        {
+          "recebedor": "BOLSÃO",
+          "valor": 1137.62
+        }
+      ],
+      "total": 14761.93
+    },
+    {
+      "grupo": "SINATC EXP",
+      "faturado": 10774.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 7963.39
+        },
+        {
+          "recebedor": "JOSE ALBERTO",
+          "valor": 936.86
+        },
+        {
+          "recebedor": "SINALSUL",
+          "valor": 936.86
+        },
+        {
+          "recebedor": "SINATC",
+          "valor": 936.86
+        }
+      ],
+      "total": 10773.97
+    },
+    {
+      "grupo": "SINTRASECE",
+      "faturado": 10179.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 9048.0
+        },
+        {
+          "recebedor": "Fecomercio",
+          "valor": 565.5
+        },
+        {
+          "recebedor": "Sintrasece",
+          "valor": 565.5
+        }
+      ],
+      "total": 10179.0
+    },
+    {
+      "grupo": "SINATC",
+      "faturado": 9571.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 9571.0
+        }
+      ],
+      "total": 9571.0
+    },
+    {
+      "grupo": "NITEROI ESP.",
+      "faturado": 6037.8,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 6037.8
+        }
+      ],
+      "total": 6037.8
+    },
+    {
+      "grupo": "PARACATU ESP.",
+      "faturado": 5304.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 3339.54
+        },
+        {
+          "recebedor": "PARACATU",
+          "valor": 1964.46
+        }
+      ],
+      "total": 5304.0
+    },
+    {
+      "grupo": "SINTEEP-RO",
+      "faturado": 3764.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 3764.0
+        }
+      ],
+      "total": 3764.0
+    },
+    {
+      "grupo": "SINTRUCAD ACT",
+      "faturado": 3284.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 3284.0
+        }
+      ],
+      "total": 3284.0
+    },
+    {
+      "grupo": "PARACATU",
+      "faturado": 1282.5,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 1282.5
+        }
+      ],
+      "total": 1282.5
+    },
+    {
+      "grupo": "SINPRO-RO",
+      "faturado": 1096.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 1096.0
+        }
+      ],
+      "total": 1096.0
+    },
+    {
+      "grupo": "STIAPAR ESP.",
+      "faturado": 674.5,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 674.5
+        }
+      ],
+      "total": 674.5
+    },
+    {
+      "grupo": "SITIAL",
+      "faturado": 413.25,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 337.25
+        },
+        {
+          "recebedor": "SINALSUL",
+          "valor": 38.0
+        },
+        {
+          "recebedor": "SITIAL",
+          "valor": 38.0
+        }
+      ],
+      "total": 413.25
+    },
+    {
+      "grupo": "SINDIERJ ESP.",
+      "faturado": 160.0,
+      "recebedores": [
+        {
+          "recebedor": "RS",
+          "valor": 160.0
+        }
+      ],
+      "total": 160.0
+    }
+  ],
+  "viabilidade": [
+    {
+      "grupo": "SEAC RJ",
+      "faturado": 20661.2,
+      "vidas": 1010,
+      "precoRealPorVida": 20.46,
+      "somaRegras": 47.0,
+      "sobraPorVida": -26.54,
+      "cabe": false,
+      "temRegraAtiva": true,
+      "totalRegras": 3,
+      "regrasAtivas": 3,
+      "precoModal": 47.0,
+      "empresasNoModal": 2,
+      "empresasComVidas": 3,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINTEG",
+      "faturado": 583944.4,
+      "vidas": 11627,
+      "precoRealPorVida": 50.22,
+      "somaRegras": 61.5,
+      "sobraPorVida": -11.28,
+      "cabe": false,
+      "temRegraAtiva": false,
+      "totalRegras": 4,
+      "regrasAtivas": 0,
+      "precoModal": 60.0,
+      "empresasNoModal": 81,
+      "empresasComVidas": 100,
+      "diferencaModal": 1.5,
+      "ajustada": false
+    },
+    {
+      "grupo": "PARACATU ESP.",
+      "faturado": 5304.0,
+      "vidas": 616,
+      "precoRealPorVida": 8.61,
+      "somaRegras": 13.5,
+      "sobraPorVida": -4.89,
+      "cabe": false,
+      "temRegraAtiva": false,
+      "totalRegras": 2,
+      "regrasAtivas": 0,
+      "precoModal": 8.5,
+      "empresasNoModal": 83,
+      "empresasComVidas": 83,
+      "diferencaModal": 5.0,
+      "ajustada": false
+    },
+    {
+      "grupo": "SINDIMOTOS",
+      "faturado": 14761.9,
+      "vidas": 551,
+      "precoRealPorVida": 26.79,
+      "somaRegras": 28.03,
+      "sobraPorVida": -1.24,
+      "cabe": false,
+      "temRegraAtiva": false,
+      "totalRegras": 4,
+      "regrasAtivas": 0,
+      "precoModal": 23.7,
+      "empresasNoModal": 67,
+      "empresasComVidas": 101,
+      "diferencaModal": 4.33,
+      "ajustada": false
+    },
+    {
+      "grupo": "SINTRASECE",
+      "faturado": 10179.0,
+      "vidas": 389,
+      "precoRealPorVida": 26.17,
+      "somaRegras": 27.0,
+      "sobraPorVida": -0.83,
+      "cabe": false,
+      "temRegraAtiva": true,
+      "totalRegras": 3,
+      "regrasAtivas": 3,
+      "precoModal": 27.0,
+      "empresasNoModal": 30,
+      "empresasComVidas": 33,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "NOVA IGUAÇU ESP.",
+      "faturado": 57015.0,
+      "vidas": 11199,
+      "precoRealPorVida": 5.09,
+      "somaRegras": 5.5,
+      "sobraPorVida": -0.41,
+      "cabe": false,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 5.5,
+      "empresasNoModal": 58,
+      "empresasComVidas": 83,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINPRO-RO",
+      "faturado": 1096.0,
+      "vidas": 295,
+      "precoRealPorVida": 3.72,
+      "somaRegras": 4.0,
+      "sobraPorVida": -0.28,
+      "cabe": false,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 4.0,
+      "empresasNoModal": 14,
+      "empresasComVidas": 20,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "CARGA CCT-ACT ESP.",
+      "faturado": 45292.5,
+      "vidas": 8241,
+      "precoRealPorVida": 5.5,
+      "somaRegras": 5.5,
+      "sobraPorVida": -0.0,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 5.5,
+      "empresasNoModal": 633,
+      "empresasComVidas": 639,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "FRETAMENTO ESP.",
+      "faturado": 25311.0,
+      "vidas": 4602,
+      "precoRealPorVida": 5.5,
+      "somaRegras": 5.5,
+      "sobraPorVida": 0.0,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 5.5,
+      "empresasNoModal": 43,
+      "empresasComVidas": 43,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINATC",
+      "faturado": 9571.0,
+      "vidas": 563,
+      "precoRealPorVida": 17.0,
+      "somaRegras": 17.0,
+      "sobraPorVida": 0.0,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 17.0,
+      "empresasNoModal": 43,
+      "empresasComVidas": 43,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINDIERJ ESP.",
+      "faturado": 160.0,
+      "vidas": 16,
+      "precoRealPorVida": 10.0,
+      "somaRegras": 10.0,
+      "sobraPorVida": 0.0,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 10.0,
+      "empresasNoModal": 4,
+      "empresasComVidas": 4,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SITIAL",
+      "faturado": 413.25,
+      "vidas": 19,
+      "precoRealPorVida": 21.75,
+      "somaRegras": 21.75,
+      "sobraPorVida": 0.0,
+      "cabe": true,
+      "temRegraAtiva": true,
+      "totalRegras": 3,
+      "regrasAtivas": 3,
+      "precoModal": 21.75,
+      "empresasNoModal": 3,
+      "empresasComVidas": 3,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "STIAPAR ESP.",
+      "faturado": 674.5,
+      "vidas": 38,
+      "precoRealPorVida": 17.75,
+      "somaRegras": 17.75,
+      "sobraPorVida": 0.0,
+      "cabe": true,
+      "temRegraAtiva": true,
+      "totalRegras": 1,
+      "regrasAtivas": 1,
+      "precoModal": 17.75,
+      "empresasNoModal": 6,
+      "empresasComVidas": 6,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "NITEROI ESP.",
+      "faturado": 6037.8,
+      "vidas": 1040,
+      "precoRealPorVida": 5.81,
+      "somaRegras": 5.8,
+      "sobraPorVida": 0.01,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 5.8,
+      "empresasNoModal": 20,
+      "empresasComVidas": 21,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINTEEP-RO",
+      "faturado": 3764.0,
+      "vidas": 939,
+      "precoRealPorVida": 4.01,
+      "somaRegras": 4.0,
+      "sobraPorVida": 0.01,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 4.0,
+      "empresasNoModal": 38,
+      "empresasComVidas": 47,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "SINATC EXP",
+      "faturado": 10774.0,
+      "vidas": 448,
+      "precoRealPorVida": 24.05,
+      "somaRegras": 23.0,
+      "sobraPorVida": 1.05,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 4,
+      "regrasAtivas": 0,
+      "precoModal": 23.0,
+      "empresasNoModal": 5,
+      "empresasComVidas": 14,
+      "diferencaModal": 0.0,
+      "ajustada": true
+    },
+    {
+      "grupo": "PARACATU",
+      "faturado": 1282.5,
+      "vidas": 93,
+      "precoRealPorVida": 13.79,
+      "somaRegras": 8.5,
+      "sobraPorVida": 5.29,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 13.5,
+      "empresasNoModal": 7,
+      "empresasComVidas": 8,
+      "diferencaModal": -5.0,
+      "ajustada": false
+    },
+    {
+      "grupo": "SINTRUCAD ACT",
+      "faturado": 3284.0,
+      "vidas": 141,
+      "precoRealPorVida": 23.29,
+      "somaRegras": 5.5,
+      "sobraPorVida": 17.79,
+      "cabe": true,
+      "temRegraAtiva": false,
+      "totalRegras": 1,
+      "regrasAtivas": 0,
+      "precoModal": 25.9,
+      "empresasNoModal": 2,
+      "empresasComVidas": 5,
+      "diferencaModal": -20.4,
+      "ajustada": false
+    }
+  ],
+  "semRegra": [
+    {
+      "grupo": "SINDICATO RODOVIARIOS RIO",
+      "titulos": 1,
+      "faturado": 24260.5,
+      "vidas": 4501,
+      "precoRealPorVida": 5.39
+    },
+    {
+      "grupo": "Ceará",
+      "titulos": 34,
+      "faturado": 22949.0,
+      "vidas": 4352,
+      "precoRealPorVida": 5.27
+    },
+    {
+      "grupo": "SINDBREF-PB",
+      "titulos": 5,
+      "faturado": 21025.0,
+      "vidas": 725,
+      "precoRealPorVida": 29.0
+    },
+    {
+      "grupo": "SIND ROV NOVA IGUAÇU - FRETAMENTO",
+      "titulos": 4,
+      "faturado": 3710.5,
+      "vidas": 743,
+      "precoRealPorVida": 4.99
+    },
+    {
+      "grupo": "SINTRARAÇÕES",
+      "titulos": 1,
+      "faturado": 2475.0,
+      "vidas": 98,
+      "precoRealPorVida": 25.26
+    },
+    {
+      "grupo": "FECOMERCIO",
+      "titulos": 10,
+      "faturado": 2212.3,
+      "vidas": 5244,
+      "precoRealPorVida": 0.42
+    },
+    {
+      "grupo": "ANASEG",
+      "titulos": 1,
+      "faturado": 1105.5,
+      "vidas": 204,
+      "precoRealPorVida": 5.42
+    },
+    {
+      "grupo": "CLIN DIGITAL",
+      "titulos": 5,
+      "faturado": 567.0,
+      "vidas": 127,
+      "precoRealPorVida": 4.46
+    },
+    {
+      "grupo": "SEJA BEM-ESTAR",
+      "titulos": 2,
+      "faturado": 464.2,
+      "vidas": 17,
+      "precoRealPorVida": 27.31
+    },
+    {
+      "grupo": "SINDCOMERCIO JUIZ DE FORA",
+      "titulos": 1,
+      "faturado": 45.5,
+      "vidas": 8,
+      "precoRealPorVida": 5.69
+    },
+    {
+      "grupo": "SIND CARGAS TERESOPOLIS E GUAPIMIRIM",
+      "titulos": 1,
+      "faturado": 5.5,
+      "vidas": 1,
+      "precoRealPorVida": 5.5
+    }
+  ]
+}

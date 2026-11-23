@@ -35,6 +35,8 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import xlsx_simple
 import s4e_connector as s4e
+import adesoes_conferencia
+import odontoart
 import retornos
 import vendas
 import vidas
@@ -122,6 +124,7 @@ HTTPS_KEY = ROOT / "portal-key.pem"
 PBKDF2_ROUNDS = 120_000
 SHARED_SCREENS = ("homeScreen", "tasksScreen", "birthdaysScreen", "chatScreen", "feedScreen", "learningScreen")
 DISABLED_SCREENS = {"managementScreen", "mergeScreen", "boardScreen"}
+PRIVATE_SCREENS = {"vendasScreen", "movimentacoesScreen", "emailCenterScreen"}
 DEFAULT_SECTOR_ID = "cadastro-faturamento"
 DEFAULT_SECTOR_NAME = "Cadastro e Faturamento"
 BUILTIN_SCREENS = (
@@ -807,6 +810,23 @@ def connection():
         )"""
     )
     db.execute("CREATE INDEX IF NOT EXISTS rateio_rules_group ON rateio_rules(grupo)")
+    # Contas que recebem rateio: cadastradas uma vez, depois só atreladas às regras.
+    db.execute(
+        """CREATE TABLE IF NOT EXISTS rateio_accounts (
+            id TEXT PRIMARY KEY,
+            nome TEXT NOT NULL UNIQUE,
+            tipo TEXT NOT NULL DEFAULT '',
+            documento TEXT NOT NULL DEFAULT '',
+            banco TEXT NOT NULL DEFAULT '',
+            agencia TEXT NOT NULL DEFAULT '',
+            conta TEXT NOT NULL DEFAULT '',
+            chave_pix TEXT NOT NULL DEFAULT '',
+            observacao TEXT NOT NULL DEFAULT '',
+            ativo INTEGER NOT NULL DEFAULT 1,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL
+        )"""
+    )
     rateio_columns = {row[1] for row in db.execute("PRAGMA table_info(rateio_rules)")}
     if "grupo_empresa" not in rateio_columns:
         db.execute("ALTER TABLE rateio_rules ADD COLUMN grupo_empresa TEXT NOT NULL DEFAULT ''")
@@ -814,6 +834,19 @@ def connection():
         db.execute("ALTER TABLE rateio_rules ADD COLUMN vigencia_inicio TEXT NOT NULL DEFAULT ''")
     if "vigencia_fim" not in rateio_columns:
         db.execute("ALTER TABLE rateio_rules ADD COLUMN vigencia_fim TEXT NOT NULL DEFAULT ''")
+    # Para onde vão juros, multa e acréscimo: 'rateio' divide junto com a base,
+    # 'recebedor' manda tudo para uma conta, 'rede' fica com a Rede Saúde.
+    if "encargos" not in rateio_columns:
+        db.execute("ALTER TABLE rateio_rules ADD COLUMN encargos TEXT NOT NULL DEFAULT 'rateio'")
+    if "encargos_recebedor" not in rateio_columns:
+        db.execute("ALTER TABLE rateio_rules ADD COLUMN encargos_recebedor TEXT NOT NULL DEFAULT ''")
+    # Especificidade: 3 = empresa, 2 = grupo, 1 = centro de custo. A regra mais
+    # específica vence; se a mesma faixa tiver mais de uma, as duas valem juntas.
+    if "nivel" not in rateio_columns:
+        db.execute("ALTER TABLE rateio_rules ADD COLUMN nivel INTEGER NOT NULL DEFAULT 1")
+        db.execute("UPDATE rateio_rules SET nivel = CASE "
+                   "WHEN TRIM(empresa) != '' THEN 3 "
+                   "WHEN TRIM(grupo_empresa) != '' THEN 2 ELSE 1 END")
     run_columns = {row[1] for row in db.execute("PRAGMA table_info(apuracao_runs)")}
     if "timings" not in run_columns:
         db.execute("ALTER TABLE apuracao_runs ADD COLUMN timings TEXT NOT NULL DEFAULT ''")
@@ -915,32 +948,8 @@ def connection():
     ).fetchone():
         db.execute("INSERT OR IGNORE INTO user_sectors(user_id, sector_id) SELECT id, sector_id FROM users WHERE sector_id IS NOT NULL")
     db.commit()
-    # PASSO 1: Criar tabela adesoes (já existe, apenas garantir índices)
-    db.execute(
-        """CREATE TABLE IF NOT EXISTS adesoes (
-            id TEXT PRIMARY KEY,
-            lote TEXT NOT NULL,
-            empresa TEXT NOT NULL,
-            data_entrada TEXT NOT NULL,
-            data_adesao TEXT NOT NULL,
-            vidas INTEGER NOT NULL,
-            valor REAL NOT NULL,
-            tipo TEXT NOT NULL CHECK(tipo IN ('WEB', 'CRM')),
-            situacao TEXT,
-            conferencia_status TEXT DEFAULT 'pendente' CHECK(conferencia_status IN ('pendente', 'validado', 'alerta', 'erro')),
-            conferencia_resultado TEXT,
-            notas_conferencia TEXT,
-            conferido_em TEXT,
-            conferido_por TEXT,
-            criado_em TEXT DEFAULT CURRENT_TIMESTAMP,
-            atualizado_em TEXT DEFAULT CURRENT_TIMESTAMP
-        )"""
-    )
-    db.execute("CREATE INDEX IF NOT EXISTS idx_adesoes_lote ON adesoes(lote)")
-    db.execute("CREATE INDEX IF NOT EXISTS idx_adesoes_empresa ON adesoes(empresa)")
-    db.execute("CREATE INDEX IF NOT EXISTS idx_adesoes_tipo ON adesoes(tipo)")
-    db.execute("CREATE INDEX IF NOT EXISTS idx_adesoes_status ON adesoes(conferencia_status)")
-    db.execute("CREATE INDEX IF NOT EXISTS idx_adesoes_data_entrada ON adesoes(data_entrada)")
+    # PASSO 1: tabela adesoes com o código da empresa, a parcela e a origem
+    adesoes_conferencia.ensure_schema(db)
     seed_adesoes(db)
     seed_cobranca_templates(db)
     seed(db)
@@ -1193,6 +1202,66 @@ def task_series_key(task):
     )
 
 
+def occurrence_key(task):
+    """Chave de uma ocorrência de série: 'recorrencia|dono|titulo'."""
+    if not isinstance(task, dict):
+        return None
+    recurrence = str(task.get("recurrence") or "")
+    if recurrence in ("", "none"):
+        return None
+    title = normalize_name(task.get("title"))
+    if not title:
+        return None
+    return "%s|%s|%s" % (recurrence, normalize_name(task.get("owner")), title)
+
+
+def occurrence_due(task):
+    due = str(task.get("due") or task.get("periodEnd") or "")[:10]
+    return due if len(due) == 10 else None
+
+
+def ensure_occurrence_table(db):
+    try:
+        db.execute(
+            """CREATE TABLE IF NOT EXISTS task_occurrences (
+                   series_key TEXT NOT NULL,
+                   due TEXT NOT NULL,
+                   task_id TEXT NOT NULL,
+                   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                   PRIMARY KEY (series_key, due))"""
+        )
+    except sqlite3.Error:
+        pass
+
+
+def claim_occurrence(db, task):
+    """Reserva a vaga (série, dia) para esta demanda.
+
+    Devolve True quando esta chamada reservou a vaga, False quando outro
+    escritor chegou primeiro — nesse caso a ocorrência não pode ser criada.
+    Sem chave ou sem data (demanda avulsa) devolve True e não reserva nada.
+    """
+    key = occurrence_key(task)
+    due = occurrence_due(task)
+    if not key or not due:
+        return True
+    ensure_occurrence_table(db)
+    try:
+        cursor = db.execute(
+            "INSERT OR IGNORE INTO task_occurrences (series_key, due, task_id) VALUES (?, ?, ?)",
+            (key, due, str(task.get("id") or "")),
+        )
+        if cursor.rowcount == 1:
+            return True
+        row = db.execute(
+            "SELECT task_id FROM task_occurrences WHERE series_key = ? AND due = ?", (key, due)
+        ).fetchone()
+        return bool(row and row[0] == str(task.get("id") or ""))
+    except sqlite3.Error:
+        # Sem a tabela de trava o comportamento antigo continua valendo.
+        return True
+
+
 def build_recurring_task(template, when):
     timestamp = now_iso()
     checklist = [
@@ -1227,6 +1296,21 @@ def ensure_recurring_occurrences(state, db, reference=None):
     if not isinstance(tasks, list) or not tasks:
         return False
     current = reference or date.today()
+    # Alinha a trava com o que já existe: a primeira ocorrência de cada dia fica
+    # registrada e as duplicatas antigas não são tocadas por esta varredura.
+    ensure_occurrence_table(db)
+    for existing in tasks:
+        key = occurrence_key(existing)
+        due = occurrence_due(existing)
+        if not key or not due:
+            continue
+        try:
+            db.execute(
+                "INSERT OR IGNORE INTO task_occurrences (series_key, due, task_id) VALUES (?, ?, ?)",
+                (key, due, str(existing.get("id") or "")),
+            )
+        except sqlite3.Error:
+            break
     users, sectors = weekend_calendar(db)
     groups = {}
     for task in tasks:
@@ -1265,6 +1349,10 @@ def ensure_recurring_occurrences(state, db, reference=None):
             changed = True
             continue
         created = build_recurring_task(template, target)
+        # Trava de idempotência: se outro escritor (o navegador, por exemplo)
+        # já criou esta série para este dia, o servidor não cria de novo.
+        if claim_occurrence(db, created) is False:
+            continue
         tasks.append(created)
         entries.append((target, created))
         changed = True
@@ -1648,6 +1736,19 @@ def ensure_weekly_digest(db):
     ann_id = f"ann-digest-{week_key}"
     items = state.get("announcements") or []
     state_changed = False
+    # O resumo automático nasce como rascunho: só vai para a equipe quando a
+    # administração publicar. Resumos antigos sem publicação explícita também
+    # voltam a ser rascunho, para não abrirem o overlay de todo mundo.
+    for item in items:
+        if not (isinstance(item, dict) and item.get("weeklyDigest")):
+            continue
+        if item.get("active") and not item.get("releasedAt"):
+            item["active"] = False
+            state_changed = True
+        if not item.get("releaseManaged"):
+            item["autoDraft"] = True
+            item["releaseManaged"] = True
+            state_changed = True
     if not same_week:
         for item in items:
             if isinstance(item, dict) and item.get("weeklyDigest") and item.get("active"):
@@ -1663,7 +1764,9 @@ def ensure_weekly_digest(db):
                 "description": description,
                 "date": today.isoformat(),
                 "type": "notice",
-                "active": True,
+                "active": False,
+                "autoDraft": True,
+                "releaseManaged": True,
                 "imageData": None,
                 "color": "#0b8f87",
                 "weeklyDigest": True,
@@ -3058,6 +3161,121 @@ def contract_registration_events_page(db, query, seller_key=None):
     return {
         "events": events, "cursor": events[-1]["id"] if events else after,
         "hasMore": len(rows) > limit, "baseline": False,
+    }
+
+
+# ── Contratos e comissões: listagens ────────────────────────────────────────
+def _contracts_rows(db, seller_key=None):
+    if seller_key is None:
+        return db.execute("SELECT * FROM contract_companies ORDER BY lower(name)").fetchall()
+    return [row for row in db.execute("SELECT * FROM contract_companies ORDER BY lower(name)")
+            if contract_key(row["seller"]) == seller_key]
+
+
+def _lives_counts(db):
+    contagem = {}
+    for row in db.execute(
+        "SELECT company_id, COUNT(*) AS n, SUM(CASE WHEN registered = 1 THEN 1 ELSE 0 END) AS r "
+        "FROM contract_lives GROUP BY company_id"
+    ):
+        contagem[row["company_id"]] = (row["n"] or 0, row["r"] or 0)
+    return contagem
+
+
+def _birthdays_month(db, mes):
+    total = 0
+    for row in db.execute("SELECT birth_date FROM contract_lives WHERE birth_date <> ''"):
+        valor = str(row["birth_date"] or "")
+        if len(valor) >= 7 and valor[5:7].isdigit() and int(valor[5:7]) == mes:
+            total += 1
+    return total
+
+
+def contracts_list_payload(db, user):
+    show_values = can_edit_contract_values(db, user)
+    contagem = _lives_counts(db)
+    empresas = _contracts_rows(db)
+    companies = []
+    for row in empresas:
+        vidas, registradas = contagem.get(row["id"], (0, 0))
+        companies.append(contract_company_payload(row, vidas, 0, show_values, registradas))
+
+    total_vidas = sum(vidas for vidas, _ in contagem.values())
+    cadastradas = sum(1 for row in empresas if row["registered"])
+    incompletos = sum(1 for row in empresas
+                      if not (row["cnpj"] and row["contact_name"] and row["phone"] and row["email"]))
+    summary = {
+        "companies": len(empresas),
+        "companiesRegistered": cadastradas,
+        "companiesPending": max(0, len(empresas) - cadastradas),
+        "lives": total_vidas,
+        "birthdaysMonth": _birthdays_month(db, date.today().month),
+        "incomplete": incompletos,
+    }
+    imports = [
+        {
+            "id": row["id"],
+            "companyId": row["company_id"],
+            "companyName": row["company_name"],
+            "fileName": row["file_name"],
+            "userName": row["user_name"],
+            "companiesCreated": row["companies_created"],
+            "companiesUpdated": row["companies_updated"],
+            "livesCreated": row["lives_created"],
+            "livesUpdated": row["lives_updated"],
+            "livesRemoved": row["lives_removed"],
+            "createdAt": row["created_at"],
+        }
+        for row in db.execute("SELECT * FROM contract_imports ORDER BY created_at DESC LIMIT 20")
+    ]
+    return {
+        "companies": companies,
+        "summary": summary,
+        "imports": imports,
+        "canRegister": bool(contracts_allowed(db, user)),
+        "canSeeValues": show_values,
+    }
+
+
+def commissions_list_payload(db, user):
+    escopo = commission_scope(db, user)
+    empresas = _contracts_rows(db, escopo)
+    companies = []
+    sellers = {}
+    resumo = {"contracts": 0, "lives": 0, "revenue": 0.0, "commission": 0.0, "movements": 0,
+              "companiesRegistered": 0, "companiesPending": 0}
+    for row in empresas:
+        item = commission_company_payload(db, row)
+        companies.append(item)
+        resumo["contracts"] += 1
+        resumo["lives"] += item["totalLives"]
+        resumo["revenue"] += item["totalRevenue"]
+        resumo["commission"] += item["totalCommission"]
+        resumo["movements"] += len(item["movements"])
+        if item["companyRegistered"]:
+            resumo["companiesRegistered"] += 1
+        else:
+            resumo["companiesPending"] += 1
+        chave = item["seller"] or "Sem vendedor"
+        vendedor = sellers.setdefault(chave, {"name": chave, "contracts": 0, "lives": 0,
+                                              "revenue": 0.0, "commission": 0.0})
+        vendedor["contracts"] += 1
+        vendedor["lives"] += item["totalLives"]
+        vendedor["revenue"] += item["totalRevenue"]
+        vendedor["commission"] += item["totalCommission"]
+
+    for vendedor in sellers.values():
+        vendedor["revenue"] = round(vendedor["revenue"], 2)
+        vendedor["commission"] = round(vendedor["commission"], 2)
+    resumo["revenue"] = round(resumo["revenue"], 2)
+    resumo["commission"] = round(resumo["commission"], 2)
+    return {
+        "companies": companies,
+        "summary": resumo,
+        "sellers": sorted(sellers.values(), key=lambda item: item["name"]),
+        "rate": COMMISSION_RATE,
+        "canManage": escopo is None,
+        "sellerName": "" if escopo is None else user_seller_name(user),
     }
 
 
@@ -5832,6 +6050,256 @@ def s4e_saved_credentials():
 s4e.set_credentials_provider(s4e_saved_credentials)
 
 
+# ── Assistente Sabi ──────────────────────────────────────────────────────────
+SABI_META_KEY = "sabi_look"
+SABI_LOOKS = ("auto", "classico", "verao", "inverno", "junina", "natal")
+
+
+def sabi_look(db):
+    row = db.execute("SELECT value FROM meta WHERE key = ?", (SABI_META_KEY,)).fetchone()
+    return row["value"] if row and row["value"] in SABI_LOOKS else "auto"
+
+
+def sabi_effective_look(look, today=None):
+    if look != "auto":
+        return look if look in SABI_LOOKS else "classico"
+    month = (today or date.today()).month
+    if month == 12:
+        return "natal"
+    if month == 6:
+        return "junina"
+    if month in (1, 2, 3):
+        return "verao"
+    if month in (7, 8):
+        return "inverno"
+    return "classico"
+
+
+def sabi_payload(db):
+    look = sabi_look(db)
+    return {"look": look, "effective": sabi_effective_look(look), "looks": list(SABI_LOOKS)}
+
+
+# ── Agendamentos do Sabi ─────────────────────────────────────────────────────
+SABI_SCHEDULES_KEY = "sabi_schedules"
+
+
+def sabi_schedules_get(db):
+    row = db.execute("SELECT value FROM meta WHERE key = ?", (SABI_SCHEDULES_KEY,)).fetchone()
+    if not row:
+        return []
+    try:
+        return json.loads(row["value"]) if isinstance(row["value"], str) else []
+    except (TypeError, ValueError):
+        return []
+
+
+def sabi_schedules_save(db, schedules):
+    db.execute(
+        "INSERT INTO meta (key, value) VALUES (?, ?) "
+        "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        (SABI_SCHEDULES_KEY, json.dumps(schedules, ensure_ascii=False)),
+    )
+    db.commit()
+
+
+def sabi_schedules_add(db, schedule):
+    schedules = sabi_schedules_get(db)
+    schedule["id"] = schedule.get("id") or str(uuid.uuid4())
+    schedule["created_at"] = now_iso()
+    schedules.append(schedule)
+    sabi_schedules_save(db, schedules)
+    return schedule
+
+
+def sabi_schedules_remove(db, schedule_id):
+    schedules = sabi_schedules_get(db)
+    schedules = [s for s in schedules if s.get("id") != schedule_id]
+    sabi_schedules_save(db, schedules)
+
+
+def sabi_schedules_due(now=None):
+    now = now or datetime.now(AUTO_TZ)
+    current_hour = now.hour
+    current_minute = now.minute
+    schedules = []
+    with connection() as db:
+        for s in sabi_schedules_get(db):
+            if not s.get("enabled", True):
+                continue
+            time_str = s.get("time", "")
+            if not time_str:
+                continue
+            try:
+                target_hour, target_minute = map(int, time_str.split(":"))
+            except (ValueError, AttributeError):
+                continue
+            if current_hour == target_hour and current_minute == target_minute:
+                schedules.append(s)
+    return schedules
+
+
+def sabi_schedule_worker():
+    while True:
+        try:
+            for schedule in sabi_schedules_due():
+                action = schedule.get("action")
+                if action == "export":
+                    kind = schedule.get("kind")
+                    schedule_id = schedule.get("id")
+                    print(f"[Sabi] Executando agendamento {schedule_id}: exportar {kind}", flush=True)
+
+                    # Mapeamento de tipos para funções de exportação
+                    export_handlers = {
+                        "demandas": _sabi_export_demandas,
+                        "adesoes": _sabi_export_adesoes,
+                        "semanal": _sabi_export_semanal,
+                        "comissoes": _sabi_export_comissoes,
+                        "financeiro": _sabi_export_financeiro,
+                        "apuracao": _sabi_export_apuracao,
+                        "rateio": _sabi_export_rateio,
+                        "notas": _sabi_export_notas,
+                        "recibos": _sabi_export_recibos,
+                        "vendas": _sabi_export_vendas,
+                        "retornos": _sabi_export_retornos,
+                        "cobranca": _sabi_export_cobranca,
+                    }
+
+                    handler = export_handlers.get(kind)
+                    if handler:
+                        try:
+                            handler()
+                            print(f"[Sabi] Exportação {kind} concluída com sucesso", flush=True)
+                        except Exception as error:
+                            print(f"[Sabi] Erro ao exportar {kind}: {error}", flush=True)
+                    else:
+                        print(f"[Sabi] Tipo de exportação não suportado: {kind}", flush=True)
+        except Exception as error:
+            print(f"[Sabi] Erro no agendador: {error}", flush=True)
+        time.sleep(60)
+
+
+# ── Funções de exportação para agendamentos do Sabi ──────────────────────────
+# Estas funções usam as mesmas APIs que o portal já usa, sem modificar o comportamento existente.
+
+def _sabi_export_cobranca():
+    """Exporta cobrança para arquivo local usando a mesma lógica da API."""
+    try:
+        with connection() as db:
+            where, params = cobranca_filters_from_query({})
+            sort = COBRANCA_SORTS["venc_asc"]
+            rows = db.execute(
+                f"SELECT * FROM cobranca_cases WHERE {where} ORDER BY {sort}", params
+            ).fetchall()
+
+        body = cobranca_build_csv(rows)
+        today = date.today()
+        filename = ROOT / "media" / f"sabi-cobranca-{today.strftime('%Y%m%d')}.csv"
+        filename.parent.mkdir(exist_ok=True)
+        with open(filename, 'w', encoding='utf-8-sig', newline='') as f:
+            f.write(body)
+        print(f"[Sabi] Cobrança exportada: {filename}", flush=True)
+    except Exception as error:
+        print(f"[Sabi] Erro ao exportar cobrança: {error}", flush=True)
+
+
+def _sabi_export_rateio():
+    """Exporta rateio de faturamento para arquivo local usando a mesma lógica da API."""
+    try:
+        today = date.today()
+        competencia = apuracao_competencia_label(today.year, today.month)
+        filters = {}
+
+        with connection() as db:
+            payload = rateio_overview(db, competencia, filters)
+
+        body = rateio_build_xlsx(payload)
+        filename = ROOT / "media" / f"sabi-rateio-{competencia.replace('/', '-')}.xlsx"
+        filename.parent.mkdir(exist_ok=True)
+        with open(filename, 'wb') as f:
+            f.write(body)
+        print(f"[Sabi] Rateio exportado: {filename}", flush=True)
+    except Exception as error:
+        print(f"[Sabi] Erro ao exportar rateio: {error}", flush=True)
+
+
+def _sabi_export_demandas():
+    """Exporta relatório de demandas - placeholder (demandas estão em app.js, não no backend)."""
+    print("[Sabi] Demandas: integrar com app.js (frontend)", flush=True)
+
+
+def _sabi_export_adesoes():
+    """Exporta conferência de adesões - placeholder (integrar com adesoes_conferencia)."""
+    print("[Sabi] Adesões: integrar com adesoes_conferencia", flush=True)
+
+
+def _sabi_export_semanal():
+    """Exporta relatório semanal - placeholder (integrar com relatorio_semanal)."""
+    print("[Sabi] Semanal: integrar com relatorio_semanal", flush=True)
+
+
+def _sabi_export_comissoes():
+    """Exporta comissões - placeholder (tabela não identificada no backend)."""
+    print("[Sabi] Comissões: tabela não identificada", flush=True)
+
+
+def _sabi_export_financeiro():
+    """Exporta rateios P4X para arquivo local usando dados de finance_rateios."""
+    try:
+        with connection() as db:
+            # Busca os rateios do mês atual
+            today = date.today()
+            month_start = today.replace(day=1).isoformat()
+            month_end = (today.replace(day=28) + timedelta(days=4)).replace(day=1) - timedelta(days=1)
+            month_end = month_end.isoformat()
+
+            rows = db.execute(
+                "SELECT * FROM finance_rateios WHERE payment_date BETWEEN ? AND ? ORDER BY payment_date DESC LIMIT 5000",
+                (month_start, month_end)
+            ).fetchall()
+
+        if not rows:
+            print("[Sabi] Financeiro: nenhum registro encontrado no período", flush=True)
+            return
+
+        # Cria CSV usando a mesma função da API
+        body = finance_build_csv(rows, "SABI")
+
+        today = date.today()
+        filename = ROOT / "media" / f"sabi-financeiro-{today.strftime('%Y%m%d')}.csv"
+        filename.parent.mkdir(exist_ok=True)
+        with open(filename, 'w', encoding='utf-8-sig', newline='') as f:
+            f.write(body)
+        print(f"[Sabi] Financeiro exportado: {filename}", flush=True)
+    except Exception as error:
+        print(f"[Sabi] Erro ao exportar financeiro: {error}", flush=True)
+
+
+def _sabi_export_apuracao():
+    """Exporta apuração - placeholder (usar apuracao_runs)."""
+    print("[Sabi] Apuração: usar dados de apuracao_runs", flush=True)
+
+
+def _sabi_export_notas():
+    """Exporta conferência de notas - placeholder (integrar com s4e_notas)."""
+    print("[Sabi] Notas: integrar com s4e_notas", flush=True)
+
+
+def _sabi_export_recibos():
+    """Exporta recibos - placeholder (integrar com recibos_pdf)."""
+    print("[Sabi] Recibos: integrar com recibos_pdf", flush=True)
+
+
+def _sabi_export_vendas():
+    """Exporta vendas - placeholder (integrar com módulo vendas)."""
+    print("[Sabi] Vendas: integrar com módulo vendas", flush=True)
+
+
+def _sabi_export_retornos():
+    """Exporta retornos - placeholder (usar retornos)."""
+    print("[Sabi] Retornos: usar dados de retornos", flush=True)
+
+
 # ── Cobrança em lote por e-mail ───────────────────────────────────────────────
 def cobranca_smtp_config(db):
     row = db.execute("SELECT value FROM meta WHERE key = ?", (COBRANCA_SMTP_KEY,)).fetchone()
@@ -7255,14 +7723,68 @@ def rateio_receipts(db, competencia_label, rows):
     }, by_row
 
 
+REDE_SAUDE = "REDE SAUDE"
+
+
+def rule_level(rule):
+    """3 = regra de empresa, 2 = de grupo, 1 = de centro de custo."""
+    try:
+        declarado = int(rule["nivel"] or 0)
+    except (KeyError, IndexError, TypeError):
+        declarado = 0
+    if declarado > 0:
+        return declarado
+    if str(rule["empresa"] or "").strip():
+        return 3
+    if str(rule["grupo_empresa"] or "").strip():
+        return 2
+    return 1
+
+
+def rules_for_line(rules, group, group_company, company):
+    """Regras que valem para um lançamento, pela mais específica.
+
+    A empresa vence o grupo, que vence o centro de custo. Dentro do mesmo nível
+    valem todas as regras cadastradas (é assim que um grupo tem dois ou três
+    recebedores). Só quando não há nenhuma no nível específico é que o nível de
+    cima é consultado.
+    """
+    candidatas = [r for r in rules if r["grupo"] == group]
+    if not candidatas:
+        return []
+    por_nivel = {}
+    for regra in candidatas:
+        nivel = rule_level(regra)
+        if nivel == 3 and str(regra["empresa"] or "").strip() != company:
+            continue
+        if nivel == 2 and str(regra["grupo_empresa"] or "").strip() != group_company:
+            continue
+        por_nivel.setdefault(nivel, []).append(regra)
+    for nivel in (3, 2, 1):
+        if por_nivel.get(nivel):
+            return por_nivel[nivel]
+    return []
+
+
+def line_encargos(row):
+    """Juros, multa e acréscimos que entraram no pagamento deste título."""
+    return round(
+        float(row["multa"] or 0)
+        + float(row["acrescimo"] or 0)
+        + float(row["acrescimo_avulso"] or 0),
+        2,
+    )
+
+
 def rateio_overview(db, competencia_label, filters=None):
     filters = filters or {}
     run = _apuracao_latest_run(db, competencia_label)
     all_rules = db.execute("SELECT * FROM rateio_rules ORDER BY grupo, empresa, recebedor").fetchall()
     rules = [r for r in all_rules if r["ativo"]]
-    payload_rules = [{"id": r["id"], "grupo": r["grupo"], "grupoEmpresa": r["grupo_empresa"], "empresa": r["empresa"], "recebedor": r["recebedor"], "metodo": r["metodo"], "valor": r["valor"], "ativo": bool(r["ativo"]), "vigenciaInicio": r["vigencia_inicio"], "vigenciaFim": r["vigencia_fim"]} for r in all_rules]
+    payload_accounts = [{"id": a["id"], "nome": a["nome"], "tipo": a["tipo"], "documento": a["documento"], "banco": a["banco"], "agencia": a["agencia"], "conta": a["conta"], "chavePix": a["chave_pix"], "observacao": a["observacao"], "ativo": bool(a["ativo"])} for a in db.execute("SELECT * FROM rateio_accounts ORDER BY nome").fetchall()]
+    payload_rules = [{"id": r["id"], "grupo": r["grupo"], "grupoEmpresa": r["grupo_empresa"], "empresa": r["empresa"], "recebedor": r["recebedor"], "metodo": r["metodo"], "valor": r["valor"], "ativo": bool(r["ativo"]), "vigenciaInicio": r["vigencia_inicio"], "vigenciaFim": r["vigencia_fim"], "nivel": rule_level(r), "encargos": r["encargos"], "encargosRecebedor": r["encargos_recebedor"]} for r in all_rules]
     if not run:
-        return {"competencia": competencia_label, "competencias": apuracao_competencia_options(), "run": None, "rules": payload_rules, "items": [], "recebedores": [], "alerts": [], "receipts": None}
+        return {"competencia": competencia_label, "competencias": apuracao_competencia_options(), "run": None, "rules": payload_rules, "accounts": payload_accounts, "items": [], "recebedores": [], "alerts": [], "receipts": None}
     rows = db.execute("SELECT * FROM apuracao_rows WHERE run_id = ? ORDER BY grupo_mae, empresa", (run["id"],)).fetchall()
     receipts, receipt_rows = rateio_receipts(db, competencia_label, rows)
     parcel_types = sorted({str(row["tipo_parcela"] or "").strip() for row in rows if str(row["tipo_parcela"] or "").strip()})
@@ -7286,15 +7808,7 @@ def rateio_overview(db, competencia_label, filters=None):
         if filters.get("grupoEmpresa") and group_company != filters["grupoEmpresa"]: continue
         if filters.get("empresa") and company != filters["empresa"]: continue
         vidas, faturado = rateio_number(row["vidas"]), float(row["valor"] or 0)
-        applicable = [
-            r for r in rules
-            if r["grupo"] == group
-            and (not r["grupo_empresa"] or r["grupo_empresa"] == group_company)
-            and (not r["empresa"] or r["empresa"] == company)
-        ]
-        company_rules = [r for r in applicable if r["empresa"] == company]
-        if company_rules:
-            applicable = company_rules
+        applicable = rules_for_line(rules, group, group_company, company)
         # O campo de vidas do S4E nem sempre representa as vidas efetivamente
         # cobradas. A planilha financeira calcula a quantidade pela parcela:
         # valor base / soma das regras por vida. Isso evita inflar o rateio
@@ -7309,16 +7823,50 @@ def rateio_overview(db, competencia_label, filters=None):
         for rule in applicable:
             amount = faturado * float(rule["valor"] or 0) / 100 if rule["metodo"] == "percentual" else (billed_lives * float(rule["valor"] or 0) if rule["metodo"] == "por_vida" else float(rule["valor"] or 0))
             amount = round(amount, 2)
-            allocations.append({"recebedor": rule["recebedor"], "valor": amount})
+            allocations.append({"recebedor": rule["recebedor"], "valor": amount, "encargos": 0.0})
             totals[rule["recebedor"]] = round(totals.get(rule["recebedor"], 0) + amount, 2)
+
+        # ── Juros, multa e acréscimos ───────────────────────────────────
+        # Cada regra decide o que fazer com eles: dividir junto com a base,
+        # mandar para uma conta específica, ou deixar com a Rede Saúde.
+        encargos = line_encargos(row)
+        encargos_recebedores = []
+        if abs(encargos) > 0.005:
+            destinos = {}
+            for rule in applicable:
+                modo = str(rule["encargos"] or "rateio")
+                if modo == "recebedor":
+                    conta = str(rule["encargos_recebedor"] or rule["recebedor"] or "").strip()
+                elif modo == "rede":
+                    conta = REDE_SAUDE
+                else:
+                    conta = str(rule["recebedor"] or "").strip()
+                if conta:
+                    destinos[conta] = destinos.get(conta, 0.0) + 1.0
+            peso = sum(destinos.values())
+            if peso > 0:
+                for conta, fatia in destinos.items():
+                    valor = round(encargos * fatia / peso, 2)
+                    if abs(valor) <= 0.005:
+                        continue
+                    for item in allocations:
+                        if item["recebedor"] == conta:
+                            item["encargos"] = round(item["encargos"] + valor, 2)
+                            item["valor"] = round(item["valor"] + valor, 2)
+                            break
+                    else:
+                        allocations.append({"recebedor": conta, "valor": valor, "encargos": valor})
+                    totals[conta] = round(totals.get(conta, 0) + valor, 2)
+                    encargos_recebedores.append({"recebedor": conta, "valor": valor})
+
         total_rateado = round(sum(x["valor"] for x in allocations), 2)
         if not applicable:
             alerts.append(f"{group or 'Sem grupo'}: sem regra")
         elif total_rateado > faturado + 0.01:
             alerts.append(f"{company}: rateio maior que o faturamento")
         received = float(row["valor_recebido"] or 0)
-        items.append({"empresa": company, "grupo": group, "grupoEmpresa": row["grupo_empresa"], "documento": row["documento"], "vidas": vidas, "vidasFaturadas": billed_lives, "faturado": faturado, "titulo": row["titulo"], "imposto": row["imposto"], "multa": row["multa"], "acrescimo": row["acrescimo"], "acrescimoAvulso": row["acrescimo_avulso"], "desconto": row["desconto"], "descontoPagamento": row["desconto_pagamento"], "tarifa": row["tarifa"], "taxa": row["taxa"], "valorRecebido": received, "diferencaRecebimento": round(received - faturado, 2), "vencimento": row["vencimento"], "pagamento": row["data_pagamento"], "credito": row["data_credito"], "competenciaOriginal": row["competencia"], "empresaS4e": row["empresa_s4e"], "departamento": row["departamento"], "situacao": row["situacao"], "gerado": row["gerado"], "tipoParcela": row["tipo_parcela"], "tipoRecebimento": row["tipo_recebimento"], "tipoPagamento": row["tipo_pagamento"], "parcela": row["parcela"], "nf": row["nf"], "nfLote": row["nf_lote"], "emissao": row["emissao"], "vlPlano": row["vl_plano"], "vlOrto": row["vl_orto"], "vlProRata": row["vl_prorata"], "vendedor": row["vendedor"], "banco": receipt_rows.get(row["id"]), "rateios": allocations, "totalRateado": total_rateado, "saldo": round(faturado - total_rateado, 2)})
-    return {"competencia": competencia_label, "competencias": apuracao_competencia_options(), "run": {"id": run["id"], "finishedAt": run["finished_at"]}, "rules": payload_rules, "items": items, "tiposParcela": parcel_types, "recebedores": [{"nome": k, "valor": v} for k, v in sorted(totals.items())], "alerts": sorted(set(alerts)), "receipts": receipts}
+        items.append({"empresa": company, "grupo": group, "grupoEmpresa": row["grupo_empresa"], "documento": row["documento"], "vidas": vidas, "vidasFaturadas": billed_lives, "faturado": faturado, "titulo": row["titulo"], "imposto": row["imposto"], "multa": row["multa"], "acrescimo": row["acrescimo"], "acrescimoAvulso": row["acrescimo_avulso"], "desconto": row["desconto"], "descontoPagamento": row["desconto_pagamento"], "tarifa": row["tarifa"], "taxa": row["taxa"], "valorRecebido": received, "diferencaRecebimento": round(received - faturado, 2), "vencimento": row["vencimento"], "pagamento": row["data_pagamento"], "credito": row["data_credito"], "competenciaOriginal": row["competencia"], "empresaS4e": row["empresa_s4e"], "departamento": row["departamento"], "situacao": row["situacao"], "gerado": row["gerado"], "tipoParcela": row["tipo_parcela"], "tipoRecebimento": row["tipo_recebimento"], "tipoPagamento": row["tipo_pagamento"], "parcela": row["parcela"], "nf": row["nf"], "nfLote": row["nf_lote"], "emissao": row["emissao"], "vlPlano": row["vl_plano"], "vlOrto": row["vl_orto"], "vlProRata": row["vl_prorata"], "vendedor": row["vendedor"], "banco": receipt_rows.get(row["id"]), "rateios": allocations, "encargos": encargos, "encargosRecebedores": encargos_recebedores, "totalRateado": total_rateado, "saldo": round(faturado + encargos - total_rateado, 2)})
+    return {"competencia": competencia_label, "competencias": apuracao_competencia_options(), "run": {"id": run["id"], "finishedAt": run["finished_at"]}, "rules": payload_rules, "accounts": payload_accounts, "items": items, "tiposParcela": parcel_types, "recebedores": [{"nome": k, "valor": v} for k, v in sorted(totals.items())], "alerts": sorted(set(alerts)), "receipts": receipts}
 
 
 def rateio_build_xlsx(data):
@@ -7343,9 +7891,14 @@ def rateio_build_xlsx(data):
     for x in items:
         banco = x.get("banco") or {}
         details.append([x["grupo"], x["grupoEmpresa"], x["empresa"], x["documento"], x["vencimento"], x["pagamento"], x["credito"], x["competenciaOriginal"], x["vidas"], x["vidasFaturadas"], x["parcela"], money(x["faturado"]), money(x["acrescimo"]), money(x["imposto"]), money(x["titulo"]), money(x["taxa"]), money(x["multa"]), money(x["acrescimoAvulso"]), money(x["desconto"]), money(x["descontoPagamento"]), money(x["tarifa"]), money(x["valorRecebido"]), money(banco.get("valor", 0)) if banco else "", conferencia_label.get(banco.get("situacao"), "Sem retorno" if x["valorRecebido"] else "Em aberto"), money(x["diferencaRecebimento"]), x["nf"], money(x["totalRateado"]), money(x["saldo"]), "; ".join(f'{r["recebedor"]}: {r["valor"]:.2f}' for r in x["rateios"])])
-    rules = [["Centro de custo", "Grupo", "Empresa (exceção)", "Conta", "Método", "Valor"]]
+    rules = [["Centro de custo", "Grupo", "Empresa (exceção)", "Conta", "Método", "Valor", "Vale para", "Juros e multa"]]
+    nivel_label = {1: "Centro de custo", 2: "Grupo", 3: "Empresa"}
+    encargos_label = {"rateio": "Divide com a base", "recebedor": "Conta específica", "rede": "Rede Saúde"}
     for r in data.get("rules") or []:
-        rules.append([r["grupo"], r.get("grupoEmpresa") or "", r["empresa"], r["recebedor"], r["metodo"], r["valor"]])
+        encargo = encargos_label.get(r.get("encargos") or "rateio", "Divide com a base")
+        if (r.get("encargos") or "rateio") == "recebedor":
+            encargo = f"Conta: {r.get('encargosRecebedor') or '—'}"
+        rules.append([r["grupo"], r.get("grupoEmpresa") or "", r["empresa"], r["recebedor"], r["metodo"], r["valor"], nivel_label.get(r.get("nivel") or 1, "Centro de custo"), encargo])
     return xlsx_simple.build([("Resumo", summary), ("Por conta", receivers), ("Lançamentos", details), ("Regras", rules)])
 
 
@@ -8203,13 +8756,18 @@ COBRANCA_AUTO_INTERVAL = 180
 AUTO_RETRY_BLOCK = 15 * 60
 COBRANCA_AUTO_LAST_KEY = "cobranca_auto_last"
 COBRANCA_AUTO_USER = {"id": "sistema", "display_name": "Sistema (automático)", "username": "sistema"}
+ADESOES_AUTO_WINDOW_MINUTES = 90
+ADESOES_AUTO_FULL_START = "2025-12-01"
+ADESOES_AUTO_USER = "Sistema (automático)"
 
 _apuracao_scheduler_lock = threading.Lock()
 _cobranca_scheduler_lock = threading.Lock()
+_adesoes_scheduler_lock = threading.Lock()
 # Evita que a apuração e a cobrança automáticas abram dois relatórios ao mesmo tempo.
 _auto_start_lock = threading.Lock()
 _apuracao_auto_block_until = 0.0
 _cobranca_auto_block_until = 0.0
+_adesoes_auto_block_until = 0.0
 
 
 def _auto_now():
@@ -8392,7 +8950,188 @@ def cobranca_scheduler_worker():
         time.sleep(60)
 
 
+# ── Atualização automática da Conferência de Adesões (10h e 16h) ─────────────
+def _adesoes_auto_busy():
+    """Qualquer outra leitura do S4E em andamento tem prioridade."""
+    return bool(
+        _s4e_auto_busy()
+        or vidas.job_status().get("running")
+        or s4e_notas.job_status().get("running")
+        or relatorio_semanal.job_status().get("running")
+    )
+
+
+def _adesoes_auto_slot(now=None):
+    """A rodada que está em aberto agora: 10h ou 16h, por até 90 minutos."""
+    now = now or _auto_now()
+    for hora in reversed(adesoes_conferencia.AUTO_HORARIOS):
+        inicio = now.replace(hour=hora, minute=0, second=0, microsecond=0)
+        if inicio <= now < inicio + timedelta(minutes=ADESOES_AUTO_WINDOW_MINUTES):
+            return inicio
+    return None
+
+
+def _adesoes_faturamento_baixar(inicio, fim):
+    for tentativa in (1, 2):
+        sessao = s4e.ensure_session()
+        try:
+            return s4e.fetch_faturamento_rows(
+                sessao, inicio.strftime("%d/%m/%Y"), fim.strftime("%d/%m/%Y"))
+        except s4e.ConnectorError as error:
+            if tentativa == 2 or "expirou" not in str(error).lower():
+                raise
+            s4e.disconnect()
+
+
+def _adesoes_faturamento_mesclar(caminho, linhas, inicio, fim):
+    """Troca na cópia do faturamento só as parcelas que vencem desde `inicio`."""
+    corte = inicio.isoformat()
+    antigas, inicio_cache = [], corte
+    try:
+        dados = json.loads(Path(caminho).read_text(encoding="utf-8"))
+        antigas = dados.get("linhas") or []
+        inicio_cache = adesoes_conferencia.iso_date(dados.get("inicio")) or corte
+    except (OSError, ValueError):
+        pass
+    mantidas = [
+        linha for linha in antigas
+        if (adesoes_conferencia.iso_date(linha.get("vencimento")) or "") < corte
+    ]
+    payload = {
+        "inicio": min(inicio_cache, corte),
+        "fim": fim.isoformat(),
+        "linhas": mantidas + list(linhas),
+        "atualizadoEm": _auto_now().isoformat(timespec="seconds"),
+    }
+    temporario = Path(str(caminho) + ".tmp")
+    temporario.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+    os.replace(temporario, caminho)
+    return {"linhas": len(payload["linhas"]), "baixadas": len(linhas),
+            "de": payload["inicio"], "ate": payload["fim"]}
+
+
+def _adesoes_atualizar_faturamento(inicio, fim):
+    linhas = _adesoes_faturamento_baixar(inicio, fim)
+    if not linhas:
+        # Melhor manter a cópia anterior do que apagar o mês em branco.
+        raise RuntimeError("O S4E não devolveu títulos no faturamento; a cópia anterior foi mantida.")
+    return _adesoes_faturamento_mesclar(
+        adesoes_conferencia.FATURAMENTO_CACHE, linhas, inicio, fim)
+
+
+def _adesoes_atualizar_vendas(inicio, fim):
+    vendas.start_query(inicio, fim)
+    limite = time.monotonic() + 15 * 60
+    while time.monotonic() < limite:
+        estado = vendas.job_status()
+        if not estado.get("running"):
+            if estado.get("error"):
+                raise RuntimeError(f"Entrada de Contratos: {estado['error']}")
+            return estado
+        time.sleep(5)
+    raise RuntimeError("A consulta de vendas do S4E não terminou em 15 minutos.")
+
+
+def _adesoes_vendas_guardar_recente(db, inicio):
+    """As consultas do mês se sobrepõem; guarda as duas últimas."""
+    db.execute(
+        "DELETE FROM vendas_snapshots WHERE start_date = ? AND id NOT IN ("
+        "SELECT id FROM vendas_snapshots WHERE start_date = ? ORDER BY id DESC LIMIT 2)",
+        (inicio.isoformat(), inicio.isoformat()),
+    )
+    db.commit()
+
+
+def _adesoes_auto_run(slot):
+    inicio_em = _auto_now()
+    hoje = inicio_em.date()
+    inicio_mes = hoje.replace(day=1)
+    estado_vendas = _adesoes_atualizar_vendas(inicio_mes, hoje)
+    if slot.hour >= max(adesoes_conferencia.AUTO_HORARIOS):
+        # À tarde basta a ponta recente: novas faturas e pagamentos do mês.
+        inicio_faturamento = (inicio_mes - timedelta(days=1)).replace(day=1)
+    else:
+        inicio_faturamento = date.fromisoformat(ADESOES_AUTO_FULL_START)
+    faturamento = _adesoes_atualizar_faturamento(inicio_faturamento, hoje)
+    with connection() as db:
+        _adesoes_vendas_guardar_recente(db, inicio_mes)
+        gerado = adesoes_conferencia.montar_do_s4e(
+            db, inicio_mes.isoformat(), hoje.isoformat(), ADESOES_AUTO_USER)
+        conferido = adesoes_conferencia.conferir_agora(db, {}, ADESOES_AUTO_USER)
+    concluido = _auto_now()
+    return {
+        "slot": slot.strftime("%Y-%m-%dT%H:%M"),
+        "at": concluido.isoformat(timespec="seconds"),
+        "tentativa": concluido.isoformat(timespec="seconds"),
+        "ok": True,
+        "erro": "",
+        "vendas": {"periodo": f"{inicio_mes.isoformat()} a {hoje.isoformat()}",
+                   "mensagem": estado_vendas.get("message") or ""},
+        "faturamento": faturamento,
+        "adesoes": {
+            "geradas": gerado.get("geradas", 0),
+            "atualizadas": gerado.get("atualizadas", 0),
+            "conferidas": conferido.get("total", 0),
+        },
+    }
+
+
+def adesoes_auto_maybe(now=None):
+    global _adesoes_auto_block_until
+    now = now or _auto_now()
+    slot = _adesoes_auto_slot(now)
+    if not slot:
+        return
+    if not _adesoes_scheduler_lock.acquire(blocking=False):
+        return
+    try:
+        if time.monotonic() < _adesoes_auto_block_until or _adesoes_auto_busy():
+            return
+        chave = slot.strftime("%Y-%m-%dT%H:%M")
+        with connection() as db:
+            if system_lock_state(db)[0]:
+                return
+            if not s4e_account_config(db).get("password"):
+                return
+            estado = adesoes_conferencia.auto_estado(db)
+        if estado.get("slot") == chave and estado.get("ok"):
+            return
+        with _auto_start_lock:
+            if _adesoes_auto_busy():
+                return
+            try:
+                resultado = _adesoes_auto_run(slot)
+            except Exception as error:
+                _adesoes_auto_block_until = time.monotonic() + AUTO_RETRY_BLOCK
+                with connection() as db:
+                    falha = dict(estado)
+                    falha.update({
+                        "tentativa": now.isoformat(timespec="seconds"),
+                        "ok": False,
+                        "erro": str(error)[:300],
+                    })
+                    adesoes_conferencia.auto_registrar(db, falha)
+                print(f"Falha na atualização automática das adesões: {error}", flush=True)
+                return
+            with connection() as db:
+                adesoes_conferencia.auto_registrar(db, resultado)
+    finally:
+        _adesoes_scheduler_lock.release()
+
+
+def adesoes_scheduler_worker():
+    while True:
+        try:
+            adesoes_auto_maybe()
+        except Exception as error:
+            print(f"Falha no agendador das adesões: {error}", flush=True)
+        time.sleep(60)
+
+
 class PortalHandler(BaseHTTPRequestHandler):
+    # Pedidos que o navegador pode abandonar (conferência longa do S4E): o
+    # servidor continua vivo mesmo se a conexão cair no meio.
+    _adesoes_desconectado = False
     def send_json(self, payload, status=200):
         body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
         self.send_response(status)
@@ -8403,7 +9142,11 @@ class PortalHandler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(body)))
         self.send_header("Cache-Control", "no-store")
         self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError, ConnectionAbortedError):
+            # O navegador desistiu de esperar: o trabalho feito não se perde.
+            self._adesoes_desconectado = True
 
     def do_OPTIONS(self):
         self.send_response(204)
@@ -8460,6 +9203,12 @@ class PortalHandler(BaseHTTPRequestHandler):
             with connection() as db:
                 locked, message, since = system_lock_state(db)
             self.send_json({"locked": locked, "message": message, "since": since})
+            return
+        if path == "/api/sabi":
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+                self.send_json(sabi_payload(db))
             return
         if path == "/api/me":
             with connection() as db:
@@ -9134,6 +9883,19 @@ class PortalHandler(BaseHTTPRequestHandler):
                 return
             self.send_json(payload)
             return
+        if path == "/api/odontoart":
+            query = parse_qs(urlparse(self.path).query)
+            pedida = (query.get("competencia") or [""])[0].strip()
+            with connection() as db:
+                user = require_apuracao(db, self)
+                if not user:
+                    return
+                # A Juliana fecha o mês anterior: por padrão é esse que abre.
+                atual = pedida or odontoart.competencia_padrao()
+                payload = odontoart.montar_controle(db, atual)
+                payload["competencias"] = odontoart.competencias_disponiveis(db)
+            self.send_json(payload)
+            return
         if path == "/api/rateios-faturamento":
             query = parse_qs(urlparse(self.path).query)
             competencia = (query.get("competencia") or [""])[0].strip() or apuracao_competencia_label(date.today().year, date.today().month)
@@ -9145,6 +9907,24 @@ class PortalHandler(BaseHTTPRequestHandler):
                 payload = rateio_overview(db, competencia, filters)
                 payload["canManage"] = user["role"] == "admin"
             self.send_json(payload)
+            return
+        if path == "/api/odontoart/exportar":
+            query = parse_qs(urlparse(self.path).query)
+            pedida = (query.get("competencia") or [""])[0].strip()
+            with connection() as db:
+                user = require_apuracao(db, self)
+                if not user:
+                    return
+                alvo = pedida or odontoart.competencia_padrao()
+                dados = odontoart.montar_controle(db, alvo)
+            conteudo = odontoart.exportar_xlsx(dados)
+            nome = f"ODONTOART {alvo.replace('/', '.')}.xlsx"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            self.send_header("Content-Disposition", f'attachment; filename="{nome}"')
+            self.send_header("Content-Length", str(len(conteudo)))
+            self.end_headers()
+            self.wfile.write(conteudo)
             return
         if path == "/api/rateios-faturamento/exportar":
             query = parse_qs(urlparse(self.path).query)
@@ -9492,117 +10272,72 @@ class PortalHandler(BaseHTTPRequestHandler):
                 "history": [cobranca_history_payload(row) for row in history],
             })
             return
+        if path == "/api/contracts":
+            with connection() as db:
+                user = require_contracts(db, self)
+                if not user:
+                    return
+                payload = contracts_list_payload(db, user)
+            self.send_json(payload)
+            return
+        if path == "/api/commissions":
+            with connection() as db:
+                user = require_commissions(db, self)
+                if not user:
+                    return
+                payload = commissions_list_payload(db, user)
+            self.send_json(payload)
+            return
+        if path == "/api/contracts/export":
+            self.send_json({"error": "Use o botão Exportar da tela para baixar a planilha."}, 400)
+            return
         if path == "/api/adesoes":
             query = parse_qs(urlparse(self.path).query)
-            mes = (query.get("mes") or [""])[0].strip()
-            ano = (query.get("ano") or [""])[0].strip()
-            tipo = (query.get("tipo") or [""])[0].strip()
-            conferencia_status = (query.get("status") or [""])[0].strip()
-            search = (query.get("search") or [""])[0].strip()
-            
             try:
                 with connection() as db:
-                    user = require_admin(db, self)
+                    user = require_user(db, self)
                     if not user:
                         return
-                    
-                    where_parts = []
-                    params = []
-                    
-                    if mes and ano:
-                        try:
-                            mes_int = int(mes)
-                            ano_int = int(ano)
-                            if 1 <= mes_int <= 12 and 1000 <= ano_int <= 9999:
-                                start = f"{ano_int:04d}-{mes_int:02d}-01"
-                                if mes_int == 12:
-                                    end = f"{ano_int+1:04d}-01-01"
-                                else:
-                                    end = f"{ano_int:04d}-{mes_int+1:02d}-01"
-                                where_parts.append("data_adesao >= ? AND data_adesao < ?")
-                                params.extend([start, end])
-                        except (ValueError, TypeError):
-                            pass
-                    
-                    if tipo in ("WEB", "CRM"):
-                        where_parts.append("tipo = ?")
-                        params.append(tipo)
-                    
-                    if conferencia_status in ("pendente", "validado", "alerta", "erro"):
-                        where_parts.append("conferencia_status = ?")
-                        params.append(conferencia_status)
-                    
-                    if search:
-                        where_parts.append("(UPPER(empresa) LIKE UPPER(?) OR UPPER(lote) LIKE UPPER(?))")
-                        params.extend([f"%{search}%", f"%{search}%"])
-                    
-                    where_clause = " WHERE " + " AND ".join(where_parts) if where_parts else ""
-                    
-                    rows = db.execute(
-                        f"SELECT * FROM adesoes {where_clause} ORDER BY data_adesao DESC LIMIT 500",
-                        params
-                    ).fetchall()
-                    
-                    try:
-                        page = max(1, int((query.get("page") or ["1"])[0]))
-                    except (TypeError, ValueError):
-                        page = 1
-                    
-                    try:
-                        page_size = int((query.get("pageSize") or ["50"])[0])
-                    except (TypeError, ValueError):
-                        page_size = 50
-                    
-                    page_size = max(1, min(200, page_size))
-                    offset = (page - 1) * page_size
-                    
-                    # Get total count without limit
-                    total_result = db.execute(
-                        f"SELECT COUNT(*) as cnt FROM adesoes {where_clause}",
-                        params
-                    ).fetchone()
-                    total = total_result["cnt"] if total_result else 0
-                    
-                    # Get paginated rows
-                    rows = db.execute(
-                        f"SELECT * FROM adesoes {where_clause} ORDER BY data_adesao DESC LIMIT ? OFFSET ?",
-                        params + [page_size, offset]
-                    ).fetchall()
-                    
-                    conferidos = sum(1 for r in rows if r["conferencia_status"] == "validado")
-                    alertas = sum(1 for r in rows if r["conferencia_status"] == "alerta")
-                    problemas = sum(1 for r in rows if r["conferencia_status"] == "erro")
-                    pendentes = sum(1 for r in rows if r["conferencia_status"] == "pendente")
-                    
-                    adesoes = [{
-                        "id": r["id"],
-                        "lote": r["lote"],
-                        "empresa": r["empresa"],
-                        "dataEntrada": r["data_entrada"],
-                        "dataAdesao": r["data_adesao"],
-                        "vidas": r["vidas"],
-                        "valor": r["valor"],
-                        "tipo": r["tipo"],
-                        "situacao": r["situacao"],
-                        "statusConferencia": r["conferencia_status"],
-                        "conferencia_resultado": r["conferencia_resultado"],
-                        "notasConferencia": r["notas_conferencia"],
-                        "conferidoEm": r["conferido_em"],
-                    } for r in rows]
-                    
-                    self.send_json({
-                        "adesoes": adesoes,
-                        "total": total,
-                        "conferidos": conferidos,
-                        "alertas": alertas,
-                        "problemas": problemas,
-                        "pendentes": pendentes,
-                        "page": page,
-                        "pageSize": page_size,
-                        "pages": (total + page_size - 1) // page_size if total > 0 else 1,
-                    })
+                    resultado = adesoes_conferencia.listar(db, query)
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, 400)
+                return
             except Exception as exc:
-                self.send_json({"error": str(exc)[:200]}, 500)
+                print(f"Falha ao listar adesoes: {exc}", flush=True)
+                self.send_json({"error": f"Nao foi possivel ler as adesoes: {str(exc)[:160]}"}, 500)
+                return
+            self.send_json(resultado)
+            return
+        if path == "/api/adesoes/exportar":
+            query = parse_qs(urlparse(self.path).query)
+            try:
+                with connection() as db:
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    rows = adesoes_conferencia.listar(db, query, paginar=False)["registros"]
+                    body = adesoes_conferencia.planilha(
+                        rows, adesoes_conferencia.situacao_fontes(db))
+            except Exception as exc:
+                self.send_json({"error": f"Nao foi possivel gerar a planilha: {str(exc)[:160]}"}, 500)
+                return
+            filename = f"conferencia-adesoes-{date.today().strftime('%Y%m%d')}.xlsx"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Access-Control-Expose-Headers", "Content-Disposition")
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if path == "/api/adesoes/status":
+            with connection() as db:
+                user = require_user(db, self)
+                if not user:
+                    return
+                estado = adesoes_conferencia.job_status(db)
+            self.send_json(estado)
             return
         if path == "/adesoes" or path.startswith("/adesoes?"):
             # PASSO 2: GET /adesoes - Renderiza HTML com conferência automática
@@ -11155,105 +11890,6 @@ render();fromHash();
         path = urlparse(self.path).path
         if deny_if_locked(self, path):
             return
-        if path == "/adesoes/conferir-todos":
-            # PASSO 5: POST /adesoes/conferir-todos - Conferenciar todos os registros filtrados
-            query = parse_qs(urlparse(self.path).query)
-            mes = (query.get("mes") or [""])[0].strip()
-            ano = (query.get("ano") or [""])[0].strip()
-            tipo = (query.get("tipo") or [""])[0].strip()
-            
-            # Parse form data if sent as POST body
-            try:
-                content_length = int(self.headers.get('Content-Length', 0))
-                if content_length > 0:
-                    body_data = self.rfile.read(content_length)
-                    post_data = parse_qs(body_data.decode('utf-8'))
-                    mes = mes or (post_data.get("mes") or [""])[0].strip()
-                    ano = ano or (post_data.get("ano") or [""])[0].strip()
-                    tipo = tipo or (post_data.get("tipo") or [""])[0].strip()
-            except Exception:
-                pass
-            
-            try:
-                with connection() as db:
-                    # Build WHERE clause based on filters
-                    where_parts = []
-                    params = []
-                    
-                    if mes:
-                        try:
-                            mes_int = int(mes)
-                            if 1 <= mes_int <= 12:
-                                mes_str = f"2026-{mes_int:02d}"
-                                where_parts.append("substr(data_entrada, 1, 7) = ?")
-                                params.append(mes_str)
-                        except (ValueError, TypeError):
-                            pass
-                    
-                    if ano:
-                        try:
-                            ano_int = int(ano)
-                            ano_str = f"{ano_int:04d}"
-                            where_parts.append("substr(data_entrada, 1, 4) = ?")
-                            params.append(ano_str)
-                        except (ValueError, TypeError):
-                            pass
-                    
-                    if tipo in ("WEB", "CRM"):
-                        where_parts.append("tipo = ?")
-                        params.append(tipo)
-                    
-                    where_clause = " WHERE " + " AND ".join(where_parts) if where_parts else ""
-                    
-                    # Fetch all matching records
-                    rows = db.execute(
-                        f"SELECT * FROM adesoes {where_clause}",
-                        params
-                    ).fetchall()
-                    
-                    # Simulate validation (in real scenario, use adesoes_validation.validate_adesao)
-                    now = now_iso()
-                    processed = 0
-                    for r in rows:
-                        # Simple validation: mark as validado if not already error or alerta
-                        if r["conferencia_status"] == "pendente":
-                            # Random validation result for demo
-                            import random
-                            validation_result = random.choice(["validado", "validado", "validado", "alerta"])
-                            db.execute(
-                                "UPDATE adesoes SET conferencia_status = ?, conferido_em = ? WHERE id = ?",
-                                (validation_result, now, r["id"])
-                            )
-                            processed += 1
-                    
-                    db.commit()
-                    
-                    # Build redirect URL with same filters
-                    redirect_params = []
-                    if mes:
-                        redirect_params.append(f"mes={quote(mes)}")
-                    if ano:
-                        redirect_params.append(f"ano={quote(ano)}")
-                    if tipo:
-                        redirect_params.append(f"tipo={quote(tipo)}")
-                    redirect_url = "/adesoes?" + "&".join(redirect_params) if redirect_params else "/adesoes"
-                    
-                    # Redirect to GET /adesoes
-                    self.send_response(303)
-                    self.send_header("Location", redirect_url)
-                    self.end_headers()
-            except Exception as exc:
-                self.send_response(500)
-                self.send_header("Content-Type", "text/html; charset=utf-8")
-                self.end_headers()
-                error_html = f"""<!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>Erro</title></head><body>
-<h1>Erro ao processar conferência</h1>
-<p>{str(exc)[:200]}</p>
-<p><a href="/adesoes">Voltar</a></p>
-</body></html>"""
-                self.wfile.write(error_html.encode('utf-8'))
-            return
         if path == "/api/agent/events":
             try:
                 payload = read_json(self)
@@ -12093,6 +12729,75 @@ render();fromHash();
                 return
             self.send_json({"ok": True, "jobId": job_id})
             return
+        if path == "/api/rateios-faturamento/contas":
+            try:
+                payload = read_json(self)
+                if not isinstance(payload, dict):
+                    raise ValueError("Objeto JSON esperado")
+            except ValueError:
+                self.send_json({"error": "Envie os dados em JSON."}, 400)
+                return
+            with connection() as db:
+                user = require_apuracao(db, self)
+                if not user:
+                    return
+                if user["role"] != "admin":
+                    self.send_json({"error": "Somente a administração pode cadastrar contas."}, 403)
+                    return
+                nome = str(payload.get("nome") or "").strip()[:120]
+                if not nome:
+                    self.send_json({"error": "Dê um nome à conta."}, 400)
+                    return
+                repetida = db.execute(
+                    "SELECT id FROM rateio_accounts WHERE LOWER(TRIM(nome)) = LOWER(?)", (nome,)
+                ).fetchone()
+                if repetida and str(payload.get("id") or "") != repetida["id"]:
+                    self.send_json({"error": f'A conta "{nome}" já está cadastrada.'}, 409)
+                    return
+                campos = (
+                    nome,
+                    str(payload.get("tipo") or "").strip()[:60],
+                    str(payload.get("documento") or "").strip()[:30],
+                    str(payload.get("banco") or "").strip()[:80],
+                    str(payload.get("agencia") or "").strip()[:20],
+                    str(payload.get("conta") or "").strip()[:30],
+                    str(payload.get("chavePix") or "").strip()[:160],
+                    str(payload.get("observacao") or "").strip()[:400],
+                    1 if payload.get("ativo", True) else 0,
+                )
+                stamp = now_iso()
+                account_id = str(payload.get("id") or "").strip()
+                if account_id:
+                    anterior = db.execute(
+                        "SELECT nome FROM rateio_accounts WHERE id = ?", (account_id,)
+                    ).fetchone()
+                    db.execute(
+                        "UPDATE rateio_accounts SET nome=?, tipo=?, documento=?, banco=?, agencia=?, "
+                        "conta=?, chave_pix=?, observacao=?, ativo=?, updated_at=? WHERE id=?",
+                        campos + (stamp, account_id),
+                    )
+                    # Renomear a conta renomeia as regras: o rateio referencia o nome.
+                    if anterior and anterior["nome"] != nome:
+                        db.execute(
+                            "UPDATE rateio_rules SET recebedor = ?, updated_at = ? WHERE recebedor = ?",
+                            (nome, stamp, anterior["nome"]),
+                        )
+                        db.execute(
+                            "UPDATE rateio_rules SET encargos_recebedor = ?, updated_at = ? "
+                            "WHERE encargos_recebedor = ?",
+                            (nome, stamp, anterior["nome"]),
+                        )
+                else:
+                    account_id = str(uuid.uuid4())
+                    db.execute(
+                        "INSERT INTO rateio_accounts(id, nome, tipo, documento, banco, agencia, conta, "
+                        "chave_pix, observacao, ativo, created_at, updated_at) "
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        (account_id,) + campos + (stamp, stamp),
+                    )
+                db.commit()
+            self.send_json({"ok": True, "id": account_id})
+            return
         if path == "/api/rateios-faturamento/regras":
             try:
                 payload = read_json(self)
@@ -12123,12 +12828,24 @@ render();fromHash();
                     self.send_json({"error": "O valor não pode ser negativo."}, 400)
                     return
                 active = 1 if payload.get("ativo", True) else 0
+                # Para onde vão juros, multa e acréscimo desta regra.
+                encargos = str(payload.get("encargos") or "rateio").strip().lower()
+                if encargos not in {"rateio", "recebedor", "rede"}:
+                    encargos = "rateio"
+                encargos_receiver = str(payload.get("encargosRecebedor") or "").strip()[:120]
+                if encargos == "recebedor" and not encargos_receiver:
+                    self.send_json({"error": "Escolha a conta que recebe os juros e multas."}, 400)
+                    return
+                # Nível vem da especificidade: empresa vence grupo, grupo vence centro.
+                nivel = 3 if company else (2 if group_company else 1)
                 stamp = now_iso()
                 rule_id = str(payload.get("id") or "").strip()
+                vigencia_inicio = str(payload.get("vigenciaInicio") or "")
+                vigencia_fim = str(payload.get("vigenciaFim") or "")
                 if rule_id:
-                    db.execute("UPDATE rateio_rules SET grupo=?, grupo_empresa=?, empresa=?, recebedor=?, metodo=?, valor=?, ativo=?, vigencia_inicio=?, vigencia_fim=?, updated_at=? WHERE id=?", (group, group_company, company, receiver, method, value, active, str(payload.get("vigenciaInicio") or ""), str(payload.get("vigenciaFim") or ""), stamp, rule_id))
+                    db.execute("UPDATE rateio_rules SET grupo=?, grupo_empresa=?, empresa=?, recebedor=?, metodo=?, valor=?, ativo=?, vigencia_inicio=?, vigencia_fim=?, encargos=?, encargos_recebedor=?, nivel=?, updated_at=? WHERE id=?", (group, group_company, company, receiver, method, value, active, vigencia_inicio, vigencia_fim, encargos, encargos_receiver, nivel, stamp, rule_id))
                 else:
-                    db.execute("INSERT INTO rateio_rules(id, grupo, grupo_empresa, empresa, recebedor, metodo, valor, ativo, vigencia_inicio, vigencia_fim, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (str(uuid.uuid4()), group, group_company, company, receiver, method, value, active, str(payload.get("vigenciaInicio") or ""), str(payload.get("vigenciaFim") or ""), stamp, stamp))
+                    db.execute("INSERT INTO rateio_rules(id, grupo, grupo_empresa, empresa, recebedor, metodo, valor, ativo, vigencia_inicio, vigencia_fim, encargos, encargos_recebedor, nivel, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", (str(uuid.uuid4()), group, group_company, company, receiver, method, value, active, vigencia_inicio, vigencia_fim, encargos, encargos_receiver, nivel, stamp, stamp))
                 db.commit()
             self.send_json({"ok": True})
             return
@@ -12215,240 +12932,84 @@ render();fromHash();
                 db.commit()
             self.send_json({"ok": True})
             return
-        if path == "/api/adesoes":
+        if path == "/api/adesoes/gerar":
             try:
                 payload = read_json(self)
-                if not isinstance(payload, dict):
-                    raise ValueError("Objeto JSON esperado")
             except ValueError:
-                self.send_json({"error": "Envie os dados em JSON."}, 400)
-                return
+                payload = {}
             with connection() as db:
-                user = require_admin(db, self)
+                user = require_user(db, self)
                 if not user:
                     return
-                
-                adesao_id = str(uuid.uuid4())
-                lote = str(payload.get("lote") or "").strip()
-                empresa = str(payload.get("empresa") or "").strip()
-                data_entrada = str(payload.get("dataEntrada") or "").strip()
-                data_adesao = str(payload.get("dataAdesao") or "").strip() or now_iso()[:10]
-                vidas = payload.get("vidas")
-                valor = payload.get("valor")
-                tipo = str(payload.get("tipo") or "WEB").strip().upper()
-                situacao = str(payload.get("situacao") or "ativo").strip()
-                
-                if not lote or not empresa or not data_entrada:
-                    self.send_json({"error": "Lote, empresa e data de entrada são obrigatórios."}, 400)
+                try:
+                    resumo = adesoes_conferencia.montar_do_s4e(
+                        db, payload.get("inicio") or "", payload.get("fim") or "",
+                        user["display_name"] or user["username"])
+                except ValueError as exc:
+                    self.send_json({"error": str(exc)}, 400)
                     return
-                
-                if tipo not in ("WEB", "CRM"):
-                    tipo = "WEB"
-                
-                try:
-                    vidas_int = int(vidas) if vidas else 0
-                except (ValueError, TypeError):
-                    vidas_int = 0
-                
-                try:
-                    valor_real = float(valor) if valor else 0.0
-                except (ValueError, TypeError):
-                    valor_real = 0.0
-                
-                db.execute(
-                    """INSERT INTO adesoes(id, lote, empresa, data_entrada, vidas, valor, tipo, situacao, 
-                    conferencia_status, data_adesao, criado_em, atualizado_em)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                    (adesao_id, lote, empresa, data_entrada, vidas_int, valor_real, tipo, situacao, 
-                     "pendente", data_adesao, now_iso(), now_iso())
-                )
-                db.commit()
-                
-                self.send_json({"id": adesao_id, "success": True}, 201)
+                except Exception as exc:
+                    self.send_json({"error": f"Nao foi possivel gerar as adesoes: {str(exc)[:160]}"}, 500)
+                    return
+            self.send_json({"ok": True, "resumo": resumo})
             return
         if path == "/api/adesoes/conferir":
-            path_parts = urlparse(self.path).path.split("/")
-            if len(path_parts) >= 5 and path_parts[4]:
-                adesao_id = unquote(path_parts[4]).strip()
-            else:
-                self.send_json({"error": "ID da adesão não informado."}, 400)
-                return
-            
             try:
                 payload = read_json(self)
-                if not isinstance(payload, dict):
-                    raise ValueError("Objeto JSON esperado")
+            except ValueError:
+                payload = {}
+            with connection() as db:
+                user = require_user(db, self)
+                if not user:
+                    return
+                try:
+                    resultado = adesoes_conferencia.conferir_agora(
+                        db, payload, user["display_name"] or user["username"])
+                except ValueError as exc:
+                    self.send_json({"error": str(exc)}, 400)
+                    return
+            self.send_json(resultado)
+            return
+        if path == "/api/adesoes/importar":
+            try:
+                payload = read_json(self)
             except ValueError:
                 self.send_json({"error": "Envie os dados em JSON."}, 400)
                 return
-            
-            with connection() as db:
-                user = require_admin(db, self)
-                if not user:
-                    return
-                
-                adesao = db.execute("SELECT * FROM adesoes WHERE id = ?", (adesao_id,)).fetchone()
-                if not adesao:
-                    self.send_json({"error": "Adesão não encontrada."}, 404)
-                    return
-                
-                from adesoes_validation import validate_adesao_with_s4e
-                
-                # Obtém sessão S4E para verificação de empresa
-                try:
-                    http_session = s4e.ensure_session()
-                except Exception:
-                    http_session = None
-                
-                validation = validate_adesao_with_s4e(
-                    adesao["lote"],
-                    adesao["empresa"],
-                    adesao["data_entrada"],
-                    adesao["vidas"] or 0,
-                    http_session=http_session
-                )
-                
-                resultado = {
-                    "validation": validation,
-                    "timestamp": now_iso()
-                }
-                
-                # Status logic: valid+no_warnings → validado, valid+warnings → alerta, else → erro
-                status_conferencia = "validado" if (validation["valid"] and not validation["warnings"]) else ("alerta" if (validation["valid"] and validation["warnings"]) else "erro")
-                notas = payload.get("notas", "")
-                
-                db.execute(
-                    """UPDATE adesoes SET conferencia_status = ?, conferencia_resultado = ?, 
-                    notas_conferencia = ?, conferido_em = ?, conferido_por = ?, atualizado_em = ?
-                    WHERE id = ?""",
-                    (status_conferencia, json.dumps(resultado, ensure_ascii=False), notas, now_iso(), user["id"], now_iso(), adesao_id)
-                )
-                db.commit()
-                
-                self.send_json({
-                    "id": adesao_id,
-                    "statusConferencia": status_conferencia,
-                    "notasConferencia": notas,
-                    "conferidoEm": now_iso()
-                })
-            return
-        if path == "/api/adesoes/conferir-todos":
-            query = parse_qs(urlparse(self.path).query)
-            mes = (query.get("mes") or [""])[0].strip()
-            ano = (query.get("ano") or [""])[0].strip()
-            
-            def run_batch_reconciliation():
-                """Executa a reconciliação em background com progresso."""
-                from adesoes_validation import validate_adesao_with_s4e
-                
-                # Obtém sessão S4E uma vez para reutilizar
-                try:
-                    http_session = s4e.ensure_session()
-                except Exception:
-                    http_session = None
-                
+            conteudo = str(payload.get("arquivo") or "")
+            nome = str(payload.get("nome") or "adesoes.xlsx")
+            if not conteudo:
+                self.send_json({"error": "Selecione a planilha de adesoes."}, 400)
+                return
+            if not nome.lower().endswith((".xlsx", ".xlsm")):
+                self.send_json({"error": "Envie a planilha em Excel (.xlsx)."}, 400)
+                return
+            try:
+                dados = base64.b64decode(conteudo.split(",")[-1])
+            except Exception:
+                self.send_json({"error": "O arquivo enviado nao pode ser lido."}, 400)
+                return
+            temporario = ROOT / f".adesoes-import-{uuid.uuid4().hex}.xlsx"
+            temporario.write_bytes(dados)
+            try:
                 with connection() as db:
-                    user_record = db.execute("SELECT * FROM users WHERE id = ?", (user["id"],)).fetchone()
-                    
-                    where_parts = []
-                    params = []
-                    
-                    if mes and ano:
-                        try:
-                            mes_int = int(mes)
-                            ano_int = int(ano)
-                            if 1 <= mes_int <= 12 and 1000 <= ano_int <= 9999:
-                                start = f"{ano_int:04d}-{mes_int:02d}-01"
-                                if mes_int == 12:
-                                    end = f"{ano_int+1:04d}-01-01"
-                                else:
-                                    end = f"{ano_int:04d}-{mes_int+1:02d}-01"
-                                where_parts.append("data_adesao >= ? AND data_adesao < ?")
-                                params.extend([start, end])
-                        except (ValueError, TypeError):
-                            pass
-                    
-                    where_clause = " WHERE " + " AND ".join(where_parts) if where_parts else ""
-                    rows = db.execute(f"SELECT id FROM adesoes {where_clause}", params).fetchall()
-                    
-                    total = len(rows)
-                    processados = 0
-                    conferidos = 0
-                    alertas = 0
-                    problemas = 0
-                    
-                    for idx, row in enumerate(rows):
-                        adesao = db.execute("SELECT * FROM adesoes WHERE id = ?", (row["id"],)).fetchone()
-                        if not adesao:
-                            continue
-                        
-                        # Valida com S4E se disponível
-                        validation = validate_adesao_with_s4e(
-                            adesao["lote"],
-                            adesao["empresa"],
-                            adesao["data_entrada"],
-                            adesao["vidas"] or 0,
-                            http_session=http_session
-                        )
-                        
-                        resultado = {
-                            "validation": validation,
-                            "timestamp": now_iso()
-                        }
-                        
-                        if validation["valid"] and not validation["warnings"]:
-                            status = "validado"
-                            conferidos += 1
-                        elif validation["errors"]:
-                            status = "erro"
-                            problemas += 1
-                        else:
-                            status = "alerta"
-                            alertas += 1
-                        
-                        db.execute(
-                            """UPDATE adesoes SET conferencia_status = ?, conferencia_resultado = ?, 
-                            conferido_em = ?, conferido_por = ?, atualizado_em = ?
-                            WHERE id = ?""",
-                            (status, json.dumps(resultado, ensure_ascii=False), now_iso(), user["id"], now_iso(), adesao["id"])
-                        )
-                        processados += 1
-                        
-                        # Commit a cada 10 registros para evitar lock prolongado
-                        if processados % 10 == 0:
-                            db.commit()
-                    
-                    db.commit()
-                    
-                    return {
-                        "processados": processados,
-                        "conferidos": conferidos,
-                        "alertas": alertas,
-                        "problemas": problemas
-                    }
-            
-            with connection() as db:
-                user = require_admin(db, self)
-                if not user:
-                    return
-                
-                # Roda reconciliação em thread para não bloquear
-                executor = ThreadPoolExecutor(max_workers=1)
-                future = executor.submit(run_batch_reconciliation)
-                
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    resumo = adesoes_conferencia.importar_planilha(
+                        db, temporario, user["display_name"] or user["username"])
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, 400)
+                return
+            except Exception as exc:
+                self.send_json({"error": f"Nao foi possivel ler a planilha: {str(exc)[:160]}"}, 500)
+                return
+            finally:
                 try:
-                    result = future.result(timeout=600)  # Timeout de 10 minutos
-                    self.send_json(result)
-                except Exception as e:
-                    self.send_json({
-                        "error": f"Erro ao processar adesões: {str(e)[:100]}",
-                        "processados": 0,
-                        "conferidos": 0,
-                        "alertas": 0,
-                        "problemas": 0
-                    }, 500)
-                finally:
-                    executor.shutdown(wait=False)
+                    temporario.unlink()
+                except OSError:
+                    pass
+            self.send_json({"ok": True, "resumo": resumo})
             return
         if path == "/api/cobranca/clear":
             with connection() as db:
@@ -13380,6 +13941,39 @@ render();fromHash();
                 row = db.execute("SELECT * FROM screens WHERE id = ?", (screen_id,)).fetchone()
                 self.send_json({"screen": screen_payload(row)}, 201)
             return
+        # ── POST /api/screens/<id>/liberar — libera ou recolhe de todos ──────
+        if path.startswith("/api/screens/") and path.endswith("/liberar"):
+            screen_id = unquote(path[len("/api/screens/"):-len("/liberar")]).strip("/")
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+                if screen_id in SHARED_SCREENS:
+                    self.send_json({"error": "Esta tela já é liberada para todos."}, 400)
+                    return
+                if screen_id in DISABLED_SCREENS or screen_id in PRIVATE_SCREENS:
+                    self.send_json({"error": "Esta tela é exclusiva do administrador."}, 400)
+                    return
+                if not db.execute("SELECT 1 FROM screens WHERE id = ?", (screen_id,)).fetchone():
+                    self.send_json({"error": "Tela não encontrada."}, 404)
+                    return
+                release = bool(payload.get("release"))
+                for row in db.execute("SELECT id FROM users WHERE role != 'admin' AND active = 1").fetchall():
+                    if release:
+                        db.execute(
+                            "INSERT OR IGNORE INTO user_screens(user_id, screen_id) VALUES (?, ?)",
+                            (row["id"], screen_id),
+                        )
+                    else:
+                        db.execute(
+                            "DELETE FROM user_screens WHERE user_id = ? AND screen_id = ?",
+                            (row["id"], screen_id),
+                        )
+                db.commit()
+                users_payload = [
+                    row_user(db, row) for row in db.execute("SELECT * FROM users ORDER BY created_at")
+                ]
+            self.send_json({"screenId": screen_id, "release": release, "users": users_payload})
+            return
         # ── POST /api/announcements — criar comunicado ────────────────────────
         if path == "/api/announcements":
             with connection() as db:
@@ -13428,6 +14022,62 @@ render();fromHash();
                     return
                 db.commit()
             self.send_json({"ok": True})
+            return
+        if path == "/api/sabi":
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+                look = payload.get("look") if isinstance(payload, dict) else ""
+                if look not in SABI_LOOKS:
+                    self.send_json({"error": "Escolha um look válido para o Sabi."}, 400)
+                    return
+                db.execute(
+                    "INSERT INTO meta (key, value) VALUES (?, ?) "
+                    "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+                    (SABI_META_KEY, look),
+                )
+                db.commit()
+                self.send_json(sabi_payload(db))
+            return
+        if path == "/api/sabi/schedules":
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+                if self.command == "GET":
+                    self.send_json({"schedules": sabi_schedules_get(db)})
+                    return
+                if self.command == "POST":
+                    action = payload.get("action")
+                    kind = payload.get("kind")
+                    time_str = payload.get("time")
+                    enabled = payload.get("enabled", True)
+                    if not action or not kind or not time_str:
+                        self.send_json({"error": "Informe ação, tipo e horário."}, 400)
+                        return
+                    try:
+                        hour, minute = map(int, time_str.split(":"))
+                        if not (0 <= hour <= 23 and 0 <= minute <= 59):
+                            raise ValueError()
+                    except (ValueError, AttributeError):
+                        self.send_json({"error": "Horário inválido. Use formato HH:MM."}, 400)
+                        return
+                    schedule = sabi_schedules_add(db, {
+                        "action": action,
+                        "kind": kind,
+                        "time": time_str,
+                        "enabled": enabled,
+                    })
+                    self.send_json({"schedule": schedule})
+                    return
+        if path.startswith("/api/sabi/schedules/"):
+            schedule_id = unquote(path[len("/api/sabi/schedules/"):]).strip("/")
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+                if self.command == "DELETE":
+                    sabi_schedules_remove(db, schedule_id)
+                    self.send_json({"ok": True})
+                    return
             return
         if path.startswith("/api/cobranca/templates/"):
             template_id = unquote(path[len("/api/cobranca/templates/"):]).strip("/")
@@ -13709,9 +14359,12 @@ render();fromHash();
                 if not item:
                     self.send_json({"error": "Comunicado não encontrado."}, 404)
                     return
-                for field in ("title", "description", "date", "type", "active", "imageData", "color"):
+                for field in ("title", "description", "date", "type", "active", "imageData", "color",
+                              "autoDraft", "releasedAt"):
                     if field in payload:
                         item[field] = payload[field]
+                if payload.get("active") and not item.get("releasedAt"):
+                    item["releasedAt"] = now_iso()
                 item["updatedAt"] = now_iso()
                 self._save_announcements(db, items)
                 self.send_json({"announcement": item})
@@ -13884,6 +14537,35 @@ render();fromHash();
     def do_DELETE(self):
         path = urlparse(self.path).path
         if deny_if_locked(self, path):
+            return
+        if path.startswith("/api/rateios-faturamento/contas/"):
+            account_id = unquote(path[len("/api/rateios-faturamento/contas/"):]).strip("/")
+            with connection() as db:
+                user = require_apuracao(db, self)
+                if not user:
+                    return
+                if user["role"] != "admin":
+                    self.send_json({"error": "Somente a administração pode excluir contas."}, 403)
+                    return
+                conta = db.execute(
+                    "SELECT nome FROM rateio_accounts WHERE id = ?", (account_id,)
+                ).fetchone()
+                if not conta:
+                    self.send_json({"error": "Conta não encontrada."}, 404)
+                    return
+                em_uso = db.execute(
+                    "SELECT COUNT(*) AS n FROM rateio_rules WHERE recebedor = ? OR encargos_recebedor = ?",
+                    (conta["nome"], conta["nome"]),
+                ).fetchone()["n"]
+                if em_uso:
+                    self.send_json(
+                        {"error": f'"{conta["nome"]}" está em {em_uso} regra(s). Troque o destino antes de excluir.'},
+                        409,
+                    )
+                    return
+                db.execute("DELETE FROM rateio_accounts WHERE id = ?", (account_id,))
+                db.commit()
+            self.send_json({"ok": True})
             return
         if path.startswith("/api/rateios-faturamento/regras/"):
             rule_id = unquote(path[len("/api/rateios-faturamento/regras/"):]).strip("/")
@@ -14350,6 +15032,8 @@ if __name__ == "__main__":
     threading.Thread(target=recurring_worker, name="gerador-demandas-diarias", daemon=True).start()
     threading.Thread(target=apuracao_scheduler_worker, name="agendador-apuracao", daemon=True).start()
     threading.Thread(target=cobranca_scheduler_worker, name="agendador-cobranca", daemon=True).start()
+    threading.Thread(target=adesoes_scheduler_worker, name="agendador-adesoes", daemon=True).start()
+    threading.Thread(target=sabi_schedule_worker, name="agendador-sabi", daemon=True).start()
     retornos.activate()
     threading.Thread(target=retornos.scheduler, name="monitor-retornos", daemon=True).start()
     ip = ip_local()

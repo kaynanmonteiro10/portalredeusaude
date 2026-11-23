@@ -1,0 +1,119 @@
+"""Bloco novo da Conferência de Adesões — endpoints reais.
+
+Este arquivo é colado no lugar do bloco antigo (linhas 9495..9610 e 12218..12455
+do portal_server.py) por `_aplicar_adesoes.py`. Fica separado só para deixar a
+revisão legível; nada aqui roda sozinho.
+"""
+
+# ── GET /api/adesoes ────────────────────────────────────────────────────────
+GET_API_ADESOES = r'''
+        if path == "/api/adesoes":
+            query = parse_qs(urlparse(self.path).query)
+            try:
+                with connection() as db:
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    resultado = adesoes_conferencia.listar(db, query)
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, 400)
+                return
+            except Exception as exc:
+                print(f"Falha ao listar adesões: {exc}", flush=True)
+                self.send_json({"error": f"Não foi possível ler as adesões: {str(exc)[:160]}"}, 500)
+                return
+            self.send_json(resultado)
+            return
+        if path == "/api/adesoes/exportar":
+            query = parse_qs(urlparse(self.path).query)
+            try:
+                with connection() as db:
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    rows = adesoes_conferencia.listar(db, query, paginar=False)["registros"]
+                    body = adesoes_conferencia.planilha(rows)
+            except Exception as exc:
+                self.send_json({"error": f"Não foi possível gerar a planilha: {str(exc)[:160]}"}, 500)
+                return
+            filename = f"conferencia-adesoes-{date.today().strftime('%Y%m%d')}.xlsx"
+            self.send_response(200)
+            self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+            self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.send_header("Access-Control-Expose-Headers", "Content-Disposition")
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if path == "/api/adesoes/status":
+            with connection() as db:
+                user = require_user(db, self)
+                if not user:
+                    return
+                estado = adesoes_conferencia.job_status(db)
+            self.send_json(estado)
+            return
+'''
+
+# ── POST /api/adesoes/* ─────────────────────────────────────────────────────
+POST_API_ADESOES = r'''
+        if path == "/api/adesoes/conferir":
+            try:
+                payload = read_json(self)
+            except ValueError:
+                payload = {}
+            with connection() as db:
+                user = require_user(db, self)
+                if not user:
+                    return
+                try:
+                    resultado = adesoes_conferencia.conferir_agora(
+                        db, payload, user["display_name"] or user["username"])
+                except ValueError as exc:
+                    self.send_json({"error": str(exc)}, 400)
+                    return
+            self.send_json(resultado)
+            return
+        if path == "/api/adesoes/importar":
+            try:
+                payload = read_json(self)
+            except ValueError:
+                self.send_json({"error": "Envie os dados em JSON."}, 400)
+                return
+            conteudo = str(payload.get("arquivo") or "")
+            nome = str(payload.get("nome") or "adesoes.xlsx")
+            if not conteudo:
+                self.send_json({"error": "Selecione a planilha de adesões."}, 400)
+                return
+            try:
+                dados = base64.b64decode(conteudo.split(",")[-1])
+            except Exception:
+                self.send_json({"error": "O arquivo enviado não pôde ser lido."}, 400)
+                return
+            if not nome.lower().endswith((".xlsx", ".xlsm")):
+                self.send_json({"error": "Envie a planilha em Excel (.xlsx)."}, 400)
+                return
+            temporario = ROOT / f".adesoes-import-{uuid.uuid4().hex}.xlsx"
+            temporario.write_bytes(dados)
+            try:
+                with connection() as db:
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    resumo = adesoes_conferencia.importar_planilha(
+                        db, temporario, user["display_name"] or user["username"])
+            except ValueError as exc:
+                self.send_json({"error": str(exc)}, 400)
+                return
+            except Exception as exc:
+                self.send_json({"error": f"Não foi possível ler a planilha: {str(exc)[:160]}"}, 500)
+                return
+            finally:
+                try:
+                    temporario.unlink()
+                except OSError:
+                    pass
+            self.send_json({"ok": True, "resumo": resumo})
+            return
+'''

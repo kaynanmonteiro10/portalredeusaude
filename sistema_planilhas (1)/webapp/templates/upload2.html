@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% set passo_atual = 4 %}
+{% block content %}
+<div class="card">
+  <h1>Passo 4 — Planilha de destino</h1>
+  <p>Os dados foram agrupados por <strong>Grupo Empresa</strong> e ordenados por data
+     (menor → maior) dentro de cada grupo. Grupos encontrados:</p>
+
+  <ul class="lista-stats">
+    {% for chave, qtd in resumo_grupos %}
+      <li>{{ chave }} <span class="badge">{{ qtd }} linhas</span></li>
+    {% endfor %}
+  </ul>
+
+  <p>Agora selecione a <strong>planilha 2</strong> (a planilha de controle,
+     dividida em abas por grupo-mãe).</p>
+
+  <form action="{{ url_for('upload2_post') }}" method="post" enctype="multipart/form-data">
+    <input type="file" name="planilha2" accept=".xlsx" required>
+    <br><br>
+    <button type="submit">Enviar e continuar →</button>
+  </form>
+  <p><a href="{{ url_for('step_tipo') }}">← Voltar (Tipo Parcela)</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Cobrança S4E</title>
+  <style>
+    :root { color-scheme: light; }
+    body { width: 320px; margin: 0; padding: 18px; font-family: 'Segoe UI', Arial, sans-serif; color: #17232f; background: #f5f7f8; }
+    h1 { font-size: 16px; margin: 0 0 4px; }
+    p { font-size: 12px; line-height: 1.55; color: #5c6b73; margin: 0 0 10px; }
+    .tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: #06736d; background: #e1f3f0; border-radius: 999px; padding: 4px 9px; margin-bottom: 10px; }
+    ol { margin: 0 0 14px; padding-left: 18px; font-size: 12px; line-height: 1.6; color: #33434d; }
+    .actions { display: flex; gap: 8px; }
+    button { flex: 1; border: 0; border-radius: 9px; padding: 10px 12px; font: 600 12px inherit; cursor: pointer; }
+    .primary { background: #0b8f87; color: #fff; }
+    .primary:hover { background: #06736d; }
+    .secondary { background: #e7edee; color: #17232f; }
+    .secondary:hover { background: #dbe4e6; }
+    .foot { margin: 14px 0 0; font-size: 10.5px; color: #7d8a91; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <span class="tag">Somente leitura</span>
+  <h1>Cobrança S4E</h1>
+  <p>Leva os títulos de <strong>empresas</strong> em atraso (coletivo empresarial e adesão) para a tela de Cobrança do portal.</p>
+  <ol>
+    <li>Entre no S4E e abra <strong>Faturamento → Contas a Receber</strong>.</li>
+    <li>Deixe <strong>Tipo Empresa</strong> em branco (ou escolha Coletivo Empresarial / Adesão), ajuste o período e clique em <strong>Buscar</strong>.</li>
+    <li>No portal, abra <strong>Cobrança</strong> e clique em <strong>Importar do S4E</strong>.</li>
+  </ol>
+  <div class="actions">
+    <button class="primary" id="openS4e" type="button">Abrir S4E</button>
+    <button class="secondary" id="openPortal" type="button">Abrir portal</button>
+  </div>
+  <p class="foot">A extensão só faz leitura no S4E: não gera acordo, não altera boleto ou situação e não dispara rotinas.</p>
+  <script src="popup.js"></script>
+</body>
+</html>

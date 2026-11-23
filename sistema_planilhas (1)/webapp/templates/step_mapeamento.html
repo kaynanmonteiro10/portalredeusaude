@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% set passo_atual = 5 %}
+{% block content %}
+<div class="card">
+  <h1>Passo 5 — Relacionar Grupo Empresa → Grupo Mãe (aba)</h1>
+  <p>Para cada <strong>Grupo Empresa</strong>, escolha em qual aba (grupo-mãe) da planilha 2
+     ele deve ser lançado. Deixe em branco ("— ignorar —") para não importar aquele grupo.</p>
+
+  <div class="aviso">
+    🏦 O selo <span class="selo-deposito">DEPÓSITO BANCÁRIO</span> aparece quando o grupo
+    tem pagamentos com esse tipo. É só um aviso — não muda o destino automaticamente.
+  </div>
+
+  <div id="contador" class="contador">0 de {{ grupos_info|length }} grupos mapeados</div>
+
+  <div class="lote">
+    <strong>Seleção rápida:</strong>
+    <input type="text" id="filtro_grupo" placeholder="Filtrar por nome do grupo" oninput="aplicarFiltro()">
+    <select id="aba_lote">
+      <option value="">-- escolha a aba --</option>
+      {% for aba in abas %}
+        <option value="{{ aba }}">{{ aba }}</option>
+      {% endfor %}
+    </select>
+    <button type="button" onclick="aplicarLote()">Aplicar aos marcados</button>
+    <button type="button" class="secundario" onclick="marcarTodos()">Marcar todos</button>
+    <button type="button" class="secundario" onclick="desmarcarTodos()">Limpar seleção</button>
+    <button type="button" class="secundario" onclick="selecionarDeposito()">Só depósito bancário</button>
+  </div>
+
+  <form action="{{ url_for('step_mapeamento_post') }}" method="post" id="form-mapeamento">
+    <table class="tabela-mapeamento">
+      <thead>
+        <tr>
+          <th></th>
+          <th>Grupo Empresa</th>
+          <th>Linhas</th>
+          <th>Aba de destino (Grupo Mãe)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for g in grupos_info %}
+        <tr class="linha-grupo {{ 'mapeado' if g.aba_atual }}" id="linha__{{ loop.index }}">
+          <td><input type="checkbox" class="marcar-lote" data-alvo="select__{{ loop.index }}"></td>
+          <td>
+            {{ g.chave }}
+            {% if g.deposito_bancario %}
+              <span class="selo-deposito">DEPÓSITO BANCÁRIO</span>
+            {% endif %}
+          </td>
+          <td>{{ g.qtd }}</td>
+          <td>
+            <select name="aba__{{ g.chave }}" id="select__{{ loop.index }}"
+                    class="select-aba" onchange="atualizaLinha(this)">
+              <option value="">-- ignorar --</option>
+              {% for aba in abas %}
+                <option value="{{ aba }}" {{ 'selected' if g.aba_atual == aba }}>{{ aba }}</option>
+              {% endfor %}
+            </select>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br>
+    <button type="submit">Importar dados para a planilha 2 →</button>
+  </form>
+  <p><a href="{{ url_for('upload2') }}">← Voltar (reenviar planilha 2)</a></p>
+</div>
+
+<script>
+function linhaDoSelect(select) {
+  return select.closest('tr');
+}
+
+function atualizaLinha(select) {
+  const linha = linhaDoSelect(select);
+  if (select.value) {
+    linha.classList.add('mapeado');
+  } else {
+    linha.classList.remove('mapeado');
+  }
+  atualizaContador();
+}
+
+function atualizaContador() {
+  const total = document.querySelectorAll('.select-aba').length;
+  const mapeados = Array.from(document.querySelectorAll('.select-aba')).filter(s => s.value).length;
+  document.getElementById('contador').innerText = mapeados + ' de ' + total + ' grupos mapeados';
+}
+
+function aplicarFiltro() {
+  const texto = document.getElementById('filtro_grupo').value.toLowerCase();
+  document.querySelectorAll('.linha-grupo').forEach(function(linha) {
+    const nome = linha.textContent.toLowerCase();
+    linha.style.display = nome.includes(texto) ? '' : 'none';
+  });
+}
+
+function aplicarLote() {
+  const aba = document.getElementById('aba_lote').value;
+  if (!aba) { alert('Escolha uma aba antes de aplicar.'); return; }
+  document.querySelectorAll('.marcar-lote:checked').forEach(function(chk) {
+    const alvoId = chk.getAttribute('data-alvo');
+    const select = document.getElementById(alvoId);
+    if (select) {
+      select.value = aba;
+      atualizaLinha(select);
+    }
+  });
+}
+
+function marcarTodos() {
+  const marcados = document.querySelectorAll('.marcar-lote');
+  marcados.forEach(c => c.checked = true);
+}
+
+function desmarcarTodos() {
+  const marcados = document.querySelectorAll('.marcar-lote');
+  marcados.forEach(c => c.checked = false);
+}
+
+function selecionarDeposito() {
+  document.querySelectorAll('.marcar-lote').forEach(function(chk) {
+    const linha = chk.closest('tr');
+    const temDeposito = linha && linha.querySelector('.selo-deposito');
+    chk.checked = !!temDeposito;
+  });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  atualizaContador();
+  aplicarFiltro();
+});
+</script>
+{% endblock %}

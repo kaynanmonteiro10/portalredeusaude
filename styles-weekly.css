@@ -18,9 +18,16 @@
 .quick-add label:first-child{flex:0 0 190px}
 .quick-add .button{padding:12px 18px}
 .weekly-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.weekly-source{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.weekly-source strong{font:600 15px 'Space Grotesk'}
+.weekly-source .panel-help{margin:4px 0 0}
+.weekly-source progress{width:100%;height:8px;margin-top:8px}
+.weekly-error{margin:10px 0 0;color:#b33432;font-size:13px;line-height:1.6;white-space:pre-wrap}
 .kind-empresa{color:#2f6b62;background:#e2f4ee}
 .kind-estabelecimento{color:#376395;background:#eaf1fa}
 .weekly-table td:nth-child(1){white-space:nowrap}
 .week-day{display:block;color:var(--muted);font-size:10px;text-transform:capitalize}
+.week-detail{display:block;font-size:12px}
+.week-detail small,.weekly-id{display:block;color:var(--muted);font-size:11px;font-weight:400}
 .week-actions{text-align:right;width:40px}
 @media(max-width:760px){.weekly-hero{display:block}.week-nav{margin-top:18px;flex-wrap:wrap}.weekly-stats{grid-template-columns:1fr}.quick-add label,.quick-add label:first-child{flex:1 1 100%}.weekly-actions{justify-content:flex-start}}

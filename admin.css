@@ -1,0 +1,406 @@
+/* ══ Central de controle — Administração do portal ══
+   Mesma linguagem visual do login e da tela de Início:
+   teal profundo, verde-menta de destaque, cartões de vidro, traço fino. */
+
+#adminScreen{display:flex;flex-direction:column;gap:20px;animation:riseIn .38s cubic-bezier(.22,.8,.3,1) both}
+
+/* ── faixa superior ── */
+#adminScreen .admin-hero{
+  position:relative;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+  gap:28px;align-items:center;padding:30px 34px;border-radius:24px;overflow:hidden;
+  background:
+    radial-gradient(circle at 92% -18%,#5ff0b83d,transparent 52%),
+    radial-gradient(circle at 4% 130%,#042b3155,transparent 48%),
+    linear-gradient(122deg,#0b3a44 0%,#075d69 54%,#0b8189 100%);
+  border:1px solid #ffffff24;color:#fff;box-shadow:0 26px 60px #075d6940;margin-bottom:0}
+#adminScreen .admin-hero:before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background-image:radial-gradient(#ffffff1f 1.2px,transparent 1.2px);background-size:20px 20px;
+  -webkit-mask-image:linear-gradient(110deg,transparent 0,#000 58%,#000 100%);
+  mask-image:linear-gradient(110deg,transparent 0,#000 58%,#000 100%);opacity:.5}
+#adminScreen .admin-hero-copy{position:relative;z-index:1;min-width:0}
+#adminScreen .admin-hero-copy .eyebrow{
+  display:inline-flex;align-items:center;gap:9px;margin:0 0 10px;padding:6px 12px;border-radius:999px;
+  background:#ffffff1a;border:1px solid #ffffff2b;color:#b9f0e5;
+  font:800 9.5px 'Montserrat',sans-serif;letter-spacing:.17em;text-transform:uppercase}
+#adminScreen .adm-live{position:relative;width:7px;height:7px;border-radius:50%;background:#2fd39a;flex:0 0 auto}
+#adminScreen .adm-live:after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid #2fd39a80;animation:admPulse 2.4s ease-out infinite}
+@keyframes admPulse{0%{transform:scale(.6);opacity:.9}70%{transform:scale(1.25);opacity:0}100%{opacity:0}}
+#adminScreen .admin-hero-copy h2{
+  color:#fff!important;margin:0 0 10px;font:700 clamp(27px,3.1vw,37px)/1.08 'Space Grotesk',sans-serif;letter-spacing:-.045em}
+#adminScreen .admin-hero .panel-help{color:#cfe8e4!important;max-width:60ch;font-size:13.5px!important;line-height:1.6;margin:0}
+#adminScreen .admin-hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:22px}
+#adminScreen .adm-refresh{
+  display:inline-flex!important;align-items:center!important;gap:9px!important;
+  border:0!important;border-radius:999px!important;padding:12px 22px!important;
+  background:#2fd39a!important;color:#063b35!important;
+  font:800 11px 'Montserrat',sans-serif!important;letter-spacing:.08em!important;text-transform:uppercase!important;
+  box-shadow:0 14px 30px #042f2b4d!important;cursor:pointer;transition:transform .16s,background .16s,box-shadow .16s}
+#adminScreen .adm-refresh svg{width:15px;height:15px;transition:transform .5s}
+#adminScreen .adm-refresh:hover{background:#48e2ad!important;transform:translateY(-1px);box-shadow:0 18px 36px #042f2b59!important}
+#adminScreen .adm-refresh:hover svg{transform:rotate(180deg)}
+#adminScreen .adm-refresh:active{transform:translateY(0)}
+#adminScreen .admin-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
+  background:#ffffff14;border:1px solid #ffffff2e;color:#c8e9e3;
+  font:700 9.5px 'Montserrat',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+#adminScreen .admin-hero-badge i{width:7px;height:7px;border-radius:50%;background:#5be0c8;box-shadow:0 0 0 4px #5be0c826}
+#adminScreen .admin-hero-art{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;min-width:0}
+#adminScreen .admin-hero-art svg{width:100%;max-width:340px;height:auto;overflow:visible;filter:drop-shadow(0 22px 40px #042f2b52)}
+#adminScreen .admin-hero-art g:first-of-type{animation:admFloat 8s ease-in-out infinite}
+@keyframes admFloat{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-7px) rotate(-5deg)}}
+
+/* ── indicadores ── */
+#adminScreen .admin-kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:0}
+#adminScreen .admin-kpi{
+  position:relative;display:flex;align-items:flex-start;gap:12px;
+  background:var(--white);border:1px solid #e3ecea;border-radius:18px;padding:16px 17px;
+  box-shadow:0 12px 30px #18333d0d;overflow:hidden;min-width:0;
+  transition:transform .18s,box-shadow .18s,border-color .18s}
+#adminScreen .admin-kpi:before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:0 3px 3px 0;background:var(--adm-tone,#0b8f87);opacity:.9}
+#adminScreen .admin-kpi:hover{transform:translateY(-2px);box-shadow:0 20px 42px #18333d17;border-color:#cfe7e3}
+#adminScreen .admin-kpi-icon{
+  position:static;display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;
+  border-radius:12px;background:var(--adm-soft,#e1f3f0);color:var(--adm-tone,#087d73);
+  font-size:0;box-shadow:inset 0 0 0 1px #ffffff59}
+#adminScreen .admin-kpi-icon svg{width:19px;height:19px}
+#adminScreen .admin-kpi-body{display:flex;flex-direction:column;min-width:0;gap:1px}
+#adminScreen .admin-kpi strong{font:700 26px/1.05 'Space Grotesk',sans-serif;letter-spacing:-.035em;color:var(--ink)}
+#adminScreen .admin-kpi-label{font:700 10.5px 'Montserrat',sans-serif;color:var(--ink);letter-spacing:.02em;line-height:1.3}
+#adminScreen .admin-kpi small{font:500 10px 'DM Sans',sans-serif;color:var(--muted);margin-top:2px;line-height:1.35}
+#adminScreen .adm-tone-teal{--adm-tone:#0b8f87;--adm-soft:#def5f0}
+#adminScreen .adm-tone-blue{--adm-tone:#3d72b8;--adm-soft:#e3edfa}
+#adminScreen .adm-tone-purple{--adm-tone:#8153d8;--adm-soft:#eee6fb}
+#adminScreen .adm-tone-amber{--adm-tone:#c9821c;--adm-soft:#fdefd8}
+#adminScreen .adm-tone-pink{--adm-tone:#d84a68;--adm-soft:#fce4ea}
+
+/* ── abas ── */
+#adminScreen .admin-tabs{
+  display:flex;gap:5px;overflow-x:auto;padding:6px;border-radius:16px;
+  background:#eef5f4;border:1px solid #e0ebe9;margin-bottom:0;scrollbar-width:none}
+#adminScreen .admin-tabs::-webkit-scrollbar{display:none}
+#adminScreen .admin-tab{
+  position:relative;flex:1 1 auto;justify-content:center;
+  display:inline-flex;align-items:center;gap:8px;
+  border:0;background:transparent;color:#5c7376;
+  font:700 11.5px 'Montserrat',sans-serif;padding:11px 15px;border-radius:11px;
+  cursor:pointer;white-space:nowrap;transition:background .16s,color .16s,box-shadow .16s}
+#adminScreen .admin-tab svg{width:16px;height:16px;opacity:.85;flex:0 0 auto;transition:opacity .16s}
+#adminScreen .admin-tab:hover{background:#ffffffb3;color:var(--ink)}
+#adminScreen .admin-tab:hover svg{opacity:1}
+#adminScreen .admin-tab.active{
+  background:var(--white);color:#06736d;
+  box-shadow:0 6px 16px #18333d1a,inset 0 0 0 1px #d9ebe8}
+#adminScreen .admin-tab.active svg{opacity:1;color:#0b8f87}
+#adminScreen .admin-tab.active:after{
+  content:'';position:absolute;left:50%;bottom:4px;transform:translateX(-50%);
+  width:16px;height:2.5px;border-radius:2px;background:linear-gradient(90deg,#2fd39a,#0b8f87)}
+
+/* ── painéis e cartões ── */
+#adminScreen .admin-panel{display:none}
+#adminScreen .admin-panel.active{display:block;animation:admIn .32s cubic-bezier(.22,.8,.3,1) both}
+@keyframes admIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#adminScreen .admin-grid{display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);gap:18px;margin-bottom:18px}
+#adminScreen .admin-panel>.learning-card{margin-bottom:0}
+#adminScreen .learning-card{
+  position:relative;background:var(--white);border:1px solid #e3ecea;border-radius:20px;
+  padding:22px 24px;box-shadow:0 14px 36px #18333d10;min-width:0}
+#adminScreen .learning-card .section-title{align-items:flex-start;gap:14px;margin-bottom:16px}
+#adminScreen .learning-card .section-title h3{
+  display:flex;align-items:center;gap:10px;margin:2px 0 0;
+  font:700 16px 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:var(--ink)}
+#adminScreen .learning-card .section-title h3:before{
+  content:'';width:4px;height:16px;border-radius:3px;flex:0 0 auto;
+  background:linear-gradient(180deg,#2fd39a,#0b8f87)}
+#adminScreen .learning-card .section-title .eyebrow{
+  font:800 9px 'Montserrat',sans-serif;letter-spacing:.15em;color:#7c9491;margin:0}
+#adminScreen .learning-card .section-title .panel-help{font-size:11.5px;line-height:1.5;color:var(--muted);margin:5px 0 0}
+#adminScreen .learning-card .section-title .button{
+  border-radius:999px!important;padding:8px 15px!important;font:800 9.5px 'Montserrat',sans-serif!important;
+  letter-spacing:.07em!important;text-transform:uppercase!important;white-space:nowrap;flex:0 0 auto}
+#adminScreen .admin-list{display:flex;flex-direction:column;gap:9px}
+
+/* linhas de pessoas e datas */
+#adminScreen .admin-person-row,#adminScreen .admin-bd-row{
+  display:flex;align-items:center;gap:12px;padding:11px 13px;
+  border:1px solid #e8f0ef;border-radius:14px;background:#fbfdfd;
+  transition:border-color .16s,background .16s,transform .16s}
+#adminScreen .admin-person-row:hover,#adminScreen .admin-bd-row:hover{
+  border-color:#c9e7e2;background:#f6fbfa;transform:translateX(2px)}
+#adminScreen .admin-person-copy strong{font:700 12.5px 'Montserrat',sans-serif;color:var(--ink)}
+#adminScreen .admin-person-copy small{font:500 10.5px 'DM Sans',sans-serif;color:var(--muted)}
+#adminScreen .admin-avatar{
+  width:36px;height:36px;border-radius:12px;font:700 12px 'Space Grotesk',sans-serif;
+  background:linear-gradient(135deg,#17b5a4,#0b8f87);box-shadow:0 6px 14px #0b8f8729}
+#adminScreen .admin-tag{
+  border-radius:999px;padding:4px 9px;
+  font:800 8.5px 'Montserrat',sans-serif;letter-spacing:.07em;
+  background:#eef2f3;color:#52616a}
+#adminScreen .admin-tag.admin-tag-strong{background:#def5f0;color:#087d73}
+#adminScreen .admin-tag.admin-tag-muted{background:#fdecec;color:#b42332}
+#adminScreen .admin-bd-day{
+  width:46px;height:46px;border-radius:13px;background:#def5f0;color:#087d73;
+  font:700 17px 'Space Grotesk',sans-serif;padding-top:10px}
+#adminScreen .admin-bd-day small{font:700 10px 'Montserrat',sans-serif;color:#0b8f87}
+#adminScreen .admin-bd-photo{border-radius:50%;border:2px solid #ffffff;box-shadow:0 0 0 1px #e0ebe9}
+#adminScreen .admin-missing{color:#b8791c;font-weight:700}
+
+/* etiquetas da estrutura */
+#adminScreen .admin-chips-label{font:800 8.5px 'Montserrat',sans-serif;letter-spacing:.13em;color:#7c9491;margin:14px 0 7px}
+#adminScreen .admin-chips-label:first-child{margin-top:0}
+#adminScreen .admin-chip{
+  border-radius:999px;padding:6px 12px;border:1px solid #d3ece7;background:#f0faf8;
+  color:#0b6f67;font:700 10.5px 'Montserrat',sans-serif;transition:background .16s,border-color .16s}
+#adminScreen .admin-chip:hover{background:#e2f6f2;border-color:#b6e2da}
+#adminScreen .admin-actions{margin-top:14px}
+
+/* ── formulários: deixam de parecer planilha ── */
+#adminScreen .admin-form{gap:14px}
+#adminScreen .admin-form>label,#adminScreen .admin-form .form-grid>label{
+  display:flex;flex-direction:column;gap:6px;
+  font:700 10.5px 'Montserrat',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#55706e}
+#adminScreen .admin-form input:not([type="checkbox"]):not([type="file"]),
+#adminScreen .admin-form select,
+#adminScreen .admin-form textarea{
+  width:100%;margin:0;padding:11px 13px;border-radius:11px;
+  border:1px solid #dfeae8;background:#fbfdfd;color:var(--ink);
+  font:500 13px 'DM Sans',sans-serif;letter-spacing:0;text-transform:none;
+  transition:border-color .16s,box-shadow .16s,background .16s}
+#adminScreen .admin-form input:focus,#adminScreen .admin-form select:focus,#adminScreen .admin-form textarea:focus{
+  outline:0;border-color:#5fc9bd;background:#fff;box-shadow:0 0 0 4px #0b8f8719}
+#adminScreen .admin-form input::placeholder,#adminScreen .admin-form textarea::placeholder{color:#a3b4b2}
+#adminScreen .admin-form .panel-help{font-size:11px;line-height:1.5;color:var(--muted);margin:-4px 0 0}
+#adminScreen .admin-form .check-label{
+  display:flex;flex-direction:row;align-items:flex-start;gap:9px;
+  padding:10px 12px;border:1px solid #e6efee;border-radius:11px;background:#fbfdfd;
+  font:500 11.5px 'DM Sans',sans-serif;letter-spacing:0;text-transform:none;color:#42585a;cursor:pointer;
+  transition:border-color .16s,background .16s}
+#adminScreen .admin-form .check-label:hover{border-color:#c9e7e2;background:#f6fbfa}
+#adminScreen .admin-form .check-label input{margin:2px 0 0;accent-color:#0b8f87;width:15px;height:15px;flex:0 0 auto}
+#adminScreen .admin-form .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:6px;padding-top:16px;border-top:1px solid #eef4f3}
+#adminScreen .admin-form .form-actions .button{border-radius:999px!important;padding:11px 22px!important;font:800 10.5px 'Montserrat',sans-serif!important;letter-spacing:.07em!important;text-transform:uppercase!important}
+#adminScreen .screen-checks{gap:8px}
+#adminScreen .screen-checks label{
+  border:1px solid #e6efee;border-radius:10px;background:#fbfdfd;padding:8px 11px;
+  font:500 11.5px 'DM Sans',sans-serif;cursor:pointer;transition:border-color .16s,background .16s}
+#adminScreen .screen-checks label:hover{border-color:#c9e7e2;background:#f6fbfa}
+#adminScreen .screen-checks input{accent-color:#0b8f87}
+
+/* avisos vazios em tom suave */
+#adminScreen .admin-list .empty-state,
+#adminScreen .learning-card>.empty-state{
+  margin:0;padding:20px;border:1px dashed #d9e7e5;border-radius:14px;
+  background:#fbfdfd;color:#8ba09e;font:500 11.5px 'DM Sans',sans-serif;text-align:center}
+
+/* ══ O que fica DENTRO das abas ══
+   admin-item é a linha genérica usada por pessoas, setores, telas e comunicados. */
+
+#adminScreen .admin-panel .admin-item{
+  display:flex;align-items:center;gap:13px;padding:13px 15px;
+  border:1px solid #e7f0ee;border-radius:15px;background:#fbfdfd;
+  transition:border-color .16s,background .16s,box-shadow .16s,transform .16s;
+  min-width:0}
+#adminScreen .admin-panel .admin-item:hover{
+  border-color:#c9e7e2;background:#f6fbfa;box-shadow:0 10px 24px #18333d0d;transform:translateY(-1px)}
+#adminScreen .admin-panel .admin-item.is-blocked{background:#fdf8f8;border-color:#f2dcdd}
+#adminScreen .admin-panel .admin-item.is-blocked:hover{background:#fdf3f4;border-color:#e9c6c8}
+#adminScreen .admin-item small{font:500 10.5px 'DM Sans',sans-serif;color:var(--muted);margin-top:3px;line-height:1.45}
+
+/* avatar + semáforo de acesso */
+#adminScreen .adm-person-lead{position:relative;flex:0 0 auto;display:block;line-height:0}
+#adminScreen .admin-panel .admin-avatar{
+  width:40px;height:40px;border-radius:13px;font:700 13px 'Space Grotesk',sans-serif;
+  background:linear-gradient(135deg,#17b5a4,#0b8f87);box-shadow:0 8px 18px #0b8f8724}
+#adminScreen .admin-item.is-blocked .admin-avatar{background:linear-gradient(135deg,#b8c4c4,#8b9c9c);box-shadow:none}
+#adminScreen .adm-person-state{
+  position:absolute;right:-1px;bottom:-1px;width:11px;height:11px;border-radius:50%;
+  background:#2fd39a;border:2px solid #fbfdfd;box-shadow:0 0 0 1px #d8ece8}
+#adminScreen .admin-item.is-blocked .adm-person-state{background:#e0576a}
+
+/* título e etiquetas */
+#adminScreen .adm-person-title{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+#adminScreen .adm-person-title strong{
+  font:700 13px 'Montserrat',sans-serif;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+
+/* metadados em linha com ícone */
+#adminScreen .adm-meta{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:5px}
+#adminScreen .adm-meta-item{
+  display:inline-flex;align-items:center;gap:5px;
+  font:500 10.5px 'DM Sans',sans-serif;color:#68807f;white-space:nowrap}
+#adminScreen .adm-meta-item svg{width:12px;height:12px;flex:0 0 auto;color:#9db3b0}
+#adminScreen .adm-meta-item .admin-missing{color:#b8791c;font-weight:700}
+
+/* chips de telas */
+#adminScreen .adm-screen-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:7px}
+#adminScreen .adm-chip-sm{
+  display:inline-flex;align-items:center;padding:3px 8px;border-radius:999px;
+  background:#eef7f5;border:1px solid #dbece9;color:#0b6f67;
+  font:700 9px 'Montserrat',sans-serif;letter-spacing:.03em;white-space:nowrap}
+#adminScreen .adm-chip-sm.is-muted{background:#f4f7f7;border-color:#e7eeee;color:#91a5a3;font-weight:600}
+
+/* ícone de tipo (setores e telas) */
+#adminScreen .adm-item-icon{
+  display:grid;place-items:center;width:38px;height:38px;flex:0 0 auto;border-radius:12px;
+  background:linear-gradient(140deg,#e6f7f3,#d7f0eb);color:#0b8f87;
+  box-shadow:inset 0 0 0 1px #ffffff8c}
+#adminScreen .adm-item-icon svg{width:18px;height:18px}
+#adminScreen .adm-item-copy{flex:1 1 auto;min-width:0}
+#adminScreen .adm-item-copy strong{
+  display:block;font:700 12.5px 'Montserrat',sans-serif;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ações: botões do grupo */
+#adminScreen .admin-item-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto;flex-wrap:wrap;justify-content:flex-end}
+#adminScreen .adm-btn{
+  border:1px solid #dbeae7;background:#fff;color:#3f5c5c;
+  border-radius:9px;padding:7px 12px;
+  font:800 9.5px 'Montserrat',sans-serif;letter-spacing:.05em;text-transform:uppercase;
+  cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,color .15s,box-shadow .15s}
+#adminScreen .adm-btn:hover{background:#f1faf8;border-color:#bfe0da;color:#0b6f67;box-shadow:0 4px 10px #0b8f871a}
+#adminScreen .adm-btn.is-warn{color:#a8701a;border-color:#efdfc4;background:#fffdf8}
+#adminScreen .adm-btn.is-warn:hover{background:#fdf4e4;border-color:#e6cd9e;color:#8a5b10}
+#adminScreen .adm-icon-btn{
+  display:grid;place-items:center;width:31px;height:31px;flex:0 0 auto;
+  border:1px solid #e3ecea;border-radius:9px;background:#fff;color:#718a88;
+  cursor:pointer;transition:background .15s,border-color .15s,color .15s,transform .15s}
+#adminScreen .adm-icon-btn svg{width:14px;height:14px}
+#adminScreen .adm-icon-btn:hover{background:#f1faf8;border-color:#bfe0da;color:#0b8f87;transform:translateY(-1px)}
+#adminScreen .adm-icon-btn.is-danger:hover{background:#fdeef0;border-color:#f2cdd2;color:#c33a4e}
+#adminScreen .admin-item.is-blocked .adm-icon-btn{background:#fff}
+
+/* botão em pílula com ícone (Novo evento, etc.) */
+#adminScreen .adm-pill-btn{
+  display:inline-flex!important;align-items:center!important;gap:7px!important;
+  border-radius:999px!important;padding:10px 18px!important;
+  font:800 10px 'Montserrat',sans-serif!important;letter-spacing:.07em!important;text-transform:uppercase!important}
+#adminScreen .adm-pill-btn svg{width:13px;height:13px}
+
+/* comunicados */
+#adminScreen .adm-ann{position:relative;padding-left:20px;overflow:hidden}
+#adminScreen .adm-ann:before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:var(--ann-accent,#0b8f87);border-radius:0 3px 3px 0}
+#adminScreen .adm-ann-swatch{
+  width:34px;height:34px;flex:0 0 auto;border-radius:11px;
+  background:var(--ann-accent,#0b8f87);opacity:.16;
+  box-shadow:inset 0 0 0 1px #ffffff8c}
+#adminScreen .adm-ann-desc{
+  display:-webkit-box!important;-webkit-line-clamp:1!important;-webkit-box-orient:vertical;
+  overflow:hidden;color:#8ba09e!important}
+
+/* blocos de Dados: formulários horizontais não podem esmagar os campos */
+#adminScreen #taskSectorForm,#adminScreen #systemLockForm{
+  display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;border:0;background:transparent;padding:0;box-shadow:none}
+#adminScreen #taskSectorForm>label,#adminScreen #systemLockForm>label{
+  flex:1 1 190px;min-width:0;margin:0;
+  font:700 10.5px 'Montserrat',sans-serif;letter-spacing:.05em;text-transform:uppercase;color:#55706e}
+#adminScreen #systemLockForm>label{flex:1 1 100%}
+#adminScreen #taskSectorForm .button,#adminScreen #systemLockForm .button{
+  flex:0 0 auto;border-radius:999px!important;padding:11px 22px!important;
+  font:800 10px 'Montserrat',sans-serif!important;letter-spacing:.07em!important;text-transform:uppercase!important}
+
+/* aviso âmbar dos blocos perigosos */
+#adminScreen .learning-card:has(#systemLockForm):before{
+  content:'';position:absolute;left:0;top:18px;bottom:18px;width:3px;border-radius:0 3px 3px 0;
+  background:linear-gradient(180deg,#f0b95c,#d89a2b)}
+
+/* ── modo noturno ── */
+body[data-theme="dark"] #adminScreen .admin-kpi,
+body[data-theme="dark"] #adminScreen .learning-card{background:#16282d;border-color:#2f4a4f;box-shadow:0 14px 36px #00000038}
+body[data-theme="dark"] #adminScreen .admin-kpi:hover{border-color:#3d6663}
+body[data-theme="dark"] #adminScreen .admin-kpi strong,
+body[data-theme="dark"] #adminScreen .admin-kpi-label,
+body[data-theme="dark"] #adminScreen .admin-person-copy strong,
+body[data-theme="dark"] #adminScreen .learning-card .section-title h3{color:#eaf4f2}
+body[data-theme="dark"] #adminScreen .admin-kpi-icon{box-shadow:inset 0 0 0 1px #ffffff0f}
+body[data-theme="dark"] #adminScreen .adm-tone-teal{--adm-soft:#1c4341;--adm-tone:#6fe0cd}
+body[data-theme="dark"] #adminScreen .adm-tone-blue{--adm-soft:#1e2f45;--adm-tone:#8dbcf5}
+body[data-theme="dark"] #adminScreen .adm-tone-purple{--adm-soft:#2c2447;--adm-tone:#c3a6f7}
+body[data-theme="dark"] #adminScreen .adm-tone-amber{--adm-soft:#3a2f1a;--adm-tone:#f0bc6a}
+body[data-theme="dark"] #adminScreen .adm-tone-pink{--adm-soft:#3d2230;--adm-tone:#f491a8}
+body[data-theme="dark"] #adminScreen .admin-tabs{background:#12232a;border-color:#2c444a}
+body[data-theme="dark"] #adminScreen .admin-tab{color:#93abab}
+body[data-theme="dark"] #adminScreen .admin-tab:hover{background:#1b3238;color:#eaf4f2}
+body[data-theme="dark"] #adminScreen .admin-tab.active{background:#1e3a3f;color:#b9f0e5;box-shadow:inset 0 0 0 1px #35605c}
+body[data-theme="dark"] #adminScreen .admin-tab.active svg{color:#5ff0b8}
+body[data-theme="dark"] #adminScreen .admin-person-row,
+body[data-theme="dark"] #adminScreen .admin-bd-row{background:#132328;border-color:#2c444a}
+body[data-theme="dark"] #adminScreen .admin-person-row:hover,
+body[data-theme="dark"] #adminScreen .admin-bd-row:hover{background:#183036;border-color:#3a6660}
+body[data-theme="dark"] #adminScreen .admin-tag{background:#24393f;color:#b8c9c9}
+body[data-theme="dark"] #adminScreen .admin-tag.admin-tag-strong{background:#1f4a46;color:#b9f0e5}
+body[data-theme="dark"] #adminScreen .admin-tag.admin-tag-muted{background:#4a2226;color:#ffb3ba}
+body[data-theme="dark"] #adminScreen .admin-bd-day{background:#1f4a46;color:#b9f0e5}
+body[data-theme="dark"] #adminScreen .admin-bd-day small{color:#7fe0cf}
+body[data-theme="dark"] #adminScreen .admin-bd-photo{box-shadow:0 0 0 1px #2f4a4f}
+body[data-theme="dark"] #adminScreen .admin-chip{background:#18383a;border-color:#2f5f5a;color:#b9f0e5}
+body[data-theme="dark"] #adminScreen .admin-chip:hover{background:#1d4547;border-color:#3d7a72}
+body[data-theme="dark"] #adminScreen .admin-form>label,
+body[data-theme="dark"] #adminScreen .admin-form .form-grid>label{color:#8fa8a6}
+body[data-theme="dark"] #adminScreen .admin-form input:not([type="checkbox"]):not([type="file"]),
+body[data-theme="dark"] #adminScreen .admin-form select,
+body[data-theme="dark"] #adminScreen .admin-form textarea{background:#132328;border-color:#2f4a4f;color:#eaf4f2}
+body[data-theme="dark"] #adminScreen .admin-form input:focus,
+body[data-theme="dark"] #adminScreen .admin-form select:focus,
+body[data-theme="dark"] #adminScreen .admin-form textarea:focus{background:#16292e;border-color:#4fb3a6;box-shadow:0 0 0 4px #5ff0b817}
+body[data-theme="dark"] #adminScreen .admin-form .check-label,
+body[data-theme="dark"] #adminScreen .screen-checks label{background:#132328;border-color:#2f4a4f;color:#c3d6d4}
+body[data-theme="dark"] #adminScreen .admin-form .check-label:hover,
+body[data-theme="dark"] #adminScreen .screen-checks label:hover{background:#183036;border-color:#3a6660}
+body[data-theme="dark"] #adminScreen .admin-form .form-actions{border-top-color:#2a4147}
+body[data-theme="dark"] #adminScreen .learning-card .section-title .eyebrow,
+body[data-theme="dark"] #adminScreen .admin-chips-label{color:#7e9a97}
+body[data-theme="dark"] #adminScreen .admin-list .empty-state,
+body[data-theme="dark"] #adminScreen .learning-card>.empty-state{background:#132328;border-color:#2f4a4f;color:#7e9a97}
+
+/* modo noturno — conteúdo das abas */
+body[data-theme="dark"] #adminScreen .admin-panel .admin-item{background:#132328;border-color:#2c444a}
+body[data-theme="dark"] #adminScreen .admin-panel .admin-item:hover{background:#183036;border-color:#3a6660;box-shadow:0 10px 24px #00000038}
+body[data-theme="dark"] #adminScreen .admin-panel .admin-item.is-blocked{background:#241a1d;border-color:#4a2a2f}
+body[data-theme="dark"] #adminScreen .admin-panel .admin-item.is-blocked:hover{background:#2b1e22;border-color:#5b3439}
+body[data-theme="dark"] #adminScreen .adm-person-title strong,
+body[data-theme="dark"] #adminScreen .adm-item-copy strong{color:#eaf4f2}
+body[data-theme="dark"] #adminScreen .adm-meta-item{color:#93abab}
+body[data-theme="dark"] #adminScreen .adm-meta-item svg{color:#6f8b89}
+body[data-theme="dark"] #adminScreen .adm-person-state{border-color:#132328;box-shadow:0 0 0 1px #2f4a4f}
+body[data-theme="dark"] #adminScreen .adm-item.is-blocked .adm-person-state{border-color:#241a1d}
+body[data-theme="dark"] #adminScreen .adm-chip-sm{background:#1b3a38;border-color:#2f5f5a;color:#b9f0e5}
+body[data-theme="dark"] #adminScreen .adm-chip-sm.is-muted{background:#1b2c31;border-color:#2c444a;color:#7e9a97}
+body[data-theme="dark"] #adminScreen .adm-item-icon{background:linear-gradient(140deg,#1f4a46,#183a38);color:#6fe0cd;box-shadow:inset 0 0 0 1px #ffffff0f}
+body[data-theme="dark"] #adminScreen .adm-btn{background:#1a2e33;border-color:#324c52;color:#c3d6d4}
+body[data-theme="dark"] #adminScreen .adm-btn:hover{background:#21403f;border-color:#417a72;color:#b9f0e5}
+body[data-theme="dark"] #adminScreen .adm-btn.is-warn{background:#2e2718;border-color:#4d3f22;color:#f0bc6a}
+body[data-theme="dark"] #adminScreen .adm-btn.is-warn:hover{background:#3a3020;border-color:#65522c}
+body[data-theme="dark"] #adminScreen .adm-icon-btn{background:#1a2e33;border-color:#324c52;color:#93abab}
+body[data-theme="dark"] #adminScreen .adm-icon-btn:hover{background:#21403f;border-color:#417a72;color:#6fe0cd}
+body[data-theme="dark"] #adminScreen .adm-icon-btn.is-danger:hover{background:#3d2229;border-color:#5d333b;color:#f491a8}
+body[data-theme="dark"] #adminScreen .adm-ann-desc{color:#7e9a97!important}
+body[data-theme="dark"] #adminScreen #taskSectorForm>label,
+body[data-theme="dark"] #adminScreen #systemLockForm>label{color:#8fa8a6}
+
+/* ── responsivo ── */
+@media(max-width:1240px){
+  #adminScreen .admin-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:1024px){
+  #adminScreen .admin-hero{grid-template-columns:1fr;padding:26px 26px 20px}
+  #adminScreen .admin-hero-art{order:-1;max-width:260px;margin:0 auto}
+  #adminScreen .admin-grid{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  #adminScreen .admin-hero{padding:22px 20px;border-radius:20px}
+  #adminScreen .admin-hero-copy h2{font-size:25px}
+  #adminScreen .admin-hero-actions{width:100%}
+  #adminScreen .adm-refresh{flex:1 1 auto;justify-content:center}
+  #adminScreen .admin-kpis{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  #adminScreen .admin-kpi{padding:13px 14px;gap:10px}
+  #adminScreen .admin-kpi-icon{width:34px;height:34px;border-radius:11px}
+  #adminScreen .admin-kpi strong{font-size:22px}
+  #adminScreen .admin-tab{flex:0 0 auto;padding:10px 13px}
+  #adminScreen .admin-tab span{font-size:11px}
+  #adminScreen .learning-card{padding:18px 16px;border-radius:16px}
+}
+@media(prefers-reduced-motion:reduce){
+  #adminScreen,#adminScreen .admin-panel.active,#adminScreen .admin-hero-art g:first-of-type,#adminScreen .adm-live:after{animation:none!important}
+}

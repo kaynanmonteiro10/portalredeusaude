@@ -17,17 +17,19 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css?v=20261116f">
 <link rel="stylesheet" href="styles-weekly.css?v=20261116a">
-<link rel="stylesheet" href="demandas-preview.css?v=20261117e">
+<link rel="stylesheet" href="demandas-preview.css?v=20261118a">
 <link rel="stylesheet" href="demandas-relogio.css?v=20261117e">
 <link rel="stylesheet" href="feed.css?v=20261116c">
-<link rel="stylesheet" href="home.css?v=20261117a">
+<link rel="stylesheet" href="home.css?v=20261118p">
+<link rel="stylesheet" href="admin.css?v=20261118p">
 <link rel="stylesheet" href="finance.css?v=20261106e">
 <link rel="stylesheet" href="cobranca.css?v=20261110r">
 <link rel="stylesheet" href="apuracao.css?v=20261111search">
-<link rel="stylesheet" href="rateios-faturamento.css?v=20261117f">
+<link rel="stylesheet" href="rateios-faturamento.css?v=20261119c">
+  <link rel="stylesheet" href="odontoart.css?v=20261119c">
 <link rel="stylesheet" href="notas.css?v=20261113n1">
 <link rel="stylesheet" href="recibos.css?v=20261113r3">
 <link rel="stylesheet" href="retornos.css?v=20261111a">
@@ -35,7 +37,8 @@
 <link rel="stylesheet" href="vidas.css?v=20261113v5">
 <link rel="stylesheet" href="movimentacoes.css?v=20261117a">
 <link rel="stylesheet" href="email-center.css?v=20261111e1">
-<link rel="stylesheet" href="adesoes-conferencia.css?v=20261117a">
+<link rel="stylesheet" href="adesoes-conferencia.css?v=20261118p">
+<link rel="stylesheet" href="sabi.css?v=20261118f">
   <script defer src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" crossorigin="anonymous"></script>
   <style>
     /* ── Contratos ───────────────────────────────────────────── */
@@ -343,41 +346,42 @@
       <nav class="sidebar-nav" id="sidebarNav" aria-label="Módulos">
         <button class="nav-button active" data-screen="homeScreen" title="Início"><span class="nav-icon">⌂</span><span class="nav-text">Início</span></button>
         <div class="nav-group hidden" role="group" aria-labelledby="navRoutineTitle">
-          <span class="nav-label" id="navRoutineTitle">Rotina do setor</span>
-          <button class="nav-button" data-screen="tasksScreen" title="Demandas"><span class="nav-icon">▦</span><span class="nav-text">Demandas</span></button>
-          <button class="nav-button hidden" type="button" data-screen="emailCenterScreen" data-admin-only="true" title="Central de E-mails"><span class="nav-icon" aria-hidden="true">EM</span><span class="nav-text">Central de E-mails</span></button>
-          <button class="nav-button hidden" data-screen="reportsScreen" data-optional="true" title="Relatórios"><span class="nav-icon">▤</span><span class="nav-text">Relatórios</span></button>
-          <button class="nav-button hidden" data-screen="weeklyScreen" title="Relatório Semanal"><span class="nav-icon">▦</span><span class="nav-text">Relatório Semanal</span></button>
-          <button class="nav-button hidden" data-screen="learningScreen" title="Treinamentos do Setor"><span class="nav-icon">◉</span><span class="nav-text">Treinamentos do Setor</span></button>
+          <span class="nav-label" id="navRoutineTitle">Operação do dia</span>
+          <button class="nav-button hidden" data-screen="tasksScreen" title="Demandas"><span class="nav-icon" aria-hidden="true">▦</span><span class="nav-text">Demandas</span></button>
+          <button class="nav-button hidden" type="button" data-screen="emailCenterScreen" data-admin-only="true" title="Central de E-mails"><span class="nav-icon" aria-hidden="true">EM</span><span class="nav-text">Central de E-mails</span><span class="chat-nav-badge hidden" id="emailNavBadge">0</span></button>
+          <button class="nav-button hidden" data-screen="chatScreen" title="Conversas"><span class="nav-icon" aria-hidden="true">❝</span><span class="nav-text">Conversas</span><span class="chat-nav-badge hidden" id="chatNavBadge">0</span></button>
+          <button class="nav-button hidden" data-screen="feedScreen" title="Mural da Equipe"><span class="nav-icon" aria-hidden="true">▣</span><span class="nav-text">Mural da Equipe</span><span class="chat-nav-badge hidden" id="feedNavBadge">0</span></button>
+          <button class="nav-button hidden" data-screen="birthdaysScreen" title="Aniversariantes"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-text">Aniversariantes</span></button>
+          <button class="nav-button hidden" data-screen="learningScreen" title="Treinamentos do Setor"><span class="nav-icon" aria-hidden="true">◉</span><span class="nav-text">Treinamentos do Setor</span></button>
         </div>
-        <div class="nav-group hidden" role="group" aria-labelledby="navTeamTitle">
-          <span class="nav-label" id="navTeamTitle">Equipe</span>
-          <button class="nav-button hidden" data-screen="chatScreen" title="Conversas"><span class="nav-icon">❝</span><span class="nav-text">Conversas</span><span class="chat-nav-badge hidden" id="chatNavBadge">0</span></button>
-          <button class="nav-button hidden" data-screen="feedScreen" title="Mural da Equipe"><span class="nav-icon">▣</span><span class="nav-text">Mural da Equipe</span><span class="chat-nav-badge hidden" id="feedNavBadge">0</span></button>
-          <button class="nav-button hidden" data-screen="birthdaysScreen" title="Aniversariantes"><span class="nav-icon">✦</span><span class="nav-text">Aniversariantes</span></button>
-        </div>
-        <div class="nav-group hidden" role="group" aria-labelledby="navUnionsTitle">
-          <span class="nav-label" id="navUnionsTitle">Sindicatos</span>
-          <button class="nav-button hidden" data-screen="sindicatosScreen" title="Sindicatos"><span class="nav-icon">◈</span><span class="nav-text">Sindicatos</span></button>
+        <div class="nav-group hidden" role="group" aria-labelledby="navEmissaoTitle">
+          <span class="nav-label" id="navEmissaoTitle">Emissões e recebimentos</span>
+          <button class="nav-button hidden" data-screen="adesiScreen" title="Conferência de Adesões"><span class="nav-icon" aria-hidden="true">✓</span><span class="nav-text">Conferência de Adesões</span></button>
+          <button class="nav-button hidden" type="button" data-screen="notasScreen" data-admin-only="true" title="Conferência de Notas"><span class="nav-icon" aria-hidden="true">NF</span><span class="nav-text">Conferência de Notas</span></button>
+          <button class="nav-button hidden" type="button" data-screen="retornosScreen" title="Retorno Instituição"><span class="nav-icon" aria-hidden="true">IF</span><span class="nav-text">Retorno Instituição</span><span class="retornos-nav-badge hidden" id="retornosNavBadge" aria-label="Alertas de retornos em aberto">0</span></button>
+          <button class="nav-button hidden" data-screen="cobrancaScreen" data-optional="true" title="Cobranças"><span class="nav-icon" aria-hidden="true">◎</span><span class="nav-text">Cobranças</span></button>
+          <button class="nav-button hidden" data-screen="recibosScreen" title="Recibos"><span class="nav-icon" aria-hidden="true">▧</span><span class="nav-text">Recibos</span></button>
+          <button class="nav-button hidden" data-screen="sindicatosScreen" title="Sindicatos"><span class="nav-icon" aria-hidden="true">◈</span><span class="nav-text">Sindicatos</span></button>
         </div>
         <div class="nav-group hidden" role="group" aria-labelledby="navFinanceTitle">
-          <span class="nav-label" id="navFinanceTitle">Financeiro</span>
-          <button class="nav-button hidden" data-screen="financeScreen" data-optional="true" title="Rateios P4X"><span class="nav-icon">◧</span><span class="nav-text">Rateios P4X</span></button>
-          <button class="nav-button hidden" data-screen="apuracaoScreen" title="Apuração"><span class="nav-icon">▤</span><span class="nav-text">Apuração</span></button>
-          <button class="nav-button hidden" data-screen="rateioScreen" title="Rateio de Faturamento"><span class="nav-icon">◫</span><span class="nav-text">Rateio de Faturamento</span></button>
-          <button class="nav-button hidden" type="button" data-screen="notasScreen" data-admin-only="true" title="Conferência de Notas"><span class="nav-icon" aria-hidden="true">NF</span><span class="nav-text">Conferência de Notas</span></button>
-          <button class="nav-button hidden" data-screen="recibosScreen" title="Recibos"><span class="nav-icon">▧</span><span class="nav-text">Recibos</span></button>
-          <button class="nav-button hidden" data-screen="adesiScreen" title="Conferência de Adesões"><span class="nav-icon">✓</span><span class="nav-text">Conferência de Adesões</span></button>
-          <button class="nav-button hidden" data-screen="cobrancaScreen" data-optional="true" title="Cobranças"><span class="nav-icon">◎</span><span class="nav-text">Cobranças</span></button>
-          <button class="nav-button hidden" type="button" data-screen="retornosScreen" title="Retorno Instituição"><span class="nav-icon" aria-hidden="true">IF</span><span class="nav-text">Retorno Instituição</span><span class="retornos-nav-badge hidden" id="retornosNavBadge" aria-label="Alertas de retornos em aberto">0</span></button>
+          <span class="nav-label" id="navFinanceTitle">Apuração e rateio</span>
+          <button class="nav-button hidden" data-screen="apuracaoScreen" title="Apuração"><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-text">Apuração</span></button>
+          <button class="nav-button hidden" data-screen="rateioScreen" title="Rateio de Faturamento"><span class="nav-icon" aria-hidden="true">◫</span><span class="nav-text">Rateio de Faturamento</span></button>
+          <button class="nav-button hidden" data-screen="financeScreen" data-optional="true" title="Rateios P4X"><span class="nav-icon" aria-hidden="true">◧</span><span class="nav-text">Rateios P4X</span></button>
         </div>
         <div class="nav-group hidden" role="group" aria-labelledby="navAgreementsTitle">
-          <span class="nav-label" id="navAgreementsTitle">Comissões e Contratos</span>
-          <button class="nav-button hidden" type="button" data-screen="vendasScreen" data-admin-only="true" title="Acompanhamento de Vendas"><span class="nav-icon" aria-hidden="true">S4E</span><span class="nav-text">Acompanhamento de Vendas</span></button>
+          <span class="nav-label" id="navAgreementsTitle">Vidas e contratos</span>
           <button class="nav-button hidden" type="button" data-screen="vidasScreen" title="Movimentação de Vidas"><span class="nav-icon" aria-hidden="true">MV</span><span class="nav-text">Movimentação de Vidas</span></button>
-          <button class="nav-button hidden" data-screen="commissionsScreen" data-optional="true" title="Comissões"><span class="nav-icon">＄</span><span class="nav-text">Comissões</span></button>
-          <button class="nav-button hidden" data-screen="contractsScreen" data-optional="true" title="Contratos"><span class="nav-icon">❑</span><span class="nav-text">Contratos</span></button>
-          <button class="nav-button hidden" type="button" data-screen="movimentacoesScreen" data-admin-only="true" title="Exclusão de Vidas" aria-label="Exclusão de vidas no S4E"><span class="nav-icon" aria-hidden="true">EX</span><span class="nav-text">Exclusão de Vidas</span></button>
+          <button class="nav-button hidden" type="button" data-screen="movimentacoesScreen" data-admin-only="true" title="Exclusão de Vidas"><span class="nav-icon" aria-hidden="true">EX</span><span class="nav-text">Exclusão de Vidas</span></button>
+          <button class="nav-button hidden" type="button" data-screen="vendasScreen" data-admin-only="true" title="Acompanhamento de Vendas"><span class="nav-icon" aria-hidden="true">S4E</span><span class="nav-text">Acompanhamento de Vendas</span></button>
+          <button class="nav-button hidden" data-screen="contractsScreen" data-optional="true" title="Contratos"><span class="nav-icon" aria-hidden="true">❑</span><span class="nav-text">Contratos</span></button>
+          <button class="nav-button hidden" data-screen="commissionsScreen" data-optional="true" title="Comissões"><span class="nav-icon" aria-hidden="true">＄</span><span class="nav-text">Comissões</span></button>
+          <button class="nav-button hidden" type="button" data-screen="odontoartScreen" title="Odontoart"><span class="nav-icon" aria-hidden="true">OD</span><span class="nav-text">Odontoart</span></button>
+        </div>
+        <div class="nav-group hidden" role="group" aria-labelledby="navReportsTitle">
+          <span class="nav-label" id="navReportsTitle">Indicadores</span>
+          <button class="nav-button hidden" data-screen="reportsScreen" data-optional="true" title="Relatórios"><span class="nav-icon" aria-hidden="true">▤</span><span class="nav-text">Relatórios</span></button>
+          <button class="nav-button hidden" data-screen="weeklyScreen" title="Relatório Semanal"><span class="nav-icon" aria-hidden="true">▦</span><span class="nav-text">Relatório Semanal</span></button>
         </div>
         <div class="nav-group hidden" role="group" aria-labelledby="navCustomTitle">
           <span class="nav-label" id="navCustomTitle">Outros setores</span>
@@ -434,10 +438,70 @@
             <button class="home-hero-cta" id="homeHeroCta" type="button">Ver mural <span aria-hidden="true">→</span></button>
           </div>
           <div class="home-hero-art" aria-hidden="true">
-            <span class="home-hero-glow"></span>
-            <span class="home-hero-ring"></span>
-            <span class="home-hero-dots"></span>
-            <div class="home-hero-words"><span>Pessoas</span><span>Saúde</span><span>Propósito</span><strong>Sempre</strong></div>
+            <svg class="home-hero-svg" viewBox="0 0 420 300" role="presentation" focusable="false">
+              <defs>
+                <linearGradient id="hArtPanel" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#ffffff" stop-opacity=".22"/>
+                  <stop offset="1" stop-color="#ffffff" stop-opacity=".06"/>
+                </linearGradient>
+                <linearGradient id="hArtMint" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#5ff0b8"/>
+                  <stop offset="1" stop-color="#2fd39a"/>
+                </linearGradient>
+                <linearGradient id="hArtLine" x1="0" y1="1" x2="1" y2="0">
+                  <stop offset="0" stop-color="#ffffff" stop-opacity=".18"/>
+                  <stop offset="1" stop-color="#5ff0b8" stop-opacity=".95"/>
+                </linearGradient>
+                <radialGradient id="hArtGlow" cx=".5" cy=".5" r=".5">
+                  <stop offset="0" stop-color="#5ff0b8" stop-opacity=".55"/>
+                  <stop offset="1" stop-color="#5ff0b8" stop-opacity="0"/>
+                </radialGradient>
+              </defs>
+
+              <!-- halo -->
+              <circle cx="300" cy="118" r="118" fill="url(#hArtGlow)"/>
+
+              <!-- cartão de vidro -->
+              <g transform="rotate(-7 300 150)">
+                <rect x="196" y="60" width="208" height="140" rx="22" fill="url(#hArtPanel)" stroke="#ffffff" stroke-opacity=".38"/>
+                <rect x="216" y="84" width="52" height="52" rx="16" fill="url(#hArtMint)" opacity=".95"/>
+                <path d="M234 110h4v-6h4v6h4v4h-4v6h-4v-6h-4z" fill="#043c36"/>
+                <rect x="282" y="88" width="98" height="9" rx="4.5" fill="#ffffff" opacity=".85"/>
+                <rect x="282" y="106" width="70" height="8" rx="4" fill="#ffffff" opacity=".45"/>
+                <rect x="216" y="152" width="164" height="8" rx="4" fill="#ffffff" opacity=".28"/>
+                <rect x="216" y="168" width="118" height="8" rx="4" fill="#ffffff" opacity=".18"/>
+              </g>
+
+              <!-- curva de crescimento -->
+              <path d="M40 250c56 0 74-34 108-58s52-64 96-64 60 26 96 26" fill="none" stroke="url(#hArtLine)" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 11"/>
+              <circle cx="148" cy="192" r="7" fill="#ffffff" opacity=".85"/>
+              <circle cx="244" cy="128" r="9" fill="#5ff0b8"/>
+              <circle cx="244" cy="128" r="17" fill="none" stroke="#5ff0b8" stroke-opacity=".45" stroke-width="2"/>
+
+              <!-- barras -->
+              <g fill="#ffffff">
+                <rect x="52" y="214" width="15" height="36" rx="7.5" opacity=".32"/>
+                <rect x="78" y="196" width="15" height="54" rx="7.5" opacity=".46"/>
+                <rect x="104" y="174" width="15" height="76" rx="7.5" opacity=".62"/>
+                <rect x="130" y="150" width="15" height="100" rx="7.5" opacity=".8"/>
+              </g>
+
+              <!-- avatares empilhados -->
+              <g>
+                <circle cx="66" cy="96" r="19" fill="#ffffff" opacity=".9"/>
+                <circle cx="66" cy="89" r="7" fill="#0b8189"/>
+                <path d="M55 106c2-8 6-11 11-11s9 3 11 11" fill="#0b8189"/>
+                <circle cx="108" cy="76" r="15" fill="#5ff0b8"/>
+                <circle cx="108" cy="71" r="5.5" fill="#043c36"/>
+                <path d="M100 84c1.5-6 4.5-8.5 8-8.5s6.5 2.5 8 8.5" fill="#043c36"/>
+                <circle cx="140" cy="104" r="11" fill="#ffffff" opacity=".55"/>
+              </g>
+
+              <!-- sparkles -->
+              <path d="M356 40l3.4 8.6 8.6 3.4-8.6 3.4-3.4 8.6-3.4-8.6-8.6-3.4 8.6-3.4z" fill="#ffffff" opacity=".9"/>
+              <path d="M382 96l2.4 6 6 2.4-6 2.4-2.4 6-2.4-6-6-2.4 6-2.4z" fill="#5ff0b8" opacity=".85"/>
+              <path d="M168 34l2 5 5 2-5 2-2 5-2-5-5-2 5-2z" fill="#ffffff" opacity=".5"/>
+            </svg>
           </div>
         </section>
 
@@ -483,7 +547,19 @@
         </div>
 
         <section class="home-quote">
-          <span class="home-quote-icon" aria-hidden="true">♥</span>
+          <span class="home-quote-art" aria-hidden="true">
+            <svg viewBox="0 0 44 44" focusable="false">
+              <defs>
+                <linearGradient id="hQuoteGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stop-color="#5ff0b8"/>
+                  <stop offset="1" stop-color="#2fd39a"/>
+                </linearGradient>
+              </defs>
+              <circle cx="22" cy="22" r="21" fill="url(#hQuoteGrad)" opacity=".18"/>
+              <path d="M22 33s-11-6.6-11-13.4A6.6 6.6 0 0 1 22 15a6.6 6.6 0 0 1 11 4.6C33 26.4 22 33 22 33z" fill="url(#hQuoteGrad)"/>
+              <path d="M8 10l1.6 4 4 1.6-4 1.6L8 21.2l-1.6-4-4-1.6 4-1.6z" fill="#5ff0b8" opacity=".8"/>
+            </svg>
+          </span>
           <div><p>Gente que cuida, faz a diferença.</p><small>Rede Saúde · Portal do Setor</small></div>
         </section>
       </section>
@@ -1365,6 +1441,7 @@
         <button type="button" class="rf-tab is-active" data-rf-tab="visao">Visão geral</button>
         <button type="button" class="rf-tab" data-rf-tab="lancamentos">Lançamentos <span class="rf-tab-count" id="rfTabCount">0</span></button>
         <button type="button" class="rf-tab" data-rf-tab="regras">Regras <span class="rf-tab-count" id="rfTabRules">0</span></button>
+        <button type="button" class="rf-tab" data-rf-tab="contas">Contas <span class="rf-tab-count" id="rfTabAccounts">0</span></button>
       </nav>
 
       <section class="rf-view" data-rf-view="visao">
@@ -1484,19 +1561,139 @@
             <label class="rf-rules-filter">Situação<select id="rfRulesFilter"><option value="">Todas</option><option value="ativa">Ativas</option><option value="revisao">Em revisão</option></select></label>
             <span class="rf-rules-count" id="rfRuleCount"></span>
           </div>
-          <div class="rf-table"><table><thead><tr><th>Centro de custo</th><th>Grupo</th><th>Empresa (exceção)</th><th>Conta</th><th>Método</th><th>Valor</th><th>Situação</th><th class="rf-col-actions"></th></tr></thead><tbody id="rfRuleRows"></tbody></table></div>
+          <div class="rf-table"><table><thead><tr><th>Centro de custo</th><th>Grupo</th><th>Empresa (exceção)</th><th>Conta</th><th>Método</th><th>Valor</th><th>Vale para</th><th>Juros e multa</th><th>Situação</th><th class="rf-col-actions"></th></tr></thead><tbody id="rfRuleRows"></tbody></table></div>
           <p class="empty-state hidden" id="rfRulesEmpty">Nenhuma regra encontrada.</p>
         </section>
       </section>
+
+      <section class="rf-view hidden" data-rf-view="contas">
+        <section class="rf-panel">
+          <header class="rf-panel-head">
+            <div><p>CADASTRO</p><h3>Contas que recebem rateio</h3><small>Cadastre uma vez. Depois é só atrelar a conta nas regras, no centro de custo, no grupo ou na empresa.</small></div>
+            <button class="button button-primary" id="rfAccountOpen" type="button">Nova conta</button>
+          </header>
+          <div class="rf-rule-tools">
+            <label class="rf-search"><span>Pesquisar</span><input id="rfAccountsSearch" type="search" placeholder="Nome, banco, documento ou chave PIX" autocomplete="off"></label>
+            <label class="rf-rules-filter">Situação<select id="rfAccountsFilter"><option value="">Todas</option><option value="ativa">Ativas</option><option value="revisao">Inativas</option></select></label>
+            <span class="rf-rules-count" id="rfAccountCount"></span>
+          </div>
+          <div class="rf-table"><table><thead><tr><th>Conta</th><th>Tipo</th><th>Documento</th><th>Banco</th><th>Agência / conta</th><th>Chave PIX</th><th>Regras</th><th>Situação</th><th class="rf-col-actions"></th></tr></thead><tbody id="rfAccountRows"></tbody></table></div>
+          <p class="empty-state hidden" id="rfAccountsEmpty">Nenhuma conta cadastrada ainda. Cadastre a primeira para poder atrelá-la às regras.</p>
+        </section>
+      </section>
+
+      <dialog id="rfAccountDialog" class="rf-dialog rf-rule-dialog"><form method="dialog" id="rfAccountForm"><header><div><p>CONTA</p><h3 id="rfAccountTitle">Nova conta de rateio</h3></div><button type="button" id="rfAccountClose">Fechar</button></header><input id="rfAccountId" type="hidden"><div class="rf-form-grid"><label>Nome da conta<input id="rfAccountName" maxlength="120" required placeholder="Ex.: RS, BOLSÃO, SINTEG"></label><label>Tipo<select id="rfAccountKind"><option value="">Não informado</option><option value="sindicato">Sindicato</option><option value="rede">Rede Saúde</option><option value="fundo">Fundo</option><option value="pessoa">Pessoa física</option><option value="outro">Outro</option></select></label><label>CNPJ / CPF<input id="rfAccountDoc" maxlength="30" placeholder="Somente números ou formatado"></label><label>Banco<input id="rfAccountBank" maxlength="80" placeholder="Ex.: Itaú"></label><label>Agência<input id="rfAccountBranch" maxlength="20"></label><label>Conta<input id="rfAccountNumber" maxlength="30"></label><label>Chave PIX<input id="rfAccountPix" maxlength="160"></label><label>Observação<input id="rfAccountNote" maxlength="400" placeholder="Opcional"></label></div><p class="rf-form-error" id="rfAccountError" hidden></p><div class="rf-form-actions"><button class="button button-secondary" type="button" id="rfAccountCancel">Cancelar</button><button class="button button-primary" type="submit">Salvar conta</button></div></form></dialog>
 
       <dialog id="rfDetailDialog" class="rf-dialog rf-detail-dialog">
         <header><div><p>LANÇAMENTO</p><h3 id="rfDetailTitle">—</h3></div><button type="button" id="rfDetailClose">Fechar</button></header>
         <div id="rfDetailBody"></div>
       </dialog>
 
-      <dialog id="rfRuleDialog" class="rf-dialog rf-rule-dialog"><form method="dialog" id="rfRuleForm"><header><div><p>REGRA</p><h3 id="rfRuleTitle">Nova regra de rateio</h3></div><button type="button" id="rfRuleClose">Fechar</button></header><input id="rfRuleId" type="hidden"><div class="rf-form-grid"><label>Centro de custo<select id="rfGroup"></select></label><label>Grupo<select id="rfCompanyGroup"><option value="">Todos os grupos deste centro</option></select></label><label>Empresa (opcional)<select id="rfCompany"><option value="">Todas as empresas do grupo</option></select></label><label>Conta que recebe<input id="rfReceiver" maxlength="120" required placeholder="Ex.: RS"></label><label>Método<select id="rfMethod"><option value="por_vida">Valor por vida</option><option value="percentual">Percentual do faturamento</option><option value="fixo">Valor fixo por lançamento</option></select></label><label><span id="rfValueLabel">Valor por vida</span><input id="rfValue" type="number" min="0" step="0.01" required></label></div><p class="rf-form-error" id="rfRuleError" hidden></p><p class="rf-rule-impact" id="rfRuleImpact"></p><div class="rf-form-actions"><button class="button button-secondary" type="button" id="rfRuleCancel">Cancelar</button><button class="button button-primary" type="submit">Salvar regra</button></div></form></dialog>
+      <dialog id="rfRuleDialog" class="rf-dialog rf-rule-dialog"><form method="dialog" id="rfRuleForm"><header><div><p>REGRA</p><h3 id="rfRuleTitle">Nova regra de rateio</h3></div><button type="button" id="rfRuleClose">Fechar</button></header><input id="rfRuleId" type="hidden"><div class="rf-form-grid"><label>Centro de custo<select id="rfGroup"></select></label><label>Grupo<select id="rfCompanyGroup"><option value="">Todos os grupos deste centro</option></select></label><label>Empresa (opcional)<select id="rfCompany"><option value="">Todas as empresas do grupo</option></select></label><label>Conta que recebe<select id="rfReceiver" required></select></label><label>Método<select id="rfMethod"><option value="por_vida">Valor por vida</option><option value="percentual">Percentual do faturamento</option><option value="fixo">Valor fixo por lançamento</option></select></label><label><span id="rfValueLabel">Valor por vida</span><input id="rfValue" type="number" min="0" step="0.01" required></label><label>Juros, multa e acréscimo<select id="rfEncargos"><option value="rateio">Dividir junto com a base</option><option value="recebedor">Mandar para uma conta</option><option value="rede">Fica com a Rede Saúde</option></select></label><label id="rfEncargosReceiverWrap" hidden>Conta dos juros e multas<select id="rfEncargosReceiver"></select></label></div><p class="rf-form-error" id="rfRuleError" hidden></p><p class="rf-rule-impact" id="rfRuleImpact"></p><div class="rf-form-actions"><button class="button button-secondary" type="button" id="rfRuleCancel">Cancelar</button><button class="button button-primary" type="submit">Salvar regra</button></div></form></dialog>
 
       <dialog id="rfLivesDialog" class="rf-dialog rf-lives-dialog"><header><div><p>CONFERÊNCIA NOMINAL</p><h3 id="rfLivesTitle">Vidas da parcela</h3></div><button type="button" id="rfLivesClose">Fechar</button></header><div id="rfLivesLoading" class="rf-lives-loading">Consultando a relação nominal no S4E…</div><div id="rfLivesContent" hidden><div class="rf-lives-summary"><article><span>Vidas no S4E</span><strong id="rfLivesS4e">0</strong></article><article><span>Vidas faturadas</span><strong id="rfLivesBilled">0</strong></article><article><span>Identificadas</span><strong id="rfLivesFound">0</strong></article><article><span>Geração</span><strong id="rfLivesGenerated">—</strong></article></div><p id="rfLivesStatus" class="rf-lives-status"></p><section><h4>Vidas que compõem a parcela</h4><div class="rf-table"><table><thead><tr><th>Vida/usuário</th><th>Titular/responsável</th><th>CPF do associado</th><th>Associado/contrato</th><th>Valor</th><th>Adesão</th><th>Cancelamento</th><th>Conferência</th></tr></thead><tbody id="rfLivesIncluded"></tbody></table></div></section><section id="rfLivesLaterSection"><h4>Vidas incluídas depois da geração</h4><p>Estas pessoas aparecem na quantidade atual do S4E, mas não compõem esta parcela.</p><div class="rf-table"><table><thead><tr><th>Vida/usuário</th><th>Titular/responsável</th><th>CPF do associado</th><th>Associado</th><th>Valor</th><th>Adesão</th><th>Motivo</th></tr></thead><tbody id="rfLivesLater"></tbody></table></div></section><small id="rfLivesSource"></small></div></dialog>
+    </div>
+
+    <div id="odontoartScreen" class="screen hidden">
+      <header class="od-header">
+        <div>
+          <p class="od-eyebrow">CONTROLE MENSAL</p>
+          <h2>Odontoart</h2>
+          <p>PJ Top Individual com Odontologia. Fecha o mês anterior sozinho, direto do S4E.</p>
+        </div>
+        <div class="od-header-tools">
+          <label>Competência<select id="odComp"></select></label>
+          <button class="button button-secondary" id="odExport" type="button">Exportar Excel</button>
+        </div>
+      </header>
+
+      <div class="od-kpis" id="odKpis"></div>
+      <p class="od-note" id="odNote"></p>
+
+      <div class="od-cols">
+        <section class="od-panel od-conferencia">
+          <header>
+            <div><p>CONFERÊNCIA S4E</p><h3>Títulos do plano nesta competência</h3></div>
+            <span class="od-count" id="odConfCount"></span>
+          </header>
+          <p class="od-hint">Todo título da competência cujo valor por vida é o preço do plano. É daqui que sai o ativo e o atraso — se o título não aparece aqui, a empresa não foi faturada.</p>
+          <div class="od-table"><table><thead><tr><th>Empresa</th><th class="od-num">Vidas</th><th class="od-num">Faturado</th><th class="od-num">Recebido</th><th>Situação</th><th>Vencimento</th></tr></thead><tbody id="odConferencia"></tbody></table></div>
+        </section>
+
+        <section class="od-panel">
+          <header><div><p>RESUMO</p><h3>Por empresa</h3></div></header>
+          <p class="od-hint">Quantas vidas a empresa tem no plano, quantas estão pagas, e o que foi faturado na competência.</p>
+          <div class="od-table"><table><thead><tr><th>Empresa</th><th class="od-num">Vidas</th><th class="od-num">Ativas</th><th class="od-num">Atraso</th><th class="od-num">Faturado</th><th class="od-num">Recebido</th></tr></thead><tbody id="odEmpresas"></tbody></table></div>
+        </section>
+      </div>
+
+      <section class="od-panel od-block">
+        <header><div><p>1</p><h3>Vidas ativas com odonto</h3></div><span class="od-count" id="odAtivosCount"></span></header>
+        <p class="od-hint">Vida ATIVO no S4E e a empresa dela teve o título da competência pago por inteiro.</p>
+        <div class="od-table"><table><thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Parentesco</th><th>Pagamento</th><th class="od-num">Valor</th></tr></thead><tbody id="odAtivos"></tbody></table></div>
+      </section>
+
+      <section class="od-panel od-block">
+        <header><div><p>2</p><h3>Vidas ativas com atraso no pagamento</h3></div><span class="od-count" id="odAtrasoCount"></span></header>
+        <p class="od-hint">Vida ATIVO no S4E que não teve o mês pago: a empresa não foi faturada, ou o título dela ficou em aberto. O motivo aparece em cada linha.</p>
+        <div class="od-table"><table><thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Parentesco</th><th>Pagamento</th><th class="od-num">Valor</th><th>Motivo</th></tr></thead><tbody id="odAtraso"></tbody></table></div>
+      </section>
+
+      <section class="od-panel od-block">
+        <header><div><p>3</p><h3>Cancelamentos</h3></div><span class="od-count" id="odCancelCount"></span></header>
+        <p class="od-hint">Vida CANCELADO no S4E. A faixa mostra em que ponto ela estava quando saiu.</p>
+        <div class="od-table"><table><thead><tr><th>Nome</th><th>CPF</th><th>Empresa</th><th>Parentesco</th><th>Pagamento</th><th class="od-num">Valor</th></tr></thead><tbody id="odCancelados"></tbody></table></div>
+      </section>
+
+      <section class="od-panel">
+        <header><div><p>RESUMO</p><h3>Fechamento do mês</h3></div></header>
+        <div class="od-table"><table><thead><tr><th>Faixa</th><th class="od-num">Ativos</th><th class="od-num">Atraso</th><th class="od-num">Cancelados</th><th class="od-num">Total</th></tr></thead><tbody id="odResumo"></tbody></table></div>
+      </section>
+
+      <section class="od-panel">
+        <header><div><p>RESUMO</p><h3>Quem emite a nota e o boleto</h3></div></header>
+        <div class="od-table"><table><thead><tr><th>Faixa</th><th class="od-num">Quant.</th><th class="od-num">Odontoart emite NF e boleto</th><th class="od-num">Rede Saúde emite NF e boleto</th></tr></thead><tbody id="odFinanceiro"></tbody></table></div>
+        <p class="od-note" id="odFinanceiroNota"></p>
+      </section>
+
+      <section class="od-panel od-como">
+        <header><div><p>COMO FUNCIONA</p><h3>As regras que esta tela aplica</h3></div></header>
+        <div class="od-como-grid">
+          <article>
+            <h4>Qual mês ela fecha</h4>
+            <p>O mês anterior ao atual. Em novembro, fecha <strong>outubro</strong>. Você pode trocar a competência no seletor do topo.</p>
+          </article>
+          <article>
+            <h4>Quem entra</h4>
+            <p>Só as vidas do plano <strong>PJ TOP INDIVIDUAL COM ODONTOLOGIA</strong>, lidas do S4E. Nenhuma outra empresa, plano ou valor entra na conta.</p>
+          </article>
+          <article>
+            <h4>A faixa de pagamento</h4>
+            <p>Contada do mês da adesão até o mês da competência: mesmo mês é <strong>1º pagamento</strong>; um mês depois é <strong>2º</strong>; dois ou mais é <strong>3º ou mais</strong>.</p>
+          </article>
+          <article>
+            <h4>O [1º PGTO] e o [PARC]</h4>
+            <p>É a mesma conta, escrita como na planilha: o mês da adesão é o 1º pagamento, e a parcela é quantos meses se passaram desde ele, mais um.</p>
+          </article>
+          <article>
+            <h4>Vidas ativas</h4>
+            <p>A vida está <strong>ATIVO</strong> no S4E, a empresa dela <strong>foi faturada</strong> na competência e o título foi <strong>pago por inteiro</strong>. É o único caso em que a vida entra na conta do mês.</p>
+          </article>
+          <article>
+            <h4>Em atraso</h4>
+            <p>A vida está <strong>ATIVO</strong>, mas a empresa dela não teve o mês pago. São dois casos, e os dois contam: a empresa <strong>não foi faturada</strong> na competência, ou foi faturada e o <strong>título ficou em aberto</strong>. Cada linha mostra qual dos dois foi.</p>
+          </article>
+          <article>
+            <h4>Canceladas</h4>
+            <p>A vida está <strong>CANCELADO</strong> no S4E. A coluna CONF mostra a faixa em que ela estava e ULT. PGTO, a data do último pagamento.</p>
+          </article>
+          <article>
+            <h4>O valor do resumo</h4>
+            <p>Cada faixa é multiplicada pelos valores fixos da planilha: <strong>R$ 8,98</strong> para a Odontoart emitir a nota e o boleto, e <strong>R$ 0,18</strong> para a Rede Saúde.</p>
+          </article>
+        </div>
+        <p class="od-note">Fonte: S4E — vidas do plano e títulos da competência. O Excel exportado usa as cinco abas do arquivo da Juliana, na mesma ordem: ODONTO, RESUMO DE VIDAS ATIVAS, ATRASO, CANCELAMENTOS e RESUMO.</p>
+      </section>
     </div>
 
     <div id="apuracaoScreen" class="screen hidden">
@@ -1665,89 +1862,124 @@
     <div id="adesiScreen" class="screen hidden">
       <div class="ad-header">
         <div>
-          <p class="ad-eyebrow">ADESÕES · CONFERÊNCIA AUTOMÁTICA</p>
+          <p class="ad-eyebrow">ADESÕES · ENTRADA DE CONTRATOS DO S4E</p>
           <h2>Conferência de Adesões</h2>
-          <p class="panel-help">Adesões importadas com verificação automática contra a base. Filtre por período, tipo (web/CRM) e status de conferência. Valide em lote ou individualmente.</p>
+          <p class="panel-help">A tela lê a <strong>Entrada de Contratos</strong> e o <strong>Faturamento</strong> do S4E e monta sozinha a conferência: dia, lote, empresa com código, quantidade de vidas, data de entrada e a data de adesão que sai da primeira parcela. Depois compara cada lote com a parcela do <strong>Faturamento</strong>, com o <strong>pagamento</strong> dela e com a <strong>Movimentação de Vidas</strong> do dia — o que não fechar aparece com o motivo escrito.</p>
         </div>
         <div class="ad-header-actions">
-          <button type="button" class="button button-primary" id="adConferirTodosBtn">Conferir todos do período</button>
-          <button type="button" class="button button-secondary" id="adExportarBtn">Exportar Excel</button>
+          <button type="button" class="button button-primary" id="adGerarBtn">Gerar do S4E</button>
+          <button type="button" class="button button-secondary" id="adConferirTodosBtn">Conferir tudo agora</button>
+          <button type="button" class="button button-secondary" id="adExportarBtn">Baixar planilha</button>
         </div>
       </div>
 
+      <div class="ad-aviso" id="adAviso" hidden></div>
+      <div class="ad-fontes" id="adFontes"></div>
       <div class="ad-kpis" id="adKpis"></div>
 
-      <div class="ad-panel">
-        <div class="ad-toolbar">
-          <div class="ad-search">
-            <span>🔍</span>
-            <input type="search" id="adSearch" placeholder="Buscar empresa ou lote…" aria-label="Buscar empresa ou lote">
-            <button type="button">✕</button>
-          </div>
-          <label>
-            Mês
-            <select id="adMes">
-              <option value="">Selecionar</option>
-              <option value="1">Janeiro</option>
-              <option value="2">Fevereiro</option>
-              <option value="3">Março</option>
-              <option value="4">Abril</option>
-              <option value="5">Maio</option>
-              <option value="6">Junho</option>
-              <option value="7">Julho</option>
-              <option value="8">Agosto</option>
-              <option value="9">Setembro</option>
-              <option value="10">Outubro</option>
-              <option value="11">Novembro</option>
-              <option value="12">Dezembro</option>
-            </select>
-          </label>
-          <label>
-            Ano
-            <select id="adAno">
-              <option value="">Selecionar</option>
-              <option value="2024">2024</option>
-              <option value="2025">2025</option>
-              <option value="2026">2026</option>
-              <option value="2027">2027</option>
-            </select>
-          </label>
-          <label>
-            Tipo
-            <select id="adTipo">
-              <option value="">Todos</option>
-              <option value="WEB">Web</option>
-              <option value="CRM">CRM</option>
-            </select>
-          </label>
+      <p class="ad-hint"><strong>Pendente não é erro:</strong> falta a fatura do mês, o código da empresa no S4E ou o pagamento da mensalidade. Quando a fonte chega, a linha vira conferida sozinha. <strong>Clique na linha</strong> para abrir a conferência.</p>
+      <details class="ad-guide">
+        <summary>Como ler esta tela</summary>
+        <div class="ad-guide-grid">
+          <article>
+            <span class="ad-badge conferido">✅ Conferida</span>
+            <p>O lote existe na Entrada de Contratos com as mesmas vidas e o mesmo valor, a parcela foi encontrada no Faturamento com vencimento compatível e essa parcela já aparece paga.</p>
+          </article>
+          <article>
+            <span class="ad-badge pendente">⏳ Pendente</span>
+            <p>Ainda falta uma fonte, não é erro: a fatura do mês não foi gerada (a data de adesão fica projetada pelo vencimento habitual), a empresa da venda está sem código no S4E ou a mensalidade ainda não foi paga. Abra a linha para ver qual é o caso.</p>
+          </article>
+          <article>
+            <span class="ad-badge divergente">⚠️ Divergente</span>
+            <p>As fontes existem e não fecham: vidas, valor ou vencimento diferentes. Abra a linha, leia o motivo e corrija a venda ou o cadastro.</p>
+          </article>
         </div>
+        <ul>
+          <li><strong>QUANTIDADE VIDAS</strong> é o que entrou no lote. <strong>TOTAL VIDAS</strong> é o valor do lote em reais (7 vidas × R$ 60 = R$ 420), igual à planilha de sempre.</li>
+          <li>A <strong>Movimentação de Vidas</strong> é conferência de apoio: o botão da linha mostra <em>quem</em> são as vidas do dia e não trava o status.</li>
+          <li>Meses anteriores a novembro de 2026 vieram de importação antiga e não têm Entrada de Contratos no portal: são histórico e não entram na conferência do mês.</li>
+          <li>A conferência usa as cópias do S4E guardadas no servidor e responde na hora. Para trazer lançamentos novos, consulte em <strong>Vendas → Consultar S4E</strong> e clique em <strong>Gerar do S4E</strong>.</li>
+        </ul>
+      </details>
 
-        <table class="ad-table">
-          <thead>
-            <tr>
-              <th>Lote</th>
-              <th>Empresa</th>
-              <th>Vidas</th>
-              <th>Valor</th>
-              <th>Data Entrada</th>
-              <th>Data Adesão</th>
-              <th>Tipo</th>
-              <th>Status</th>
-              <th>Situação</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody id="adTableBody">
-            <tr><td colspan="10" class="ad-loading">Carregando…</td></tr>
-          </tbody>
-        </table>
-        <div id="adPaginationContainer"></div>
+      <div class="ad-grid">
+        <aside class="ad-panel ad-days">
+          <div class="ad-panel-head">
+            <h3>Dias com adesão</h3>
+            <span id="adDaysCount">—</span>
+          </div>
+          <div class="ad-days-list" id="adDays"></div>
+        </aside>
+
+        <section class="ad-panel ad-main">
+          <div class="ad-toolbar">
+            <div class="ad-search">
+              <span aria-hidden="true">🔍</span>
+              <input type="search" id="adSearch" placeholder="Buscar empresa ou lote…" aria-label="Buscar empresa ou lote">
+              <button type="button" id="adSearchClear" aria-label="Limpar busca">✕</button>
+            </div>
+            <label>De<input type="date" id="adInicio" aria-label="Data inicial do período"></label>
+            <label>Até<input type="date" id="adFim" aria-label="Data final do período"></label>
+            <label>Tipo<select id="adTipo">
+              <option value="">WEB e CRM</option>
+              <option value="WEB">Só WEB</option>
+              <option value="CRM">Só CRM</option>
+            </select></label>
+            <div class="ad-teams">
+              <span class="ad-teams-title">Equipe</span>
+              <div class="ad-team-chips" id="adTeamChips" role="group" aria-label="Filtrar por equipe"></div>
+            </div>
+            <label>Status<select id="adStatus">
+              <option value="">Todos</option>
+              <option value="conferido">Conferido</option>
+              <option value="divergente">Divergente</option>
+              <option value="pendente">Pendente</option>
+            </select></label>
+          </div>
+
+          <div class="ad-daybar" id="adDayBar" hidden>
+            <div>
+              <strong id="adDayLabel"></strong>
+              <span id="adDayInfo"></span>
+            </div>
+            <div class="ad-daybar-actions">
+              <button type="button" class="button button-primary" id="adConferirDiaBtn">Conferir este dia</button>
+              <button type="button" class="button button-secondary" id="adLimparDiaBtn">Ver todos os dias</button>
+            </div>
+          </div>
+
+          <div class="ad-tablebar">
+            <span id="adTableInfo"></span>
+            <div id="adPaginationTop" class="ad-pagination ad-pagination-top"></div>
+          </div>
+          <div class="ad-tablewrap">
+            <table class="ad-table">
+              <thead>
+                <tr>
+                  <th>Dia</th>
+                  <th>Status</th>
+                  <th>Lote</th>
+                  <th>Empresa</th>
+                  <th>Vidas</th>
+                  <th>Valor</th>
+                  <th>Entrada → Adesão</th>
+                  <th>Parcela</th>
+                  <th>Tipo</th>
+                  <th>Equipe</th>
+                  <th aria-label="Abrir conferência"></th>
+                </tr>
+              </thead>
+              <tbody id="adTableBody">
+                <tr><td colspan="12" class="ad-loading">Carregando…</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="adPaginationContainer" class="ad-pagination"></div>
+        </section>
       </div>
 
       <dialog id="adDetailModal" class="ad-modal">
-        <div class="ad-modal-content" id="adDetailBody">
-          <!-- Preenchido dinamicamente -->
-        </div>
+        <div class="ad-modal-content" id="adDetailBody"></div>
       </dialog>
     </div>
 
@@ -2230,25 +2462,92 @@
     <div id="adminScreen" class="screen hidden">
       <section class="admin-hero">
         <div class="admin-hero-copy">
-          <p class="eyebrow">CENTRAL DE CONTROLE</p>
+          <p class="eyebrow"><span class="adm-live"></span> CENTRAL DE CONTROLE</p>
           <h2>Administração do portal</h2>
           <p class="panel-help">Contas, setores, telas, comunicados e aniversários em um só lugar. Tudo o que você muda aqui vale para o portal inteiro.</p>
+          <div class="admin-hero-actions">
+            <button class="button button-primary adm-refresh" id="adminRefreshBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.6 6"/><path d="M20 5.5V11h-5.4"/></svg>
+              Atualizar dados
+            </button>
+            <span class="admin-hero-badge"><i></i> Sessão de administrador</span>
+          </div>
         </div>
-        <div class="admin-hero-actions">
-          <span class="admin-hero-badge"><i></i> Sessão de administrador</span>
-          <button class="button button-secondary" id="adminRefreshBtn" type="button">Atualizar dados</button>
+        <div class="admin-hero-art" aria-hidden="true">
+          <svg viewBox="0 0 340 220" focusable="false">
+            <defs>
+              <linearGradient id="admPanel" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#ffffff" stop-opacity=".24"/>
+                <stop offset="1" stop-color="#ffffff" stop-opacity=".06"/>
+              </linearGradient>
+              <linearGradient id="admMint" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#5ff0b8"/>
+                <stop offset="1" stop-color="#2fd39a"/>
+              </linearGradient>
+              <radialGradient id="admGlow" cx=".5" cy=".5" r=".5">
+                <stop offset="0" stop-color="#5ff0b8" stop-opacity=".42"/>
+                <stop offset="1" stop-color="#5ff0b8" stop-opacity="0"/>
+              </radialGradient>
+            </defs>
+            <circle cx="250" cy="96" r="110" fill="url(#admGlow)"/>
+
+            <!-- painel de controle -->
+            <g transform="rotate(-5 220 118)">
+              <rect x="112" y="34" width="196" height="150" rx="20" fill="url(#admPanel)" stroke="#ffffff" stroke-opacity=".34"/>
+              <!-- barra de janela -->
+              <circle cx="132" cy="52" r="4" fill="#ffffff" opacity=".6"/>
+              <circle cx="146" cy="52" r="4" fill="#ffffff" opacity=".4"/>
+              <circle cx="160" cy="52" r="4" fill="#ffffff" opacity=".26"/>
+              <rect x="112" y="64" width="196" height="1.6" fill="#ffffff" opacity=".22"/>
+              <!-- coluna de navegação -->
+              <rect x="126" y="78" width="46" height="7" rx="3.5" fill="url(#admMint)"/>
+              <rect x="126" y="94" width="38" height="6" rx="3" fill="#ffffff" opacity=".42"/>
+              <rect x="126" y="108" width="42" height="6" rx="3" fill="#ffffff" opacity=".3"/>
+              <rect x="126" y="122" width="34" height="6" rx="3" fill="#ffffff" opacity=".2"/>
+              <!-- cartões do conteúdo -->
+              <rect x="186" y="78" width="52" height="40" rx="10" fill="#ffffff" opacity=".18"/>
+              <rect x="246" y="78" width="52" height="40" rx="10" fill="#ffffff" opacity=".12"/>
+              <rect x="196" y="88" width="20" height="6" rx="3" fill="#ffffff" opacity=".7"/>
+              <rect x="196" y="100" width="30" height="5" rx="2.5" fill="#ffffff" opacity=".4"/>
+              <rect x="256" y="88" width="18" height="6" rx="3" fill="#5ff0b8" opacity=".85"/>
+              <rect x="256" y="100" width="28" height="5" rx="2.5" fill="#ffffff" opacity=".35"/>
+              <!-- tabela -->
+              <rect x="186" y="128" width="112" height="6" rx="3" fill="#ffffff" opacity=".3"/>
+              <rect x="186" y="142" width="96" height="6" rx="3" fill="#ffffff" opacity=".2"/>
+              <rect x="186" y="156" width="104" height="6" rx="3" fill="#ffffff" opacity=".14"/>
+            </g>
+
+            <!-- escudo (segurança) -->
+            <g transform="translate(44 96)">
+              <path d="M28 0 56 12v22c0 17-12 30-28 36C12 64 0 51 0 34V12z" fill="url(#admMint)" opacity=".95"/>
+              <path d="M17 34l8 8 15-16" fill="none" stroke="#043c36" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+
+            <!-- cédulas de permissão -->
+            <g>
+              <rect x="26" y="28" width="62" height="26" rx="9" fill="#ffffff" opacity=".22" transform="rotate(-13 57 41)"/>
+              <rect x="40" y="176" width="70" height="26" rx="9" fill="#ffffff" opacity=".16" transform="rotate(9 75 189)"/>
+              <path d="M60 44l2.6 6.4 6.4 2.6-6.4 2.6L60 62l-2.6-6.4L51 53l6.4-2.6z" fill="#ffffff" opacity=".75"/>
+            </g>
+
+            <!-- brilhos -->
+            <path d="M300 26l3.2 8 8 3.2-8 3.2-3.2 8-3.2-8-8-3.2 8-3.2z" fill="#ffffff" opacity=".85"/>
+            <path d="M312 186l2.2 5.4 5.4 2.2-5.4 2.2-2.2 5.4-2.2-5.4-5.4-2.2 5.4-2.2z" fill="#5ff0b8" opacity=".8"/>
+            <circle cx="86" cy="140" r="3.4" fill="#ffffff" opacity=".45"/>
+            <circle cx="36" cy="74" r="2.4" fill="#ffffff" opacity=".5"/>
+          </svg>
         </div>
       </section>
 
       <section class="admin-kpis" id="adminKpis" aria-label="Resumo do portal"></section>
 
       <nav class="admin-tabs" id="adminTabs" aria-label="Seções da administração">
-        <button type="button" class="admin-tab active" data-admin-tab="overview"><span>◫</span> Visão geral</button>
-        <button type="button" class="admin-tab" data-admin-tab="people"><span>☺</span> Pessoas</button>
-        <button type="button" class="admin-tab" data-admin-tab="birthdays"><span>✦</span> Aniversariantes</button>
-        <button type="button" class="admin-tab" data-admin-tab="structure"><span>▤</span> Setores e telas</button>
-        <button type="button" class="admin-tab" data-admin-tab="events"><span>◆</span> Comunicados</button>
-        <button type="button" class="admin-tab" data-admin-tab="data"><span>⛁</span> Dados</button>
+        <button type="button" class="admin-tab active" data-admin-tab="overview"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="2"/><rect x="13.5" y="3.5" width="7" height="7" rx="2"/><rect x="3.5" y="13.5" width="7" height="7" rx="2"/><rect x="13.5" y="13.5" width="7" height="7" rx="2"/></svg><span>Visão geral</span></button>
+        <button type="button" class="admin-tab" data-admin-tab="people"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.4"/><path d="M3 20c.9-3.7 3.2-5.6 6-5.6s5.1 1.9 6 5.6"/><path d="M16.5 6.2a3 3 0 0 1 0 5.6M17.5 14.6c2 .6 3.3 2.4 3.9 5.4"/></svg><span>Pessoas</span></button>
+        <button type="button" class="admin-tab" data-admin-tab="birthdays"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20.5h16M5.5 20.5v-6a2.5 2.5 0 0 1 2.5-2.5h8a2.5 2.5 0 0 1 2.5 2.5v6"/><path d="M5.5 16.5c1.6 1.4 3.2 1.4 4.8 0s3.2-1.4 4.8 0 3.2 1.4 3.4 0"/><path d="M12 12V9.5M12 6.5v.01"/></svg><span>Aniversariantes</span></button>
+        <button type="button" class="admin-tab" data-admin-tab="structure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="7" height="6" rx="2"/><rect x="13.5" y="4.5" width="7" height="6" rx="2"/><rect x="8.5" y="14" width="7" height="6" rx="2"/><path d="M7 10.5v1.5a2 2 0 0 0 2 2h.5M17 10.5v1.5a2 2 0 0 1-2 2h-.5"/></svg><span>Setores e telas</span></button>
+        <button type="button" class="admin-tab" data-admin-tab="events"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 11.5v-1a2 2 0 0 1 2-2h1.6l7-3.6v13.2l-7-3.6H6a2 2 0 0 1-2-2z"/><path d="M17.5 8.6a4.6 4.6 0 0 1 0 6.8"/></svg><span>Comunicados</span></button>
+        <button type="button" class="admin-tab" data-admin-tab="data"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3"/></svg><span>Dados</span></button>
       </nav>
 
       <div class="admin-panel active" data-admin-panel="overview">
@@ -2397,7 +2696,7 @@
                 <h3>Avisos para a equipe</h3>
                 <p class="panel-help">Foto, data e recado. Abre uma vez na entrada do portal; dá para ver de novo pelo botão no canto.</p>
               </div>
-              <button class="button button-primary" id="newAnnouncementBtn" type="button">+ Novo evento</button>
+              <button class="button button-primary adm-pill-btn" id="newAnnouncementBtn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo evento</button>
             </div>
             <div id="announcementsList" class="admin-list"></div>
           </article>
@@ -2527,6 +2826,16 @@
         <section class="task-checklist-editor dm-section"><div class="field-heading"><span>Checklist</span><small>Divida a demanda em etapas</small></div><div class="checklist-add"><input id="checklistInput" type="text" maxlength="120" placeholder="Ex.: Conferir documentos"><button type="button" class="button button-secondary" id="addChecklistItem">Adicionar etapa</button></div><div id="checklistItems" class="checklist-editor-list"></div></section>
         <label class="dm-field">Observação (opcional)<textarea id="taskNotes" rows="3" maxlength="300" placeholder="Contexto, dependência ou próximo passo..."></textarea></label>
         <label class="attachment-field dm-field">Anexos<input id="taskAttachments" type="file" multiple><small>Contrato, e-mail, comprovante, planilha ou qualquer outro arquivo. Sem limite de tamanho ou de quantidade.</small></label><div id="taskAttachmentList" class="attachment-list"></div>
+      </div>
+      <div class="dm-duplicate hidden" id="taskDuplicateWarn" role="status" aria-live="polite">
+        <span class="dm-duplicate-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8.5v5M12 16.5v.01"/><path d="M10.3 4.2 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 4.2a2 2 0 0 0-3.4 0z"/></svg>
+        </span>
+        <div class="dm-duplicate-copy">
+          <strong id="taskDuplicateTitle">Já existe uma demanda assim</strong>
+          <p id="taskDuplicateText"></p>
+        </div>
+        <button type="button" class="dm-duplicate-open" id="taskDuplicateOpen">Abrir a existente</button>
       </div>
       <footer class="dm-foot">
         <button type="button" class="button button-danger hidden" id="deleteDialog">Excluir demanda</button>
@@ -3725,11 +4034,12 @@
   window.leaveFeedScreen = function () { window.__feedVisible = false; window.dispatchEvent(new Event('portal:feed-leave')); };
 </script>
 <script defer src="offline-demands.js?v=20261112o1"></script>
-<script defer src="access.js?v=20261117-overlay1"></script>
+<script defer src="access.js?v=20261119a"></script>
+<script defer src="sabi.js?v=20261118c"></script>
 <script defer src="retornos.js?v=20261112f1"></script>
 <script defer src="contract-notifications.js?v=20261112c1"></script>
 <script defer src="commission-notifications.js?v=20261113a2"></script>
-<script defer src="app.js?v=20261117e"></script>
+<script defer src="app.js?v=20261119a"></script>
 <script defer src="vendas.js?v=20261111v1"></script>
 <script defer src="vidas.js?v=20261113v5"></script>
 <script defer src="email-center.js?v=20261111e1"></script>
@@ -3737,11 +4047,12 @@
 <script defer src="finance.js?v=20261106i"></script>
 <script defer src="cobranca.js?v=20261110r"></script>
 <script defer src="apuracao.js?v=20261111audit"></script>
-<script defer src="rateios-faturamento.js?v=20261117f"></script>
+<script defer src="rateios-faturamento.js?v=20261119c"></script>
+<script defer src="odontoart.js?v=20261119c"></script>
 <script defer src="notas.js?v=20261113n1"></script>
 <script defer src="recibos.js?v=20261113r3"></script>
-<script defer src="adesoes-conferencia.js?v=20261117a"></script>
-<script defer src="home.js?v=20261117a"></script>
+<script defer src="adesoes-conferencia.js?v=20261118p"></script>
+<script defer src="home.js?v=20261118p"></script>
 <script defer src="demandas-preview.js?v=20261117e"></script>
 <script type="module" src="feed-react/feed-react.js?v=20261104d"></script>
 

@@ -2,8 +2,26 @@ portal-key.pem
 portal-cert.pem
 portal.db
 portal.db.before-*.bak
+*.db
+*.bak
+backups/
+logs/
+*.log
+*.err
+*.out
+portal-ca*.pem
+portal-*-key.pem
+portal*.cer
 __pycache__/
 .venv/
+react-src/node_modules/
 .mcp.json
 *.exe
+runtime/
+sistema_planilhas (1)/webapp/outputs/
+outputs/
+uploads/
+backups/
+Treinamentos/
+.s4e_faturamento_cache.json
 Gerador de Planilhas de Importação/_internal/

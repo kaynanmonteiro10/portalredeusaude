@@ -1,0 +1,32 @@
+{
+ "5353": {
+  "rotulo": "TAKE A JUICE RIOMAR",
+  "total": 16,
+  "odonto": 0,
+  "vidas": []
+ },
+ "5355": {
+  "rotulo": "TAKE A JUICE IGUATEMI",
+  "total": 3,
+  "odonto": 0,
+  "vidas": []
+ },
+ "5305": {
+  "rotulo": "CHA DE PRAIA",
+  "total": 4,
+  "odonto": 0,
+  "vidas": []
+ },
+ "702425": {
+  "rotulo": "JESSICA",
+  "total": 0,
+  "odonto": 0,
+  "vidas": []
+ },
+ "702426": {
+  "rotulo": "JESSICA2",
+  "total": 0,
+  "odonto": 0,
+  "vidas": []
+ }
+}

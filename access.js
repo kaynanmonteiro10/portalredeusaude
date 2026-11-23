@@ -3,6 +3,7 @@ if (window.location.search && window.history.replaceState) window.history.replac
 const SESSION_KEY = 'portal-session-v1';
 const SHARED_SCREENS = ['homeScreen', 'tasksScreen', 'birthdaysScreen', 'chatScreen', 'feedScreen', 'learningScreen'];
 const DISABLED_SCREENS = ['managementScreen', 'mergeScreen', 'boardScreen'];
+const PRIVATE_SCREENS = ['vendasScreen', 'movimentacoesScreen', 'emailCenterScreen'];
 const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5500' : '';
 window.PORTAL_API_BASE = API_BASE;
 
@@ -21,7 +22,7 @@ function authHeaders(extra = {}) {
 
 const PortalLoading = (() => {
   const active = new Set();
-  const SILENT = [/^\/api\/chat/, /^\/api\/feed/, /^\/api\/me$/, /^\/api\/state$/, /^\/api\/tasks\/sync/, /^\/api\/system\/status/, /^\/api\/contracts\/events/, /^\/api\/commissions\/events/, /^\/api\/notas\/job/, /^\/api\/recibos\/job/];
+  const SILENT = [/^\/api\/chat/, /^\/api\/feed/, /^\/api\/me$/, /^\/api\/state$/, /^\/api\/tasks\/sync/, /^\/api\/system\/status/, /^\/api\/sabi$/, /^\/api\/contracts\/events/, /^\/api\/commissions\/events/, /^\/api\/notas\/job/, /^\/api\/recibos\/job/];
   let minUntil = 0;
   let fadeTimer = null;
   let waitTimer = null;
@@ -354,6 +355,8 @@ function openScreen(screenId) {
   if (screenId === 'financeScreen') window.enterFinanceScreen?.();
   if (screenId === 'rateioScreen') window.enterRateioScreen?.();
   else window.leaveRateioScreen?.();
+  if (screenId === 'odontoartScreen') window.Odontoart?.carregar();
+
   if (screenId === 'cobrancaScreen') window.enterCobrancaScreen?.();
   else window.leaveCobrancaScreen?.();
   if (screenId === 'retornosScreen') window.enterRetornosScreen?.();
@@ -577,7 +580,7 @@ async function saveSectorContent(screenId, content) {
 }
 
 function screenChecksHtml(selected = []) {
-  const assignable = Access.screens.filter(s => !['vendasScreen', 'movimentacoesScreen', 'emailCenterScreen'].includes(s.id) && !SHARED_SCREENS.includes(s.id) && !DISABLED_SCREENS.includes(s.id));
+  const assignable = Access.screens.filter(s => !PRIVATE_SCREENS.includes(s.id) && !SHARED_SCREENS.includes(s.id) && !DISABLED_SCREENS.includes(s.id));
   const builtins = assignable.filter(s => s.kind === 'builtin');
   const sectors  = assignable.filter(s => s.kind !== 'builtin');
   const row = s => `<label class="check-label"><input type="checkbox" name="userScreen" value="${escapeHtml(s.id)}" ${selected.includes(s.id) ? 'checked' : ''}><span><strong>${escapeHtml(s.name)}</strong> · ${escapeHtml(s.sector || s.kind)}</span></label>`;
@@ -636,21 +639,25 @@ function renderAdminDashboard() {
   const month = new Date().getMonth() + 1;
   const monthBirthdays = birthdays.filter(item => item.month === month);
 
+  // Ícones em SVG de traço — mesma família visual da tela de Início.
+  const admSvg = corpo => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${corpo}</svg>`;
   const kpis = [
-    { label: 'Contas ativas', value: users.length, hint: `${users.filter(u => u.role === 'admin').length} administrador(es)`, icon: '☺' },
-    { label: 'Setores', value: Access.sectors.length, hint: 'estrutura do portal', icon: '▤' },
-    { label: 'Telas', value: Access.screens.length, hint: `${Access.screens.filter(s => s.kind === 'sector').length} de setor`, icon: '◫' },
-    { label: 'Comunicados', value: activeAnn.length, hint: `${announcements.length} no total`, icon: '◆' },
-    { label: 'Aniversários no mês', value: monthBirthdays.length, hint: `${birthdays.length} cadastrados`, icon: '✦' },
+    { label: 'Contas ativas', value: users.length, hint: `${users.filter(u => u.role === 'admin').length} administrador(es)`, icon: admSvg('<circle cx="9" cy="8" r="3.4"/><path d="M3 20c.9-3.7 3.2-5.6 6-5.6s5.1 1.9 6 5.6"/><path d="M16.5 6.2a3 3 0 0 1 0 5.6M17.5 14.6c2 .6 3.3 2.4 3.9 5.4"/>'), tone: 'teal' },
+    { label: 'Setores', value: Access.sectors.length, hint: 'estrutura do portal', icon: admSvg('<rect x="3.5" y="4.5" width="7" height="6" rx="2"/><rect x="13.5" y="4.5" width="7" height="6" rx="2"/><rect x="8.5" y="14" width="7" height="6" rx="2"/><path d="M7 10.5v1.5a2 2 0 0 0 2 2h.5M17 10.5v1.5a2 2 0 0 1-2 2h-.5"/>'), tone: 'blue' },
+    { label: 'Telas', value: Access.screens.length, hint: `${Access.screens.filter(s => s.kind === 'sector').length} de setor`, icon: admSvg('<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17"/><circle cx="7" cy="7" r="1" fill="currentColor" stroke="none"/>'), tone: 'purple' },
+    { label: 'Comunicados', value: activeAnn.length, hint: `${announcements.length} no total`, icon: admSvg('<path d="M4 11.5v-1a2 2 0 0 1 2-2h1.6l7-3.6v13.2l-7-3.6H6a2 2 0 0 1-2-2z"/><path d="M17.5 8.6a4.6 4.6 0 0 1 0 6.8"/>'), tone: 'amber' },
+    { label: 'Aniversários no mês', value: monthBirthdays.length, hint: `${birthdays.length} cadastrados`, icon: admSvg('<path d="M4 20.5h16M5.5 20.5v-6a2.5 2.5 0 0 1 2.5-2.5h8a2.5 2.5 0 0 1 2.5 2.5v6"/><path d="M5.5 16.5c1.6 1.4 3.2 1.4 4.8 0s3.2-1.4 4.8 0 3.2 1.4 3.4 0"/><path d="M12 12V9.5M12 6.5v.01"/>'), tone: 'pink' },
   ];
   const kpiHost = document.getElementById('adminKpis');
   if (kpiHost) {
     kpiHost.innerHTML = kpis.map(kpi => `
-      <article class="admin-kpi">
+      <article class="admin-kpi adm-tone-${kpi.tone}">
         <span class="admin-kpi-icon">${kpi.icon}</span>
-        <strong>${kpi.value}</strong>
-        <span class="admin-kpi-label">${kpi.label}</span>
-        <small>${kpi.hint}</small>
+        <span class="admin-kpi-body">
+          <strong>${kpi.value}</strong>
+          <span class="admin-kpi-label">${kpi.label}</span>
+          <small>${kpi.hint}</small>
+        </span>
       </article>`).join('');
   }
 
@@ -902,7 +909,18 @@ function renderSectorOptions() {
 }
 
 function renderSectorCatalog() {
-  $('#sectorsList').innerHTML = Access.sectors.map(sector => `<article class="admin-item"><div><strong>${escapeHtml(sector.name)}</strong><small>${escapeHtml(sector.description || 'Sem descrição')}</small></div>${sector.id === 'cadastro-faturamento' ? '<span class="muted-tag">padrão</span>' : `<button type="button" class="delete" data-delete-sector="${escapeHtml(sector.id)}" aria-label="Excluir setor">×</button>`}</article>`).join('');
+  const sectorIcon = '<span class="adm-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="7" height="6" rx="2"/><rect x="13.5" y="4.5" width="7" height="6" rx="2"/><rect x="8.5" y="14" width="7" height="6" rx="2"/><path d="M7 10.5v1.5a2 2 0 0 0 2 2h.5M17 10.5v1.5a2 2 0 0 1-2 2h-.5"/></svg></span>';
+  $('#sectorsList').innerHTML = Access.sectors.map(sector => `
+    <article class="admin-item adm-item">
+      ${sectorIcon}
+      <div class="adm-item-copy">
+        <strong>${escapeHtml(sector.name)}</strong>
+        <small>${escapeHtml(sector.description || 'Sem descrição')}</small>
+      </div>
+      ${sector.id === 'cadastro-faturamento'
+        ? '<span class="adm-chip-sm is-muted">padrão</span>'
+        : `<button type="button" class="adm-icon-btn is-danger" data-delete-sector="${escapeHtml(sector.id)}" aria-label="Excluir setor" title="Excluir setor"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg></button>`}
+    </article>`).join('') || '<p class="empty-state">Nenhum setor cadastrado.</p>';
 }
 
 function renderUserList(users) {
@@ -914,19 +932,36 @@ function renderUserList(users) {
     const dateNote = !user.birthday && registry && !registry.year ? ' · <span class="admin-missing">sem ano</span>' : '';
     const weekendDays = [user.worksSaturday ? 'sábado' : '', user.worksSunday ? 'domingo' : ''].filter(Boolean);
     const scheduleLabel = weekendDays.length ? `trabalha ${weekendDays.join(' e ')}` : 'só de segunda a sexta';
+    const extraScreens = (user.screens || []).map(id => Access.screens.find(screen => screen.id === id)?.name || id);
+    const isBlocked = user.active === false;
     return `
-    <article class="admin-item admin-person-card">
-      ${avatarMarkup(user, 'admin-avatar')}
+    <article class="admin-item admin-person-card${isBlocked ? ' is-blocked' : ''}">
+      <span class="adm-person-lead">
+        ${avatarMarkup(user, 'admin-avatar')}
+        <span class="adm-person-state" title="${isBlocked ? 'Acesso bloqueado' : 'Acesso liberado'}"></span>
+      </span>
       <div class="admin-person-copy">
-        <strong>${escapeHtml(user.displayName)} <span class="admin-tag ${user.role === 'admin' ? 'admin-tag-strong' : ''}">${user.role === 'admin' ? 'admin' : 'equipe'}</span>${user.management ? '<span class="admin-tag admin-tag-strong">gestor</span>' : ''}${user.active === false ? '<span class="admin-tag admin-tag-muted">bloqueado</span>' : ''}</strong>
-        <small>${escapeHtml(user.username)} · aniversário: ${dateLabel}${dateNote}${user.active === false ? ' · <span class="admin-missing">sem acesso ao portal</span>' : ''}</small>
-        <small>Telas extras: ${(user.screens || []).map(id => Access.screens.find(screen => screen.id === id)?.name || id).join(', ') || 'somente as comuns'}</small>
-        <small>Demandas diárias: ${scheduleLabel}</small>
+        <div class="adm-person-title">
+          <strong>${escapeHtml(user.displayName)}</strong>
+          <span class="admin-tag ${user.role === 'admin' ? 'admin-tag-strong' : ''}">${user.role === 'admin' ? 'admin' : 'equipe'}</span>
+          ${user.management ? '<span class="admin-tag admin-tag-strong">gestor</span>' : ''}
+          ${isBlocked ? '<span class="admin-tag admin-tag-muted">bloqueado</span>' : ''}
+        </div>
+        <div class="adm-meta">
+          <span class="adm-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3.4"/><path d="M4 20c1.4-3.4 4.4-5.3 8-5.3s6.6 1.9 8 5.3"/></svg>@${escapeHtml(user.username)}</span>
+          <span class="adm-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20.5h16M5.5 20.5v-6a2.5 2.5 0 0 1 2.5-2.5h8a2.5 2.5 0 0 1 2.5 2.5v6"/><path d="M12 12V9.5M12 6.5v.01"/></svg>${dateLabel}${dateNote}</span>
+          <span class="adm-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></svg>${scheduleLabel}</span>
+        </div>
+        <div class="adm-screen-chips">
+          ${extraScreens.length
+            ? extraScreens.map(name => `<span class="adm-chip-sm">${escapeHtml(name)}</span>`).join('')
+            : '<span class="adm-chip-sm is-muted">somente as telas comuns</span>'}
+        </div>
       </div>
-      <div class="admin-item-actions">
-        <button type="button" class="button button-secondary" data-edit-user="${user.id}">Editar</button>
-        ${user.id === Access.user?.id ? '' : `<button type="button" class="button button-secondary" data-toggle-user="${user.id}" data-active="${user.active === false ? '0' : '1'}">${user.active === false ? 'Liberar acesso' : 'Bloquear acesso'}</button>`}
-        <button type="button" class="delete" data-delete-user="${user.id}" aria-label="Excluir conta">×</button>
+      <div class="admin-item-actions adm-actions">
+        <button type="button" class="adm-btn" data-edit-user="${user.id}">Editar</button>
+        ${user.id === Access.user?.id ? '' : `<button type="button" class="adm-btn${isBlocked ? '' : ' is-warn'}" data-toggle-user="${user.id}" data-active="${isBlocked ? '0' : '1'}">${isBlocked ? 'Liberar' : 'Bloquear'}</button>
+        <button type="button" class="adm-icon-btn is-danger" data-delete-user="${user.id}" aria-label="Excluir conta" title="Excluir conta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg></button>`}
       </div>
     </article>`;
   }).join('') || '<p class="empty-state">Nenhuma conta ainda.</p>';
@@ -934,15 +969,36 @@ function renderUserList(users) {
 }
 
 function renderScreenCatalog() {
-  $('#screensList').innerHTML = Access.screens.map(screen => `
-    <article class="admin-item">
-      <div>
-        <strong>${escapeHtml(screen.name)}</strong>
-        <small>${screen.kind === 'builtin' ? 'Tela nativa' : 'Tela de setor'} · ${escapeHtml(screen.sector || 'Geral')}</small>
-        <small>${escapeHtml(screen.description || '')}</small>
+  const screenIcon = '<span class="adm-item-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="3"/><path d="M3.5 9.5h17"/><circle cx="7" cy="7" r="1" fill="currentColor" stroke="none"/></svg></span>';
+  const people = (window.__portalUsers || []).filter(user => user.role !== 'admin' && user.active !== false);
+  const releasedTo = screenId => people.filter(user => (user.screens || []).includes(screenId)).length;
+  $('#screensList').innerHTML = Access.screens.map(screen => {
+    const count = releasedTo(screen.id);
+    let actions = '';
+    if (SHARED_SCREENS.includes(screen.id)) {
+      actions = '<span class="adm-chip-sm is-muted">liberada para todos</span>';
+    } else if (PRIVATE_SCREENS.includes(screen.id) || DISABLED_SCREENS.includes(screen.id)) {
+      actions = '<span class="adm-chip-sm is-muted">somente administração</span>';
+    } else {
+      const label = count ? `Recolher da equipe (${count})` : 'Liberar para a equipe';
+      actions = `<button type="button" class="adm-btn${count ? ' is-warn' : ''}" data-release-screen="${escapeHtml(screen.id)}" data-release="${count ? '0' : '1'}">${label}</button>`;
+    }
+    if (screen.kind === 'sector') {
+      actions += `<button type="button" class="adm-icon-btn is-danger" data-delete-screen="${escapeHtml(screen.id)}" aria-label="Excluir tela" title="Excluir tela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M9.5 7V5.2A1.2 1.2 0 0 1 10.7 4h2.6a1.2 1.2 0 0 1 1.2 1.2V7"/><path d="M6.5 7l.8 11.4A1.6 1.6 0 0 0 8.9 20h6.2a1.6 1.6 0 0 0 1.6-1.6L17.5 7"/></svg></button>`;
+    }
+    return `
+    <article class="admin-item adm-item">
+      ${screenIcon}
+      <div class="adm-item-copy">
+        <div class="adm-person-title">
+          <strong>${escapeHtml(screen.name)}</strong>
+          <span class="adm-chip-sm">${screen.kind === 'builtin' ? 'nativa' : 'de setor'}</span>
+        </div>
+        <small>${escapeHtml(screen.sector || 'Geral')}${screen.description ? ' · ' + escapeHtml(screen.description) : ''}</small>
       </div>
-      ${screen.kind === 'sector' ? `<button type="button" class="delete" data-delete-screen="${screen.id}" aria-label="Excluir tela">×</button>` : '<span class="muted-tag">nativa</span>'}
-    </article>`).join('');
+      <div class="adm-actions">${actions}</div>
+    </article>`;
+  }).join('') || '<p class="empty-state">Nenhuma tela cadastrada.</p>';
 }
 
 async function renderAdmin() {
@@ -1465,6 +1521,28 @@ $('#taskSectorForm').addEventListener('submit', async event => {
 });
 
 $('#screensList').addEventListener('click', async event => {
+  const release = event.target.closest('[data-release-screen]');
+  if (release) {
+    const screen = Access.screens.find(item => item.id === release.dataset.releaseScreen);
+    const on = release.dataset.release === '1';
+    const message = on
+      ? `Liberar a tela "${screen?.name || 'selecionada'}" para toda a equipe agora?`
+      : `Recolher a tela "${screen?.name || 'selecionada'}" de toda a equipe?`;
+    if (!confirm(message)) return;
+    try {
+      const data = await api(`/api/screens/${release.dataset.releaseScreen}/liberar`, {
+        method: 'POST', body: JSON.stringify({ release: on }),
+      });
+      window.__portalUsers = data.users || window.__portalUsers;
+      renderUserList(window.__portalUsers);
+      renderScreenCatalog();
+      applyAccess();
+      if (on) alert('Tela liberada para a equipe. Cada pessoa precisa atualizar a página para ver o novo menu.');
+    } catch (error) {
+      alert(error.message);
+    }
+    return;
+  }
   const remove = event.target.closest('[data-delete-screen]');
   if (!remove || !confirm('Excluir esta tela de setor?')) return;
   try {

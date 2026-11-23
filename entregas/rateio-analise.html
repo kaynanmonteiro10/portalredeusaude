@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Análise de rateio — Novembro/2026</title>
+<style>
+  :root{--ink:#16272e;--ink-2:#4b6570;--ink-3:#7d949e;--line:#e3ecef;--bg:#f7fafb;--card:#fff;
+        --teal:#0f8f8a;--teal-soft:#e6f5f4;--amber:#b7791f;--amber-soft:#fdf5e6;--red:#b4413a;--red-soft:#fdeeed;
+        --blue:#2b6cb0;--blue-soft:#eaf2fb;--purple:#6b46c1;--purple-soft:#f0ebfb}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:15px/1.6 'DM Sans',-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:40px 28px 72px}
+  h1{font:700 27px/1.25 'Space Grotesk','Segoe UI',sans-serif;letter-spacing:-.02em;margin:0 0 6px}
+  .sub{color:var(--ink-3);font-size:13.5px;margin:0 0 34px}
+  h2{font:700 16px/1.3 'Space Grotesk','Segoe UI',sans-serif;margin:44px 0 4px;letter-spacing:-.01em}
+  .lead{color:var(--ink-2);font-size:13.5px;margin:0 0 16px;max-width:760px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(196px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;
+         box-shadow:0 1px 2px rgba(20,50,60,.04)}
+  .card .lbl{font:700 9.5px/1 'Montserrat','Segoe UI',sans-serif;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3)}
+  .card .val{font:700 23px/1.2 'Space Grotesk','Segoe UI',sans-serif;margin:9px 0 3px;letter-spacing:-.02em}
+  .card .hint{font-size:11.5px;color:var(--ink-3);line-height:1.4}
+  .card.is-teal{border-left:3px solid var(--teal)} .card.is-amber{border-left:3px solid var(--amber)}
+  .card.is-red{border-left:3px solid var(--red)} .card.is-blue{border-left:3px solid var(--blue)}
+  .card.is-purple{border-left:3px solid var(--purple)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+         border-radius:13px;overflow:hidden;font-size:13px;margin-top:10px}
+  th{background:#f1f6f7;text-align:left;padding:9px 12px;font:700 9.5px/1 'Montserrat','Segoe UI',sans-serif;
+      letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+  td{padding:9px 12px;border-top:1px solid #eef3f4;vertical-align:top}
+  tr:hover td{background:#fbfdfd}
+  td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tag{display:inline-block;border-radius:999px;padding:2px 8px;font:700 9.5px/1.5 'Montserrat',sans-serif;
+        letter-spacing:.04em;text-transform:uppercase}
+  .tag.ok{background:var(--teal-soft);color:var(--teal)}
+  .tag.no{background:var(--red-soft);color:var(--red)}
+  .tag.warn{background:var(--amber-soft);color:var(--amber)}
+  .tag.info{background:var(--blue-soft);color:var(--blue)}
+  .bar{height:5px;border-radius:3px;background:#eef3f4;overflow:hidden;margin-top:6px;min-width:60px}
+  .bar>span{display:block;height:100%;border-radius:3px;background:var(--teal)}
+  .bar.low>span{background:var(--red)} .bar.mid>span{background:var(--amber)}
+  .note{background:var(--amber-soft);border:1px solid #f0e0bd;border-radius:13px;padding:15px 17px;
+         font-size:13px;color:#7a5c17;line-height:1.55}
+  .note strong{color:#5f460f}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:17px 19px;margin-top:12px}
+  .box h3{font:700 13.5px/1.3 'Space Grotesk',sans-serif;margin:0 0 8px}
+  ul{margin:0;padding-left:19px} li{margin:5px 0;font-size:13px;color:var(--ink-2)}
+  .foot{margin-top:44px;padding-top:16px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3)}
+  @media(max-width:640px){.wrap{padding:26px 16px 52px} h1{font-size:22px}}
+</style></head><body><div class="wrap">
+<h1>Faturamento, recebimento e rateio</h1>
+<p class="sub">Competência Novembro/2026 · apuração de 2026-11-19 ·
+1329 títulos · fonte: S4E (faturamento e baixa) + relatórios P4X (rateio)</p>
+
+<div class="cards">
+  <div class="card is-blue"><div class="lbl">Faturado</div><div class="val">R$ 878.346,05</div>
+    <div class="hint">29 grupos · valor dos títulos emitidos</div></div>
+  <div class="card is-teal"><div class="lbl">Recebido no S4E</div><div class="val">R$ 351.625,34</div>
+    <div class="hint">40.0% do faturado já baixado</div></div>
+  <div class="card is-red"><div class="lbl">Ainda em aberto</div><div class="val">R$ 526.720,71</div>
+    <div class="hint">títulos sem baixa até hoje</div></div>
+  <div class="card is-purple"><div class="lbl">Rateio P4X único</div><div class="val">R$ 269.637,62</div>
+    <div class="hint">1892 lançamentos sem repetição</div></div>
+</div>
+
+
+<h2>O que a tela de rateio distribui hoje</h2>
+<p class="lead">Só quatro grupos têm regra ativa. Todo o resto do faturamento — inclusive os grupos grandes —
+fica sem distribuição e não aparece como erro na tela.</p>
+<div class="cards">
+  <div class="card is-teal"><div class="lbl">Faturado com regra</div><div class="val">R$ 31.927,95</div>
+    <div class="hint">4 de 29 grupos</div></div>
+  <div class="card is-red"><div class="lbl">Faturado sem regra</div><div class="val">R$ 846.418,10</div>
+    <div class="hint">25 grupos sem nenhuma regra</div></div>
+  <div class="card is-amber"><div class="lbl">Distribuído pelas regras</div><div class="val">R$ 31.927,95</div>
+    <div class="hint">3.6% do faturamento total</div></div>
+</div>
+<table><thead><tr><th>Grupo</th><th>Recebedor</th><th class="num">R$/vida</th><th class="num">Total distribuído</th></tr></thead><tbody>
+<tr><td><strong>SEAC RJ</strong></td><td>RS</td><td class='num'>R$ 42,00</td><td class='num'>R$ 18.463,20</td></tr>
+<tr><td></td><td>SIND. ASSEIO</td><td class='num'>R$ 3,00</td><td class='num'>R$ 1.318,80</td></tr>
+<tr><td></td><td>SEAC RJ</td><td class='num'>R$ 2,00</td><td class='num'>R$ 879,20</td></tr>
+<tr><td><strong>SINTRASECE</strong></td><td>RS</td><td class='num'>R$ 24,00</td><td class='num'>R$ 9.048,00</td></tr>
+<tr><td></td><td>Fecomercio</td><td class='num'>R$ 1,50</td><td class='num'>R$ 565,50</td></tr>
+<tr><td></td><td>Sintrasece</td><td class='num'>R$ 1,50</td><td class='num'>R$ 565,50</td></tr>
+<tr><td><strong>STIAPAR ESP.</strong></td><td>RS</td><td class='num'>R$ 17,75</td><td class='num'>R$ 674,50</td></tr>
+<tr><td><strong>SITIAL</strong></td><td>RS</td><td class='num'>R$ 17,75</td><td class='num'>R$ 337,25</td></tr>
+<tr><td></td><td>SINALSUL</td><td class='num'>R$ 2,00</td><td class='num'>R$ 38,00</td></tr>
+<tr><td></td><td>SITIAL</td><td class='num'>R$ 2,00</td><td class='num'>R$ 38,00</td></tr>
+</tbody></table>
+
+<h2>Quem recebe de verdade (relatórios P4X)</h2>
+<p class="lead">Só dois recebedores aparecem nos relatórios. São 8446 lançamentos nos arquivos,
+mas apenas 1892 são de verdade: 6554 linhas são
+o mesmo lançamento chegando em vários relatórios. Somar os arquivos sem deduplicar infla o recebido
+em mais de 4 vezes.</p>
+<table><thead><tr><th>Recebedor</th><th class="num">Lançamentos</th><th class="num">Nominal</th>
+<th class="num">Rateio</th><th class="num">% do total</th></tr></thead><tbody>
+<tr><td><strong>APP REDE SAUDE LTDA</strong></td><td class='num'>1513</td><td class='num'>R$ 219.111,00</td><td class='num'>R$ 219.111,00</td><td class='num'>81.3%</td></tr>
+<tr><td><strong>CARTAO REDE SAUDE LTDA</strong></td><td class='num'>379</td><td class='num'>R$ 50.526,62</td><td class='num'>R$ 50.526,62</td><td class='num'>18.7%</td></tr>
+<tr><td><strong>Total</strong></td><td class="num">1892</td>
+<td class="num">R$ 269.637,62</td><td class="num">R$ 269.637,62</td>
+<td class="num">100%</td></tr></tbody></table>
+<div class="note" style="margin-top:14px"><strong>Atenção:</strong> 
+há importação repetida na base: P4X_20261117_1200.xlsx (= P4X_20261117_1127.xlsx). Somar tudo sem deduplicar infla o recebido.
+</div>
+
+<h2>Faturado x recebido por forma de pagamento</h2>
+<p class="lead">É aqui que aparece a diferença entre "faturei" e "vou receber". Tudo em ABERTO é o que
+ainda não entrou. As formas P4X são os convênios que repassam o rateio.</p>
+<table><thead><tr><th>Forma de recebimento</th><th class="num">Títulos</th><th class="num">Faturado</th>
+<th class="num">Recebido</th><th class="num">%</th><th style="width:110px"></th></tr></thead><tbody>
+<tr><td>ABERTO</td><td class='num'>296</td><td class='num'>R$ 525.446,45</td><td class='num'>R$ 0,00</td><td class='num'>0.0%</td><td><div class='bar low'><span style='width:0%'></span></div></td></tr>
+<tr><td>P4X FITBANK SINTEG</td><td class='num'>53</td><td class='num'>R$ 140.115,80</td><td class='num'>R$ 139.415,47</td><td class='num'>99.5%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>DEPOSITO BANCARIO</td><td class='num'>813</td><td class='num'>R$ 131.933,80</td><td class='num'>R$ 131.933,30</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>FITBANK BOLETO PJ - MENSALIDADE</td><td class='num'>34</td><td class='num'>R$ 55.617,60</td><td class='num'>R$ 55.073,46</td><td class='num'>99.0%</td><td><div class='bar '><span style='width:99%'></span></div></td></tr>
+<tr><td>P4X SINTRASECE</td><td class='num'>25</td><td class='num'>R$ 8.208,00</td><td class='num'>R$ 8.221,00</td><td class='num'>100.2%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SINDIMOTOS CCT 2026</td><td class='num'>65</td><td class='num'>R$ 5.404,80</td><td class='num'>R$ 5.414,19</td><td class='num'>100.2%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SINDIMOTOS 2025</td><td class='num'>23</td><td class='num'>R$ 5.369,50</td><td class='num'>R$ 5.369,50</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SINTRUCADRIO ACT</td><td class='num'>4</td><td class='num'>R$ 3.258,10</td><td class='num'>R$ 3.258,75</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SINATC</td><td class='num'>6</td><td class='num'>R$ 1.127,00</td><td class='num'>R$ 1.127,00</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SEEAC DC</td><td class='num'>2</td><td class='num'>R$ 752,00</td><td class='num'>R$ 752,00</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X PARACATU</td><td class='num'>4</td><td class='num'>R$ 688,50</td><td class='num'>R$ 696,17</td><td class='num'>101.1%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>P4X SITIAL</td><td class='num'>2</td><td class='num'>R$ 304,50</td><td class='num'>R$ 304,50</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+<tr><td>ACORDADO</td><td class='num'>1</td><td class='num'>R$ 60,00</td><td class='num'>R$ 0,00</td><td class='num'>0.0%</td><td><div class='bar low'><span style='width:0%'></span></div></td></tr>
+<tr><td>DINHEIRO</td><td class='num'>1</td><td class='num'>R$ 60,00</td><td class='num'>R$ 60,00</td><td class='num'>100.0%</td><td><div class='bar '><span style='width:100%'></span></div></td></tr>
+</tbody></table>
+
+<h2>Grupo por grupo: faturado, recebido no S4E e rateio P4X</h2>
+<p class="lead">O rateio P4X é ligado à empresa pelo documento (CNPJ) do pagador. Onde aparece zero,
+ou não houve repasse do convênio, ou o pagador não bate com nenhuma empresa da apuração.</p>
+<table><thead><tr><th>Grupo</th><th class="num">Títulos</th><th class="num">Faturado</th>
+<th class="num">Recebido S4E</th><th class="num">%</th><th class="num">Em aberto</th>
+<th class="num">Rateio P4X</th><th>Regra</th></tr></thead><tbody>
+<tr><td>SINTEG</td><td class='num'>100</td><td class='num'>R$ 583.944,40</td><td class='num'>R$ 139.397,44</td><td class='num'>24%</td><td class='num'>R$ 443.844,40</td><td class='num'>R$ 126,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>NOVA IGUAÇU ESP.</td><td class='num'>84</td><td class='num'>R$ 57.015,00</td><td class='num'>R$ 54.268,50</td><td class='num'>95%</td><td class='num'>R$ 2.746,50</td><td class='num'>R$ 77.407,50</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>CARGA CCT-ACT ESP.</td><td class='num'>641</td><td class='num'>R$ 45.292,50</td><td class='num'>R$ 35.684,00</td><td class='num'>79%</td><td class='num'>R$ 9.608,50</td><td class='num'>R$ 95.462,90</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>FRETAMENTO ESP.</td><td class='num'>43</td><td class='num'>R$ 25.311,00</td><td class='num'>R$ 17.924,50</td><td class='num'>71%</td><td class='num'>R$ 7.386,50</td><td class='num'>R$ 20.135,50</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINDICATO RODOVIARIOS RIO</td><td class='num'>1</td><td class='num'>R$ 24.260,50</td><td class='num'>R$ 23.896,59</td><td class='num'>98%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>Ceará</td><td class='num'>34</td><td class='num'>R$ 22.949,00</td><td class='num'>R$ 11.635,88</td><td class='num'>51%</td><td class='num'>R$ 11.196,40</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINDBREF-PB</td><td class='num'>5</td><td class='num'>R$ 21.025,00</td><td class='num'>R$ 5.456,48</td><td class='num'>26%</td><td class='num'>R$ 15.718,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SEAC RJ</td><td class='num'>3</td><td class='num'>R$ 20.661,20</td><td class='num'>R$ 752,00</td><td class='num'>4%</td><td class='num'>R$ 19.909,20</td><td class='num'>R$ 546,00</td><td><span class='tag ok'>com regra</span></td></tr>
+<tr><td>SINDIMOTOS</td><td class='num'>103</td><td class='num'>R$ 14.761,90</td><td class='num'>R$ 10.783,69</td><td class='num'>73%</td><td class='num'>R$ 3.987,60</td><td class='num'>R$ 13.031,07</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINATC EXP</td><td class='num'>14</td><td class='num'>R$ 10.774,00</td><td class='num'>R$ 10.650,63</td><td class='num'>99%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 1.377,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINTRASECE</td><td class='num'>33</td><td class='num'>R$ 10.179,00</td><td class='num'>R$ 8.221,00</td><td class='num'>81%</td><td class='num'>R$ 1.971,00</td><td class='num'>R$ 14.448,00</td><td><span class='tag ok'>com regra</span></td></tr>
+<tr><td>SINATC</td><td class='num'>43</td><td class='num'>R$ 9.571,00</td><td class='num'>R$ 8.857,00</td><td class='num'>93%</td><td class='num'>R$ 714,00</td><td class='num'>R$ 11.917,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>NITEROI ESP.</td><td class='num'>21</td><td class='num'>R$ 6.037,80</td><td class='num'>R$ 5.979,80</td><td class='num'>99%</td><td class='num'>R$ 58,00</td><td class='num'>R$ 12.272,60</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>PARACATU ESP.</td><td class='num'>86</td><td class='num'>R$ 5.304,00</td><td class='num'>R$ 4.675,00</td><td class='num'>88%</td><td class='num'>R$ 629,00</td><td class='num'>R$ 5.984,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINTEEP-RO</td><td class='num'>47</td><td class='num'>R$ 3.764,00</td><td class='num'>R$ 0,00</td><td class='num'>0%</td><td class='num'>R$ 3.764,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SIND ROV NOVA IGUAÇU - FRETAMENTO</td><td class='num'>4</td><td class='num'>R$ 3.710,50</td><td class='num'>R$ 3.710,00</td><td class='num'>100%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 7.420,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINTRUCAD ACT</td><td class='num'>5</td><td class='num'>R$ 3.284,00</td><td class='num'>R$ 3.258,75</td><td class='num'>99%</td><td class='num'>R$ 25,90</td><td class='num'>R$ 1.364,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINTRARAÇÕES</td><td class='num'>1</td><td class='num'>R$ 2.475,00</td><td class='num'>R$ 2.437,88</td><td class='num'>99%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>FECOMERCIO</td><td class='num'>10</td><td class='num'>R$ 2.212,30</td><td class='num'>R$ 545,11</td><td class='num'>25%</td><td class='num'>R$ 1.633,50</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>PARACATU</td><td class='num'>8</td><td class='num'>R$ 1.282,50</td><td class='num'>R$ 696,17</td><td class='num'>54%</td><td class='num'>R$ 594,00</td><td class='num'>R$ 748,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>ANASEG</td><td class='num'>1</td><td class='num'>R$ 1.105,50</td><td class='num'>R$ 1.088,92</td><td class='num'>99%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINPRO-RO</td><td class='num'>20</td><td class='num'>R$ 1.096,00</td><td class='num'>R$ 0,00</td><td class='num'>0%</td><td class='num'>R$ 1.096,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>STIAPAR ESP.</td><td class='num'>6</td><td class='num'>R$ 674,50</td><td class='num'>R$ 674,50</td><td class='num'>100%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 745,50</td><td><span class='tag ok'>com regra</span></td></tr>
+<tr><td>CLIN DIGITAL</td><td class='num'>5</td><td class='num'>R$ 567,00</td><td class='num'>R$ 567,00</td><td class='num'>100%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SEJA BEM-ESTAR</td><td class='num'>2</td><td class='num'>R$ 464,20</td><td class='num'>R$ 0,00</td><td class='num'>0%</td><td class='num'>R$ 464,20</td><td class='num'>R$ 88,20</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SITIAL</td><td class='num'>3</td><td class='num'>R$ 413,25</td><td class='num'>R$ 304,50</td><td class='num'>74%</td><td class='num'>R$ 108,75</td><td class='num'>R$ 337,25</td><td><span class='tag ok'>com regra</span></td></tr>
+<tr><td>SINDIERJ ESP.</td><td class='num'>4</td><td class='num'>R$ 160,00</td><td class='num'>R$ 160,00</td><td class='num'>100%</td><td class='num'>R$ 0,00</td><td class='num'>R$ 160,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SINDCOMERCIO JUIZ DE FORA</td><td class='num'>1</td><td class='num'>R$ 45,50</td><td class='num'>R$ 0,00</td><td class='num'>0%</td><td class='num'>R$ 45,50</td><td class='num'>R$ 0,00</td><td><span class='tag no'>sem regra</span></td></tr>
+<tr><td>SIND CARGAS TERESOPOLIS E GUAPIMIRIM</td><td class='num'>1</td><td class='num'>R$ 5,50</td><td class='num'>R$ 0,00</td><td class='num'>0%</td><td class='num'>R$ 5,50</td><td class='num'>R$ 5,50</td><td><span class='tag no'>sem regra</span></td></tr>
+</tbody></table>
+
+<h2>O que isso quer dizer</h2>
+<div class="box"><h3>1. A tela não está errada na conta — está vazia de regras</h3>
+<ul>
+  <li>25 dos 29 grupos não têm nenhuma regra de rateio cadastrada,
+      o que deixa R$ 846.418,10 (96.4% do faturamento) sem distribuição.</li>
+  <li>SINTEG sozinho é R$ 583.944,40
+      de faturamento e não tem regra — por isso a tela parece não funcionar.</li>
+  <li>Os 4 grupos com regra fecham exatamente no faturado (saldo zero): o cálculo por vida está correto.</li>
+</ul></div>
+<div class="box"><h3>2. Faturar não é receber</h3>
+<ul>
+  <li>Faturado R$ 878.346,05; recebido R$ 351.625,34 (40.0%);
+      em aberto R$ 526.720,71.</li>
+  <li>Quase tudo em aberto está em SINTEG: R$ 443.844,40,
+      em títulos com forma de recebimento ABERTO (sem convênio definido).</li>
+  <li>As formas P4X (FITBANK SINTEG, SINTRASECE, SINDIMOTOS, SINATC, SITIAL, PARACATU, SEEAC) estão
+      praticamente 100% recebidas.</li>
+</ul></div>
+<div class="box"><h3>3. O rateio que chega é de dois recebedores, não da rede toda</h3>
+<ul>
+  <li>Os relatórios P4X trazem R$ 269.637,62 para APP REDE SAUDE LTDA
+      (R$ 219.111,00) e
+      CARTAO REDE SAUDE LTDA (R$ 50.526,62).</li>
+  <li>Não há repasse identificado para os demais recebedores das regras (RS, SEAC RJ, Sintrasece, SINALSUL…).
+      Ou seja: a regra diz quem deveria receber, o relatório mostra quem recebeu de fato.</li>
+  <li>R$ 6.061,60 em rateios não casaram com nenhuma empresa da apuração
+      (pagador com CNPJ diferente do cadastro) — precisa de conferência manual.</li>
+</ul></div>
+<div class="box"><h3>4. O que falta para a tela servir de análise</h3>
+<ul>
+  <li>Cadastrar regra para os 25 grupos — sem isso a tela não tem o que distribuir.</li>
+  <li>Tratar o grupo SINTEG separadamente: R$ 583.944,40
+      faturado contra R$ 126,00 de rateio P4X.</li>
+  <li>Deduplicar os relatórios P4X na importação (mesmo pagador + data + valor + movimento),
+      senão o recebido aparece inflado.</li>
+</ul></div>
+<p class="foot">Gerado a partir de portal.db (apuracao_rows e finance_rateios) e do cache de faturamento do S4E.
+Nada foi alterado no portal. Valores em reais.</p>
+</div></body></html>

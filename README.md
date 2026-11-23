@@ -1,4 +1,4 @@
-# Plantão de Demandas
+# Intranet Rede Saúde
 
 Sistema local e simples para organizar as demandas de uma dupla.
 
@@ -31,7 +31,7 @@ O checklist exportado identifica cada atividade como `[PENDENTE]`, `[EM ANDAMENT
 
 ## Telas do setor
 
-- **Plantão de Demandas**: atividades, prioridades, responsáveis, cronômetro e relatórios operacionais.
+- **Intranet Rede Saúde**: atividades, prioridades, responsáveis, cronômetro e relatórios operacionais.
 - **Mala Direta**: processamento financeiro, planilha de competências e histórico de cobranças.
 
 Na tela **Mala Direta**, cole a página completa do sistema financeiro. O sistema identifica a `Razão Social` e todos os endereços que aparecem depois de `E-mail`, reunindo-os no campo `EMAIL` separados por vírgula. Ao baixar a planilha, a cobrança é registrada no histórico com a data do dia, empresa, e-mail, competências enviadas e quantidade acumulada de cobranças.

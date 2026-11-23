@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% set passo_atual = 6 %}
+{% block content %}
+<div class="card">
+  <h1>✅ Processamento concluído</h1>
+
+  <ul class="lista-stats grande">
+    <li>Empresas <strong>PAGAS</strong> (tinham Data Crédito na planilha 1):
+      <span class="badge verde">{{ resumo.pagos }}</span></li>
+    <li>Empresas <strong>NÃO PAGAS</strong> (sem Data Crédito):
+      <span class="badge vermelho">{{ resumo.nao_pagos }}</span></li>
+    <li>Total de vidas somadas: <strong>{{ resumo.total_vidas }}</strong></li>
+    <li>Valor total das mensalidades importadas:
+        <strong>R$ {{ "%.2f"|format(resumo.valor_total) }}</strong></li>
+    <li>Valor recebido até o momento:
+        <strong>R$ {{ "%.2f"|format(resumo.valor_recebido) }}</strong></li>
+    <li>Valor pendente a receber:
+        <strong>R$ {{ "%.2f"|format(resumo.valor_pendente) }}</strong></li>
+  </ul>
+
+  <h3>Resumo por grupo-mãe</h3>
+  <div class="tabela-scroll">
+    <table class="tabela-mapeamento">
+      <thead>
+        <tr>
+          <th>Grupo Mãe</th>
+          <th>Empresas</th>
+          <th>Pagaram</th>
+          <th>Não Pagaram</th>
+          <th>Total de Vidas</th>
+          <th>Valor Total</th>
+          <th>Recebido</th>
+          <th>Pendente</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in resumo.resumo_grupos %}
+        <tr>
+          <td>{{ item.grupo_mae }}</td>
+          <td>{{ item.empresas }}</td>
+          <td>{{ item.pagaram }}</td>
+          <td>{{ item.nao_pagaram }}</td>
+          <td>{{ item.total_vidas }}</td>
+          <td>R$ {{ "%.2f"|format(item.valor_total) }}</td>
+          <td>R$ {{ "%.2f"|format(item.valor_recebido) }}</td>
+          <td>R$ {{ "%.2f"|format(item.valor_pendente) }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Resumo por vencimento</h3>
+  <div class="tabela-scroll">
+    <table class="tabela-mapeamento">
+      <thead>
+        <tr>
+          <th>Vencimento</th>
+          <th>Recebido</th>
+          <th>Pendente</th>
+          <th>Pagos</th>
+          <th>Não Pagos</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in resumo.resumo_vencimentos %}
+        <tr>
+          <td>{{ item.vencimento.strftime('%d/%m/%Y') if item.vencimento else '' }}</td>
+          <td>R$ {{ "%.2f"|format(item.recebido) }}</td>
+          <td>R$ {{ "%.2f"|format(item.pendente) }}</td>
+          <td>{{ item.pagos }}</td>
+          <td>{{ item.nao_pagos }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <details class="bloco-empresas" open>
+    <summary>✅ Ver as {{ pagos|length }} empresas PAGAS</summary>
+    <div class="tabela-scroll">
+      <table class="tabela-mapeamento">
+        <thead><tr><th>Código</th><th>Empresa</th><th>Grupo</th><th>Aba</th><th>Valor</th><th>Dt Pagamento</th></tr></thead>
+        <tbody>
+          {% for r in pagos %}
+          <tr>
+            <td>{{ r.codigo }}</td>
+            <td>{{ r.nome_empresa }}</td>
+            <td>{{ r.grupo_empresa }}</td>
+            <td>{{ r.aba }}</td>
+            <td>{{ r.valor_parcela }}</td>
+            <td>{{ r.data_credito.strftime('%d/%m/%Y') if r.data_credito else '' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <details class="bloco-empresas">
+    <summary>❌ Ver as {{ nao_pagos|length }} empresas NÃO PAGAS</summary>
+    <div class="tabela-scroll">
+      <table class="tabela-mapeamento">
+        <thead><tr><th>Código</th><th>Empresa</th><th>Grupo</th><th>Aba</th><th>Valor</th><th>Vencimento</th></tr></thead>
+        <tbody>
+          {% for r in nao_pagos %}
+          <tr>
+            <td>{{ r.codigo }}</td>
+            <td>{{ r.nome_empresa }}</td>
+            <td>{{ r.grupo_empresa }}</td>
+            <td>{{ r.aba }}</td>
+            <td>{{ r.valor_parcela }}</td>
+            <td>{{ r.data.strftime('%d/%m/%Y') if r.data else '' }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+
+  <br>
+  <div class="downloads">
+    <a class="botao" href="{{ url_for('download', nome_arquivo=arquivo_planilha2) }}">⬇ Baixar Planilha 2 atualizada</a>
+    <a class="botao" href="{{ url_for('download', nome_arquivo=arquivo_relatorio) }}">⬇ Baixar Relatório (pagos x não pagos)</a>
+  </div>
+
+  <h3>📁 Histórico por semana do mês</h3>
+  {% if historico %}
+    <div class="historico-grid">
+      {% for item in historico %}
+        <div class="historico-card">
+          <div class="historico-topo">
+            <strong>{{ item.semana }} · {{ item.mes }}/{{ item.ano }}</strong>
+          </div>
+          <ul class="historico-lista">
+            {% for arquivo in item.arquivos %}
+            <li>
+              <a href="{{ url_for('download_historico', subpath=arquivo.subpath) }}">{{ arquivo.nome }}</a>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p>Nenhum histórico salvo ainda.</p>
+  {% endif %}
+
+  <br>
+  <a href="{{ url_for('inicio') }}">↺ Iniciar novo processamento</a>
+</div>
+{% endblock %}

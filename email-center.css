@@ -1,0 +1,54 @@
+/* Central de E-mails: estilos isolados do restante do portal. */
+#emailCenterScreen, .email-dialog { --ec-bg: #fff; --ec-soft: #f1f8f7; --ec-text: #193c40; --ec-muted: #526f73; --ec-line: #d5e6e4; --ec-teal: #087e76; --ec-danger: #a62d3c; color: var(--ec-text); min-width: 0; }
+body[data-theme="dark"] #emailCenterScreen, body[data-theme="dark"] .email-dialog { --ec-bg: #172a30; --ec-soft: #20383e; --ec-text: #e6f2f1; --ec-muted: #aac3c5; --ec-line: #35545a; --ec-teal: #168e83; --ec-danger: #ff9da7; color-scheme: dark; }
+#emailCenterScreen *, .email-dialog * { box-sizing: border-box; }
+#emailCenterScreen [hidden], .email-dialog [hidden] { display: none !important; }
+#emailCenterScreen .ec-hero { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; padding: 28px; border-radius: 20px; background: linear-gradient(120deg, #087f77, #075e5a); color: white; margin-bottom: 18px; }
+#emailCenterScreen .ec-hero h2 { font-size: clamp(1.6rem, 4vw, 2.2rem); margin: 4px 0 10px; }
+#emailCenterScreen .ec-hero p { margin: 0; max-width: 65ch; }
+#emailCenterScreen .ec-eyebrow, .email-dialog .ec-eyebrow { font-size: .72rem; letter-spacing: .1em; font-weight: 750; margin: 0 0 6px; }
+#emailCenterScreen .ec-button, .email-dialog .ec-button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--ec-teal); color: #fff; border: 1px solid transparent; border-radius: 10px; min-height: 42px; padding: 10px 15px; font: inherit; font-size: .87rem; font-weight: 650; text-decoration: none; cursor: pointer; max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-button:disabled, .email-dialog .ec-button:disabled { opacity: .55; cursor: not-allowed; }
+#emailCenterScreen .ec-secondary, .email-dialog .ec-secondary { background: var(--ec-soft); color: var(--ec-text); border-color: var(--ec-line); }
+#emailCenterScreen .ec-button:focus-visible, .email-dialog .ec-button:focus-visible, #emailCenterScreen input:focus-visible, #emailCenterScreen select:focus-visible, .email-dialog input:focus-visible, .email-dialog select:focus-visible, .email-dialog textarea:focus-visible, #emailCenterScreen summary:focus-visible { outline: 3px solid #59c6bc; outline-offset: 3px; }
+#emailCenterScreen .ec-notice, .email-dialog .ec-notice { border: 1px solid var(--ec-line); background: var(--ec-soft); padding: 14px 16px; border-radius: 12px; font-size: .85rem; line-height: 1.6; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-muted, .email-dialog .ec-muted { color: var(--ec-muted); font-size: .83rem; line-height: 1.6; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-error, .email-dialog .ec-error { color: var(--ec-danger); background: var(--ec-soft); border: 1px solid var(--ec-danger); padding: 12px; border-radius: 10px; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-panel { background: var(--ec-bg); border: 1px solid var(--ec-line); padding: 20px; margin-bottom: 18px; border-radius: 16px; min-width: 0; }
+#emailCenterScreen .ec-panel summary { cursor: pointer; font-weight: 650; }
+#emailCenterScreen .ec-heading, .email-dialog .ec-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+#emailCenterScreen h3, .email-dialog h2, .email-dialog h3 { margin: 0; overflow-wrap: anywhere; }
+.email-dialog h3 { margin: 20px 0 12px; }
+#emailCenterScreen .ec-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 18px 0; }
+#emailCenterScreen .ec-kpi { background: var(--ec-bg); border: 1px solid var(--ec-line); border-top: 3px solid var(--ec-teal); padding: 18px; border-radius: 14px; }
+#emailCenterScreen .ec-kpi strong { display: block; font-size: 1.9rem; margin-bottom: 4px; }
+#emailCenterScreen .ec-kpi span { color: var(--ec-muted); font-size: .83rem; }
+#emailCenterScreen .ec-mailboxes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+#emailCenterScreen .ec-mailbox { background: var(--ec-soft); border: 1px solid var(--ec-line); border-radius: 12px; padding: 16px; min-width: 0; }
+#emailCenterScreen .ec-mailbox h4 { margin: 0 0 6px; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-actions, .email-dialog .ec-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+#emailCenterScreen .ec-filters, #emailCenterScreen .ec-form, .email-dialog .ec-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 16px 0; align-items: end; }
+#emailCenterScreen .ec-filters { grid-template-columns: minmax(160px, 2fr) repeat(3, minmax(100px, 1fr)); }
+#emailCenterScreen label, .email-dialog label { display: flex; flex-direction: column; gap: 7px; font-size: .84rem; font-weight: 600; min-width: 0; }
+#emailCenterScreen input, #emailCenterScreen select, .email-dialog input, .email-dialog select, .email-dialog textarea { width: 100%; min-width: 0; padding: 10px 12px; min-height: 42px; border: 1px solid var(--ec-line); border-radius: 9px; background: var(--ec-bg); color: var(--ec-text); font: inherit; }
+.email-dialog textarea { resize: vertical; }
+#emailCenterScreen .ec-check, .email-dialog .ec-check { flex-direction: row; align-items: flex-start; line-height: 1.5; }
+#emailCenterScreen .ec-check input, .email-dialog .ec-check input { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin-top: 2px; accent-color: var(--ec-teal); }
+#emailCenterScreen .ec-full, .email-dialog .ec-full { grid-column: 1 / -1; }
+#emailCenterScreen .ec-conversations { display: grid; gap: 10px; }
+#emailCenterScreen .ec-conversation { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; padding: 16px; border: 1px solid var(--ec-line); border-radius: 12px; background: var(--ec-bg); align-items: center; }
+#emailCenterScreen .ec-conversation h4 { margin: 0 0 6px; font-size: 1rem; overflow-wrap: anywhere; }
+#emailCenterScreen .ec-conversation p { margin: 4px 0; }
+#emailCenterScreen .ec-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+#emailCenterScreen .ec-badge, .email-dialog .ec-badge { display: inline-block; font-size: .74rem; padding: 4px 8px; border-radius: 6px; background: var(--ec-soft); color: var(--ec-muted); border: 1px solid var(--ec-line); }
+#emailCenterScreen .ec-overdue { color: var(--ec-danger); border-color: var(--ec-danger); }
+#emailCenterScreen .ec-empty { text-align: center; color: var(--ec-muted); padding: 30px 12px; }
+.email-dialog { width: min(880px, calc(100vw - 28px)); max-width: calc(100vw - 28px); max-height: calc(100dvh - 28px); margin: auto; padding: 24px; border: 1px solid var(--ec-line); border-radius: 18px; background: var(--ec-bg); overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; box-shadow: 0 24px 70px #001b2b45; }
+.email-dialog::backdrop { background: #001a24a6; backdrop-filter: blur(3px); }
+.email-dialog .ec-message { padding: 16px; border: 1px solid var(--ec-line); background: var(--ec-soft); border-radius: 12px; margin: 12px 0; overflow-wrap: anywhere; }
+.email-dialog .ec-message h4 { margin: 0 0 8px; }
+.email-dialog .ec-message-text { white-space: pre-wrap; overflow-wrap: anywhere; font: inherit; font-size: .88rem; line-height: 1.7; margin: 12px 0; max-width: 100%; }
+.email-dialog.ec-device-dialog { width: min(540px, calc(100vw - 28px)); }
+.email-dialog .ec-device-code { font: 750 clamp(1.4rem, 6vw, 2rem) monospace; letter-spacing: .12em; text-align: center; padding: 20px 10px; border: 1px dashed var(--ec-teal); border-radius: 12px; background: var(--ec-soft); overflow-wrap: anywhere; user-select: all; }
+@media (max-width: 900px) { #emailCenterScreen .ec-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { #emailCenterScreen .ec-hero, #emailCenterScreen .ec-panel { padding: 16px; } #emailCenterScreen .ec-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } #emailCenterScreen .ec-kpi { padding: 14px; } #emailCenterScreen .ec-mailboxes, #emailCenterScreen .ec-filters, #emailCenterScreen .ec-form, .email-dialog .ec-form { grid-template-columns: minmax(0, 1fr); } #emailCenterScreen .ec-conversation { grid-template-columns: minmax(0, 1fr); } #emailCenterScreen .ec-conversation > .ec-button { justify-self: start; } .email-dialog { padding: 16px; } .email-dialog .ec-heading h2 { font-size: 1.3rem; } }

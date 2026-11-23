@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contratos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --ink: #17232f;
+            --muted: #5d7280;
+            --line: #d9e3e6;
+            --bg: #eef3f4;
+            --white: #ffffff;
+            --teal: #0b8f87;
+            --teal-dark: #087d73;
+            --teal-soft: #e0f5f0;
+            --red: #c93a3a;
+            --red-soft: #fde8eb;
+            --amber: #8a5a00;
+            --amber-soft: #fff1d6;
+            --shadow: 0 18px 45px rgba(13, 46, 54, 0.08);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 34px 30px 60px;
+            font-family: 'Montserrat', sans-serif;
+            background: var(--bg);
+            color: var(--ink);
+        }
+
+        body[data-theme="dark"] {
+            --ink: #e8eef0;
+            --muted: #a8b8bd;
+            --line: #344b52;
+            --bg: #0d171b;
+            --white: #18282e;
+            --teal: #55c5b5;
+            --teal-dark: #8be0d2;
+            --teal-soft: #24534f;
+            --red: #ee6974;
+            --red-soft: #5a3038;
+            --amber: #ffe3a8;
+            --amber-soft: #594727;
+            --shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1560px;
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            margin: 0;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            color: var(--teal-dark);
+        }
+
+        h1 {
+            margin: 6px 0 6px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 3.4vw, 40px);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+        }
+
+        .subtitle {
+            margin: 0 0 22px;
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 18px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: end;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+            padding: 16px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+        }
+
+        .filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .filters input,
+        .filters select {
+            height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            background: var(--bg);
+            color: var(--ink);
+            padding: 0 12px;
+            font: 600 13px 'Montserrat', sans-serif;
+            outline: none;
+        }
+
+        .filters input:focus,
+        .filters select:focus {
+            border-color: var(--teal);
+            box-shadow: 0 0 0 3px rgba(11, 143, 135, 0.15);
+        }
+
+        .filters input[type="search"] {
+            min-width: 220px;
+        }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 32px !important;
+            cursor: pointer;
+            background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+            background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+        }
+
+        .button {
+            height: 40px;
+            padding: 0 16px;
+            border: 1px solid var(--line);
+            border-radius: 9px;
+            font: 700 13px 'Montserrat', sans-serif;
+            cursor: pointer;
+            background: var(--white);
+            color: var(--ink);
+            transition: 0.15s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .button:hover {
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .button-primary {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #ffffff;
+        }
+
+        body[data-theme="dark"] .button-primary {
+            color: #0d171b;
+        }
+
+        .button-primary:hover {
+            background: var(--teal-dark);
+            color: #ffffff;
+        }
+
+        body[data-theme="dark"] .button-primary:hover {
+            color: #0d171b;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            padding: 16px 18px;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .stat-card span {
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            text-transform: uppercase;
+        }
+
+        .stat-card strong {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            line-height: 1.1;
+        }
+
+        .stat-card small {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .stat-card.teal strong {
+            color: var(--teal-dark);
+        }
+
+        #status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--muted);
+        }
+
+        #status::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        #status.status-sucesso {
+            color: var(--teal-dark);
+        }
+
+        #status.status-sucesso::before {
+            background: var(--teal);
+        }
+
+        #status.status-erro {
+            color: var(--red);
+        }
+
+        #status.status-erro::before {
+            background: var(--red);
+        }
+
+        #status.status-atualizando::before {
+            background: var(--amber);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        .tabela-container {
+            width: 100%;
+            overflow: auto;
+            background: var(--white);
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            max-height: calc(100vh - 330px);
+            min-height: 300px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 900px;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: var(--white);
+            padding: 10px 10px;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--muted);
+            border-bottom: 2px solid var(--line);
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        thead th:hover {
+            color: var(--teal-dark);
+        }
+
+        thead th .sort-arrow {
+            font-size: 10px;
+            margin-left: 4px;
+        }
+
+        td {
+            padding: 8px 10px;
+            font-size: 12.5px;
+            border-bottom: 1px solid var(--line);
+            white-space: nowrap;
+        }
+
+        tbody tr {
+            transition: background 0.12s;
+        }
+
+        tbody tr:nth-child(4n + 3) {
+            background: color-mix(in srgb, var(--bg) 45%, transparent);
+        }
+
+        tbody tr:hover {
+            background: var(--bg);
+        }
+
+        tbody tr.cadastrado td {
+            background: color-mix(in srgb, var(--teal-soft) 38%, transparent);
+        }
+
+        tbody tr.cadastrado:hover td {
+            background: var(--teal-soft);
+        }
+
+        tbody tr.cadastrado .cell-strong {
+            color: var(--teal-dark);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .cell-strong {
+            font-weight: 700;
+        }
+
+        td.cliente {
+            max-width: 230px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cell-muted {
+            color: var(--muted);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 6px;
+            font-size: 10.5px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
+        }
+
+        .tag-sindicato {
+            background: var(--teal-soft);
+            color: var(--teal-dark);
+        }
+
+        .tag-empresa {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+
+        .tag-ok {
+            background: var(--teal-soft);
+            color: var(--teal-dark);
+        }
+
+        .tag-pendente {
+            background: var(--amber-soft);
+            color: var(--amber);
+        }
+
+        td.num {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+            font-weight: 700;
+        }
+
+        td.acao {
+            text-align: center;
+        }
+
+        .cad-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 11px;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: var(--bg);
+            color: var(--muted);
+            font: 700 11px 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: 0.15s;
+            white-space: nowrap;
+        }
+
+        .cad-btn:hover {
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .cad-btn.ok {
+            background: var(--teal-soft);
+            border-color: transparent;
+            color: var(--teal-dark);
+        }
+
+        .cad-btn .dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--muted);
+        }
+
+        .cad-btn.ok .dot {
+            background: var(--teal);
+        }
+
+        .vazio {
+            text-align: center;
+            padding: 48px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Detalhes (linha expandida) */
+        .detail-row td {
+            background: var(--bg);
+            padding: 0;
+        }
+
+        .detail-box {
+            padding: 16px 20px;
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .detail-box .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            min-width: 160px;
+        }
+
+        .detail-box .detail-item span {
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .detail-box .detail-item strong {
+            font-size: 13px;
+        }
+
+        .obs-box {
+            flex: 1;
+            min-width: 260px;
+        }
+
+        .obs-box span {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .obs-box p {
+            margin: 0;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .expander {
+            width: 26px;
+            height: 26px;
+            border: 1px solid var(--line);
+            border-radius: 7px;
+            background: var(--bg);
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 15px;
+            line-height: 1;
+            transition: 0.15s;
+        }
+
+        .expander:hover {
+            border-color: var(--teal);
+            color: var(--teal-dark);
+        }
+
+        .expander.open {
+            background: var(--teal);
+            border-color: var(--teal);
+            color: #fff;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 14px 40px;
+            }
+
+            .toolbar {
+                padding: 12px;
+            }
+
+            .filters input[type="search"] {
+                min-width: 0;
+                flex: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="topbar">
+            <div>
+                <p class="eyebrow">DADOS DO SETOR</p>
+                <h1>Contratos</h1>
+                <p class="subtitle">Acompanhe os contratos ativos com busca, filtros, ordenação e detalhes por linha. A
+                    lista se atualiza sozinha.</p>
+            </div>
+            <div class="top-actions">
+                <span id="status" class="status-atualizando">Carregando dados...</span>
+                <button class="button" id="themeButton" type="button" title="Alternar modo de exibição">Modo
+                    noturno</button>
+                <button class="button" id="refreshButton" type="button" title="Atualizar agora">Atualizar</button>
+                <button class="button button-primary" id="exportButton" type="button" title="Baixar CSV">Baixar
+                    CSV</button>
+            </div>
+        </div>
+
+        <section class="stat-grid" aria-label="Resumo dos contratos">
+            <article class="stat-card teal"><span>Contratos</span><strong id="statTotal">0</strong><small>na planilha
+                    agora</small></article>
+            <article class="stat-card"><span>Sindicatos</span><strong id="statSindicatos">0</strong><small>clientes do
+                    tipo sindicato</small></article>
+            <article class="stat-card"><span>Empresas</span><strong id="statEmpresas">0</strong><small>clientes do tipo
+                    empresa</small></article>
+            <article class="stat-card"><span>Cadastrados</span><strong id="statCadastrados">0</strong><small>marcados como cadastrados</small></article>
+            <article class="stat-card"><span>Vendedores</span><strong id="statVendedores">0</strong><small>com contratos
+                    ativos</small></article>
+        </section>
+
+        <section class="toolbar">
+            <div class="filters">
+                <input id="busca" type="search" placeholder="Buscar por nome, CNPJ, vendedor..."
+                    aria-label="Buscar contrato">
+                <select id="filtroTipo" aria-label="Filtrar por tipo de cliente">
+                    <option value="">Todos os tipos</option>
+                    <option value="Sindicato">Sindicato</option>
+                    <option value="Empresa">Empresa</option>
+                </select>
+                <select id="filtroMes" aria-label="Filtrar por mês">
+                    <option value="">Todos os meses</option>
+                </select>
+                <select id="filtroVendedor" aria-label="Filtrar por vendedor">
+                    <option value="">Todos os vendedores</option>
+                </select>
+                <select id="filtroCadastro" aria-label="Filtrar por situação de cadastro">
+                    <option value="">Cadastro: todos</option>
+                    <option value="ok">Cadastrados</option>
+                    <option value="pendente">Não cadastrados</option>
+                </select>
+                <button class="button" id="limparFiltros" type="button">Limpar</button>
+            </div>
+        </section>
+
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width:36px"></th>
+                        <th data-sort="ID">ID<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="TipoCliente">Tipo<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="NomeCliente">Cliente<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="CNPJ">CNPJ<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="Responsavel">Responsável<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="Dia">Dia<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="Mes">Mês<span class="sort-arrow hidden"></span></th>
+                        <th data-sort="Vendedor">Vendedor<span class="sort-arrow hidden"></span></th>
+                        <th>Cadastro</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaContratos"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        /*
+        ============================================================
+        URL DA SUA API
+        ============================================================
+        */
+        const API_URL =
+            "https://script.google.com/macros/s/AKfycbx5AJ2ugB5duMBOd8LetXQ_uRq0F_Qv1K7W-dnLB3DIRyfSG0smXIqsbOXRb4Jxlk2R/exec";
+        /*
+        ============================================================
+        ELEMENTOS DA PÁGINA
+        ============================================================
+        */
+        const tabela =
+            document.getElementById("tabelaContratos");
+        const status =
+            document.getElementById("status");
+        /*
+        ============================================================
+        ESTADO DA TELA
+        ============================================================
+        */
+        let contratosCache = [];
+        let expandedRows = new Set();
+        let sortKey = "ID";
+        let sortDir = 1;
+        /*
+        ============================================================
+        CADASTRO (salvo no banco do portal, visível para todos)
+        ============================================================
+        A marcação é compartilhada: quem marcar, todos veem.
+        */
+        const API_BASE = window.location.protocol === "file:" ? "http://127.0.0.1:5500" : "";
+        let cadastrados = new Set();
+
+        async function carregarCadastrados() {
+            try {
+                const resposta = await fetch(`${API_BASE}/api/contracts/cadastro`);
+                if (!resposta.ok) return;
+                const dados = await resposta.json();
+                cadastrados = new Set(dados.cadastrados || []);
+            } catch (erro) {
+                console.warn("Sem conexão com o portal; marcações ficam apenas nesta sessão.", erro);
+            }
+        }
+
+        async function alternarCadastro(id) {
+            try {
+                const resposta = await fetch(`${API_BASE}/api/contracts/cadastro/toggle`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ contractId: id }),
+                });
+                if (!resposta.ok) throw new Error("HTTP " + resposta.status);
+                const dados = await resposta.json();
+                if (dados.cadastrado) cadastrados.add(id);
+                else cadastrados.delete(id);
+            } catch (erro) {
+                console.error("Erro ao salvar cadastro:", erro);
+                status.textContent = "Erro ao salvar: " + erro.message;
+                status.className = "status-erro";
+            }
+        }
+        /*
+        ============================================================
+        ESCAPAR HTML
+        ============================================================
+        Isso evita que algum conteúdo vindo da planilha
+        seja interpretado como código HTML.
+        */
+        function escapar(valor) {
+            if (
+                valor === null ||
+                valor === undefined
+            ) {
+                return "";
+            }
+            return String(valor)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+        /*
+        ============================================================
+        MESSES EM ORDEM
+        ============================================================
+        */
+        const MESES = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+        const mesIndex = (m) => MESES.findIndex(x => String(m || "").toLowerCase().startsWith(x.slice(0, 3).toLowerCase()));
+        /*
+        ============================================================
+        CARREGAR CONTRATOS
+        ============================================================
+        */
+        async function carregarContratos() {
+            try {
+                status.textContent =
+                    "Atualizando dados...";
+                status.className =
+                    "status-atualizando";
+                /*
+                ----------------------------------------------------
+                Faz a chamada para sua API
+                ----------------------------------------------------
+                */
+                const resposta = await fetch(
+                    API_URL + "?action=READ_ALL"
+                );
+                /*
+                ----------------------------------------------------
+                Verifica resposta HTTP
+                ----------------------------------------------------
+                */
+                if (!resposta.ok) {
+                    throw new Error(
+                        "HTTP " + resposta.status
+                    );
+                }
+                /*
+                ----------------------------------------------------
+                Converte resposta para JSON
+                ----------------------------------------------------
+                */
+                const dados =
+                    await resposta.json();
+                /*
+                ----------------------------------------------------
+                Verifica se a API informou erro
+                ----------------------------------------------------
+                */
+                if (!dados.ok) {
+                    throw new Error(
+                        dados.erro ||
+                        "A API retornou um erro."
+                    );
+                }
+                /*
+                ----------------------------------------------------
+                Pega somente CONTRATOS
+                ----------------------------------------------------
+                Os movimentos não serão utilizados.
+                Os valores financeiros também não serão utilizados.
+                */
+                contratosCache =
+                    dados.contratos || [];
+                preencherFiltros();
+                renderTabela();
+                renderStats();
+                /*
+                ----------------------------------------------------
+                Horário da atualização
+                ----------------------------------------------------
+                */
+                const horario =
+                    new Date().toLocaleTimeString(
+                        "pt-BR"
+                    );
+                status.textContent =
+                    contratosCache.length +
+                    " contrato(s) • Atualizado às " +
+                    horario;
+                status.className =
+                    "status-sucesso";
+            }
+            catch (erro) {
+                console.error(
+                    "Erro ao carregar dados:",
+                    erro
+                );
+                status.textContent =
+                    "Erro ao carregar os dados: " +
+                    erro.message;
+                status.className =
+                    "status-erro";
+            }
+        }
+        /*
+        ============================================================
+        FILTROS
+        ============================================================
+        */
+        function contratosFiltrados() {
+            const q = (document.getElementById("busca").value || "").toLowerCase().trim();
+            const tipo = document.getElementById("filtroTipo").value;
+            const mes = document.getElementById("filtroMes").value;
+            const vendedor = document.getElementById("filtroVendedor").value;
+            const cadastro = document.getElementById("filtroCadastro").value;
+            return contratosCache.filter(c => {
+                const alvo = [c.NomeCliente, c.NomeSindicato, c.CNPJ, c.Responsavel, c.Vendedor, c.SindicatoVinculado, c.Obs, c.Produto]
+                    .map(v => String(v || "").toLowerCase()).join(" ");
+                if (q && !alvo.includes(q)) return false;
+                if (tipo && String(c.TipoCliente || "").toLowerCase() !== tipo.toLowerCase()) return false;
+                if (mes && String(c.Mes || "") !== mes) return false;
+                if (vendedor && String(c.Vendedor || "") !== vendedor) return false;
+                const estaCadastrado = cadastrados.has(String(c.ID ?? ""));
+                if (cadastro === "ok" && !estaCadastrado) return false;
+                if (cadastro === "pendente" && estaCadastrado) return false;
+                return true;
+            });
+        }
+        function preencherFiltros() {
+            const meses = [...new Set(contratosCache.map(c => String(c.Mes || "").trim()).filter(Boolean))]
+                .sort((a, b) => (mesIndex(a) + 13) % 13 - (mesIndex(b) + 13) % 13);
+            const vendedores = [...new Set(contratosCache.map(c => String(c.Vendedor || "").trim()).filter(Boolean))].sort();
+            const mesSel = document.getElementById("filtroMes");
+            const venSel = document.getElementById("filtroVendedor");
+            const mAnterior = mesSel.value, vAnterior = venSel.value;
+            mesSel.innerHTML = '<option value="">Todos os meses</option>' + meses.map(m => `<option value="${escapar(m)}">${escapar(m)}</option>`).join("");
+            venSel.innerHTML = '<option value="">Todos os vendedores</option>' + vendedores.map(v => `<option value="${escapar(v)}">${escapar(v)}</option>`).join("");
+            if (meses.includes(mAnterior)) mesSel.value = mAnterior;
+            if (vendedores.includes(vAnterior)) venSel.value = vAnterior;
+        }
+        function limparFiltros() {
+            document.getElementById("busca").value = "";
+            document.getElementById("filtroTipo").value = "";
+            document.getElementById("filtroMes").value = "";
+            document.getElementById("filtroVendedor").value = "";
+            document.getElementById("filtroCadastro").value = "";
+            renderTabela();
+        }
+        /*
+        ============================================================
+        ORDENAÇÃO
+        ============================================================
+        */
+        function ordenar(lista) {
+            const arr = [...lista];
+            arr.sort((a, b) => {
+                let va = a[sortKey], vb = b[sortKey];
+                const na = Number(va), nb = Number(vb);
+                if (!isNaN(na) && !isNaN(nb) && String(va).trim() !== "" && String(vb).trim() !== "") { va = na; vb = nb; }
+                else { va = String(va || "").toLowerCase(); vb = String(vb || "").toLowerCase(); }
+                if (va < vb) return -1 * sortDir;
+                if (va > vb) return 1 * sortDir;
+                return 0;
+            });
+            return arr;
+        }
+        function configurarOrdenacao() {
+            document.querySelectorAll("th[data-sort]").forEach(th => {
+                th.addEventListener("click", () => {
+                    const key = th.dataset.sort;
+                    if (sortKey === key) sortDir *= -1;
+                    else { sortKey = key; sortDir = 1; }
+                    renderTabela();
+                });
+            });
+        }
+        function renderSetas() {
+            document.querySelectorAll("th[data-sort]").forEach(th => {
+                const seta = th.querySelector(".sort-arrow");
+                if (th.dataset.sort === sortKey) {
+                    seta.classList.remove("hidden");
+                    seta.textContent = sortDir === 1 ? "▲" : "▼";
+                } else {
+                    seta.classList.add("hidden");
+                }
+            });
+        }
+        /*
+        ============================================================
+        RESUMO (CARDS)
+        ============================================================
+        */
+        function renderStats() {
+            const lista = contratosFiltrados();
+            document.getElementById("statTotal").textContent = lista.length;
+            document.getElementById("statSindicatos").textContent = lista.filter(c => String(c.TipoCliente || "").toLowerCase() === "sindicato").length;
+            document.getElementById("statEmpresas").textContent = lista.filter(c => String(c.TipoCliente || "").toLowerCase() === "empresa").length;
+            document.getElementById("statVendedores").textContent = new Set(lista.map(c => String(c.Vendedor || "").trim()).filter(Boolean)).size;
+            document.getElementById("statCadastrados").textContent = lista.filter(c => cadastrados.has(String(c.ID ?? ""))).length;
+        }
+        /*
+        ============================================================
+        TABELA
+        ============================================================
+        */
+        function renderTabela() {
+            const lista = ordenar(contratosFiltrados());
+            tabela.innerHTML = "";
+            if (lista.length === 0) {
+                tabela.innerHTML = `
+            <tr>
+                <td colspan="10" class="vazio">
+                    ${contratosCache.length === 0 ? "Nenhum contrato encontrado." : "Nenhum contrato corresponde aos filtros ativos."}
+                </td>
+            </tr>
+        `;
+                return;
+            }
+            lista.forEach(contrato => {
+                const id = String(contrato.ID ?? "");
+                const expandido = expandedRows.has(id);
+                const estaCadastrado = cadastrados.has(id);
+                const tipo = String(contrato.TipoCliente || "").trim();
+                const tipoClasse = tipo.toLowerCase() === "sindicato" ? "tag-sindicato" : "tag-empresa";
+                const cliente = contrato.NomeCliente || contrato.NomeSindicato || "—";
+                const linha = document.createElement("tr");
+                if (estaCadastrado) linha.className = "cadastrado";
+                linha.innerHTML = `
+            <td><button class="expander ${expandido ? "open" : ""}" data-expand="${escapar(id)}" title="Detalhes do contrato">${expandido ? "−" : "+"}</button></td>
+            <td class="cell-muted">${escapar(contrato.ID)}</td>
+            <td>${tipo ? `<span class="tag ${tipoClasse}">${escapar(tipo)}</span>` : ""}</td>
+            <td class="cell-strong cliente" title="${escapar(cliente)}">${escapar(cliente)}</td>
+            <td>${escapar(contrato.CNPJ)}</td>
+            <td>${escapar(contrato.Responsavel)}</td>
+            <td class="num">${escapar(contrato.Dia)}</td>
+            <td>${escapar(contrato.Mes)}</td>
+            <td>${escapar(contrato.Vendedor)}</td>
+            <td class="acao"><button class="cad-btn ${estaCadastrado ? "ok" : ""}" data-cadastro="${escapar(id)}" title="Alternar situação de cadastro"><span class="dot"></span>${estaCadastrado ? "Cadastrado" : "Não cadastrado"}</button></td>
+        `;
+                tabela.appendChild(linha);
+                if (expandido) tabela.appendChild(linhaDetalhe(contrato));
+            });
+            renderSetas();
+        }
+        function linhaDetalhe(contrato) {
+            const linha = document.createElement("tr");
+            linha.className = "detail-row";
+            linha.innerHTML = `
+        <td colspan="10">
+            <div class="detail-box">
+                <div class="detail-item"><span>Situação do cadastro</span><strong>${cadastrados.has(String(contrato.ID ?? "")) ? "Cadastrado" : "Não cadastrado"}</strong></div>
+                <div class="detail-item"><span>E-mail</span><strong>${escapar(contrato.Email || "—")}</strong></div>
+                <div class="detail-item"><span>Telefone</span><strong>${escapar(contrato.Telefone || "—")}</strong></div>
+                <div class="detail-item"><span>Produto</span><strong>${escapar(contrato.Produto || "—")}</strong></div>
+                <div class="detail-item"><span>Total inicial</span><strong>${contrato.TotalInicial != null && contrato.TotalInicial !== "" ? "R$ " + Number(contrato.TotalInicial).toLocaleString("pt-BR", { minimumFractionDigits: 2 }) : "—"}</strong></div>
+                <div class="obs-box"><span>Observações</span><p>${escapar(contrato.Obs || "Sem observações registradas.")}</p></div>
+            </div>
+        </td>
+    `;
+            return linha;
+        }
+        /*
+        ============================================================
+        EXPORTAR CSV
+        ============================================================
+        */
+        function exportarCsv() {
+            const lista = ordenar(contratosFiltrados());
+            const cols = ["ID", "TipoCliente", "NomeCliente", "NomeSindicato", "CNPJ", "SindicatoVinculado", "Responsavel", "VidasIniciais", "Dia", "Mes", "Vendedor", "Email", "Telefone", "Produto", "ValorVida", "TotalInicial", "ComissaoInicial", "Obs", "Cadastrado"];
+            const linhas = [cols.join(";")].concat(lista.map(c => cols.map(col => {
+                const valor = col === "Cadastrado"
+                    ? (cadastrados.has(String(c.ID ?? "")) ? "Sim" : "Não")
+                    : String(c[col] ?? "").replace(/;/g, ",").replace(/\r?\n/g, " ");
+                return `"${valor}"`;
+            }).join(";")));
+            const blob = new Blob(["\uFEFF" + linhas.join("\r\n")], { type: "text/csv;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `contratos-${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+        }
+        /*
+        ============================================================
+        MODO NOTURNO
+        ============================================================
+        */
+        function initTheme() {
+            const salvo = localStorage.getItem("dados-theme") || "light";
+            document.body.dataset.theme = salvo;
+            atualizarBotaoTema();
+        }
+        function atualizarBotaoTema() {
+            document.getElementById("themeButton").textContent =
+                document.body.dataset.theme === "dark" ? "Modo claro" : "Modo noturno";
+        }
+        /*
+        ============================================================
+        EVENTOS
+        ============================================================
+        */
+        document.getElementById("busca").addEventListener("input", () => { renderTabela(); renderStats(); });
+        document.getElementById("filtroTipo").addEventListener("change", () => { renderTabela(); renderStats(); });
+        document.getElementById("filtroMes").addEventListener("change", () => { renderTabela(); renderStats(); });
+        document.getElementById("filtroVendedor").addEventListener("change", () => { renderTabela(); renderStats(); });
+        document.getElementById("filtroCadastro").addEventListener("change", () => { renderTabela(); renderStats(); });
+        document.getElementById("limparFiltros").addEventListener("click", () => { limparFiltros(); renderStats(); });
+        document.getElementById("refreshButton").addEventListener("click", carregarContratos);
+        document.getElementById("exportButton").addEventListener("click", exportarCsv);
+        document.getElementById("themeButton").addEventListener("click", () => {
+            document.body.dataset.theme = document.body.dataset.theme === "dark" ? "light" : "dark";
+            localStorage.setItem("dados-theme", document.body.dataset.theme);
+            atualizarBotaoTema();
+        });
+        tabela.addEventListener("click", async event => {
+            const botao = event.target.closest("[data-expand]");
+            if (botao) {
+                const id = botao.dataset.expand;
+                if (expandedRows.has(id)) expandedRows.delete(id);
+                else expandedRows.add(id);
+                renderTabela();
+                return;
+            }
+            const cadastro = event.target.closest("[data-cadastro]");
+            if (cadastro) {
+                cadastro.disabled = true;
+                await alternarCadastro(cadastro.dataset.cadastro);
+                cadastro.disabled = false;
+                renderTabela();
+                renderStats();
+            }
+        });
+        configurarOrdenacao();
+        initTheme();
+        carregarCadastrados().then(() => { renderTabela(); renderStats(); });
+        /*
+        ============================================================
+        PRIMEIRA CARGA
+        ============================================================
+        */
+        carregarContratos();
+        /*
+        ============================================================
+        ATUALIZAÇÃO AUTOMÁTICA
+        ============================================================
+        A cada 5 segundos consulta novamente a API.
+        Se alguém alterar um contrato através do seu sistema,
+        na próxima consulta os dados novos aparecerão.
+        */
+        setInterval(
+            carregarContratos,
+            5000
+        );
+    </script>
+</body>
+
+</html>

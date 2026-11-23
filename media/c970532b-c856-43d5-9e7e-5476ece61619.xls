@@ -1,0 +1,219 @@
+﻿<html><head><style type="text/css">.BODY              {font-family: "calibri"; font-size: 12px; color: #000000; background-color: #ffffff; mso-number-format: "currency";}.A                 {color: #0000ff; text-decoration: none; mso-number-format: "currency";}.FmtContabil       {font-family: "calibri"; font-size: "12px"; mso-number-format: "currency";}.FmtNumero         {font-family: "calibri"; font-size: "12px"; mso-number-format: "0\.00";}.FmtInteiro        {font-family: "calibri"; font-size: "12px"; mso-number-format: "0";}.FmtData           {font-family: "calibri"; font-size: "12px"; mso-number-format: "dd\/mm\/yyyy";}.FmtTexto          {mso-number-format: \@}.conteudo          {font-family: calibri; font-size: 12px; vertical-align: middle;}.cabecalho         {font-family: calibri; font-size: 15px; background-color: #ffff00; font-weight: bold; vertical-align: middle;}.legenda           {font-family: calibri; font-size: 12px; font-weight: bold; vertical-align: middle;}.conteudoTXT6      {font-family: calibri; font-size: 16px; vertical-align: middle;}.conteudoTXT7      {font-family: calibri; font-size: 20px; vertical-align: middle;}.conteudoTXT8      {font-family: calibri; font-size: 25px; vertical-align: middle;}.percent           {font-family: calibri; font-size: 12px; mso-number-format: "Percent"; text-align:right; }</style></head>
+<body>
+<table border="1">
+<tr>
+<th nowrap colspan="8" class="cabecalho">TABELA ESTABELECIMENTO_CENTRO MEDICO DA FAMILIA</th>
+</tr>
+<tr>
+<th nowrap class="cabecalho">Código</th>
+<th nowrap class="cabecalho">Valor</th>
+<th nowrap class="cabecalho">Desconto</th>
+<th nowrap class="cabecalho">Tipo Desconto</th>
+<th nowrap class="cabecalho">Código Plano</th>
+<th nowrap class="cabecalho">Tipo de valor</th>
+<th nowrap class="cabecalho">Procedimento</th>
+<th nowrap class="cabecalho">Plano</th>
+<th nowrap class="cabecalho">Tipo de Procedimento</th>
+<th nowrap class="cabecalho">Exige Documentação</th>
+<th nowrap class="cabecalho">Especialidade</th>
+<th nowrap class="cabecalho">Dias de Retorno</th>
+<th nowrap class="cabecalho">Regras do Serviço</th>
+</tr>
+<tr>
+<td nowrap class="conteudo">102</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM ANGIOLOGISTA / VASCULAR</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">ANGIOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10003</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM CARDIOLOGISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">CARDIOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10002</td>
+<td nowrap class="conteudo">75,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM CLÍNICO GERAL</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">CLINICO GERAL</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">81000034</td>
+<td nowrap class="conteudo">65,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM GINECOLOGISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">GINECOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">100</td>
+<td nowrap class="conteudo">114,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM GINECOLOGISTA + (PRÉ-NATAL)</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">GINECOLOGIA E OBSTETRICIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">101</td>
+<td nowrap class="conteudo">98,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM GINECOLOGISTA + PREVENÇÃO</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">GINECOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10014</td>
+<td nowrap class="conteudo">75,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM OFTALMOLOGISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">OFTALMOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10017</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM PEDIATRA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">PEDIATRIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10021</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM REUMATOLOGISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">REUMATOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10022</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM UROLOGISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">UROLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">50000456</td>
+<td nowrap class="conteudo">90,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA MASTOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">MASTOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">50000459</td>
+<td nowrap class="conteudo">55,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA PSICOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">PSICOLOGIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10006</td>
+<td nowrap class="conteudo">20,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">SESSÃO DE FISIOTERAPIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">FISIOTERAPIA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo"></td>
+</tr>
+</table>
+</body>
+</html>

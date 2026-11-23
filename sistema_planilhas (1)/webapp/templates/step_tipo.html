@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% set passo_atual = 3 %}
+{% block content %}
+<div class="card">
+  <h1>Passo 3 — Coluna Tipo Parcela</h1>
+  <p>A coluna "Valor Parcela" já foi limpa (removido "R$", excluídas linhas "R$ 0,00" e "R$ -").
+     Restam <strong>{{ total }}</strong> linhas.</p>
+
+  <p>Marque os tipos que deseja <strong>REMOVER</strong>:</p>
+
+  <form action="{{ url_for('step_tipo_post') }}" method="post">
+    <div class="lista-checkbox">
+      {% for valor, qtd in contagem %}
+      <label class="opcao">
+        <input type="checkbox" name="remover" value="{{ valor }}" {{ 'checked' if valor in removidos_atuais }}>
+        {{ valor }} <span class="badge">{{ qtd }} linhas (na planilha original)</span>
+      </label>
+      {% endfor %}
+    </div>
+    <br>
+    <button type="submit">Continuar →</button>
+  </form>
+  <p><a href="{{ url_for('step_cpf') }}">← Voltar (CPF/CNPJ)</a></p>
+</div>
+{% endblock %}

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conferência de Adesões</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0c918d;
+            margin: 0 0 10px 0;
+        }
+        .subtitle {
+            color: #666;
+            margin: 0 0 30px 0;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+        select, input {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #0c918d;
+            box-shadow: 0 0 0 3px rgba(12, 145, 141, 0.1);
+        }
+        button {
+            padding: 10px 20px;
+            background: #0c918d;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        button:hover {
+            background: #087571;
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .kpis {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, #0c918d, #056b64);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .kpi-card strong {
+            display: block;
+            font-size: 28px;
+            margin: 10px 0;
+        }
+        .kpi-card small {
+            display: block;
+            opacity: 0.9;
+            font-size: 12px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        thead {
+            background: #f0f0f0;
+            border-bottom: 2px solid #0c918d;
+        }
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .crm {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid rgb(59, 130, 246);
+        }
+        .web {
+            background: rgba(34, 197, 94, 0.05);
+            border-left: 3px solid rgb(34, 197, 94);
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-crm {
+            background: #e0e7ff;
+            color: #3b82f6;
+        }
+        .badge-web {
+            background: #dcfce7;
+            color: #22c55e;
+        }
+        .status-validado { background: #dcfce7; color: #22c55e; }
+        .status-alerta { background: #fef3c7; color: #f59e0b; }
+        .status-erro { background: #fee2e2; color: #ef4444; }
+        .status-pendente { background: #e5e7eb; color: #6b7280; }
+        .message {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .message.loading {
+            background: #dbeafe;
+            color: #0c51ba;
+        }
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .message.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 40px 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Conferência de Adesões</h1>
+        <p class="subtitle">Adesões importadas com verificação automática. Filtre por período e tipo.</p>
+
+        <div id="message" class="message" style="display:none;"></div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label>Mês:</label>
+                <select id="mes">
+                    <option value="">Todos</option>
+                    <option value="2026-01">Janeiro 2026</option>
+                    <option value="2026-02">Fevereiro 2026</option>
+                    <option value="2026-03">Março 2026</option>
+                    <option value="2026-06">Junho 2026</option>
+                    <option value="2026-07">Julho 2026</option>
+                    <option value="2026-08">Agosto 2026</option>
+                    <option value="2026-09">Setembro 2026</option>
+                    <option value="2026-10">Outubro 2026</option>
+                    <option value="2026-11">Novembro 2026</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label>Tipo:</label>
+                <select id="tipo">
+                    <option value="">Todos</option>
+                    <option value="CRM">CRM</option>
+                    <option value="WEB">WEB</option>
+                </select>
+            </div>
+            <button onclick="carregar()">🔄 Filtrar</button>
+            <button onclick="conferirTodos()">✅ Conferir Todos</button>
+            <button onclick="exportarExcel()">📥 Exportar Excel</button>
+        </div>
+
+        <div class="kpis" id="kpis"></div>
+
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Lote</th>
+                        <th>Empresa</th>
+                        <th>Vidas</th>
+                        <th>Valor</th>
+                        <th>Data Entrada</th>
+                        <th>Data Adesão</th>
+                        <th>Tipo</th>
+                        <th>Status</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = window.PORTAL_API_BASE || 'http://localhost:5000';
+
+        async function fetch_api(path) {
+            try {
+                const res = await fetch(API + path);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                mostra_erro(`Erro: ${e.message}`);
+                throw e;
+            }
+        }
+
+        function mostra_msg(msg, tipo = 'loading') {
+            const div = document.getElementById('message');
+            div.textContent = msg;
+            div.className = `message ${tipo}`;
+            div.style.display = 'block';
+            if (tipo === 'success') setTimeout(() => div.style.display = 'none', 3000);
+        }
+
+        function mostra_erro(msg) {
+            mostra_msg(msg, 'error');
+        }
+
+        function formata_valor(v) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
+        }
+
+        function formata_numero(n) {
+            return new Intl.NumberFormat('pt-BR').format(n || 0);
+        }
+
+        async function carregar() {
+            mostra_msg('Carregando adesões...');
+            const mes = document.getElementById('mes').value;
+            const tipo = document.getElementById('tipo').value;
+            
+            let query = [];
+            if (mes) query.push(`mes=${mes}`);
+            if (tipo) query.push(`tipo=${tipo}`);
+            
+            const url = `/api/adesoes${query.length ? '?' + query.join('&') : ''}`;
+            
+            try {
+                const data = await fetch_api(url);
+                const tbody = document.getElementById('tbody');
+                const kpis = document.getElementById('kpis');
+
+                // KPIs
+                kpis.innerHTML = `
+                    <div class="kpi-card">
+                        <small>Total</small>
+                        <strong>${formata_numero(data.total)}</strong>
+                        <small>adesões</small>
+                    </div>
+                    <div class="kpi-card">
+                        <small>✅ Conferidos</small>
+                        <strong>${formata_numero(data.conferidos)}</strong>
+                        <small>validados</small>
+                    </div>
+                    <div class="kpi-card">
+                        <small>⚠️ Alertas</small>
+                        <strong>${formata_numero(data.alertas)}</strong>
+                        <small>com avisos</small>
+                    </div>
+                    <div class="kpi-card">
+                        <small>❌ Problemas</small>
+                        <strong>${formata_numero(data.problemas)}</strong>
+                        <small>erros</small>
+                    </div>
+                `;
+
+                // Tabela
+                if (!data.adesoes || !data.adesoes.length) {
+                    tbody.innerHTML = '<tr><td colspan="9" class="empty">Nenhuma adesão encontrada</td></tr>';
+                    mostra_msg('Nenhuma adesão encontrada', 'success');
+                    return;
+                }
+
+                tbody.innerHTML = data.adesoes.map(a => {
+                    const statusMap = {
+                        'validado': '✅ Conferido',
+                        'alerta': '⚠️ Alerta',
+                        'erro': '❌ Erro',
+                        'pendente': '🔄 Pendente'
+                    };
+                    const statusClass = `status-${a.statusConferencia || 'pendente'}`;
+                    const rowClass = a.tipo === 'CRM' ? 'crm' : 'web';
+                    
+                    return `<tr class="${rowClass}">
+                        <td><strong>${a.lote}</strong></td>
+                        <td>${a.empresa}</td>
+                        <td>${formata_numero(a.vidas)}</td>
+                        <td>${formata_valor(a.valor)}</td>
+                        <td>${a.dataEntrada || '—'}</td>
+                        <td>${a.dataAdesao || '—'}</td>
+                        <td><span class="badge ${a.tipo === 'CRM' ? 'badge-crm' : 'badge-web'}">${a.tipo}</span></td>
+                        <td><span class="badge ${statusClass}">${statusMap[a.statusConferencia] || '?'}</span></td>
+                        <td>${a.situacao || '—'}</td>
+                    </tr>`;
+                }).join('');
+
+                mostra_msg(`${data.adesoes.length} adesões carregadas`, 'success');
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function conferirTodos() {
+            mostra_msg('Conferindo todas as adesões... Aguarde');
+            const mes = document.getElementById('mes').value || '2026-01';
+            
+            try {
+                const res = await fetch(API + `/api/adesoes/conferir-todos?mes=${mes}`, {
+                    method: 'POST'
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    mostra_msg(`✅ Conferência concluída! ${data.processadas} adesões verificadas`, 'success');
+                    carregar();
+                } else {
+                    mostra_erro(data.error || 'Erro na conferência');
+                }
+            } catch (e) {
+                mostra_erro(`Erro: ${e.message}`);
+            }
+        }
+
+        async function exportarExcel() {
+            mostra_msg('Preparando download...');
+            const mes = document.getElementById('mes').value;
+            const tipo = document.getElementById('tipo').value;
+            
+            let query = [];
+            if (mes) query.push(`mes=${mes}`);
+            if (tipo) query.push(`tipo=${tipo}`);
+            
+            const url = `/api/adesoes${query.length ? '?' + query.join('&') : ''}`;
+            
+            try {
+                const data = await fetch_api(url);
+                const adesoes = data.adesoes || [];
+                
+                // Cria CSV simples
+                const headers = ['Lote', 'Empresa', 'Vidas', 'Valor', 'Data Entrada', 'Data Adesão', 'Tipo', 'Status', 'Situação'];
+                const rows = adesoes.map(a => [
+                    a.lote,
+                    a.empresa,
+                    a.vidas,
+                    a.valor,
+                    a.dataEntrada,
+                    a.dataAdesao,
+                    a.tipo,
+                    a.statusConferencia,
+                    a.situacao
+                ]);
+                
+                let csv = headers.join('\t') + '\n';
+                csv += rows.map(r => r.join('\t')).join('\n');
+                
+                // Download
+                const blob = new Blob([csv], { type: 'text/plain;charset=utf-8' });
+                const url_obj = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url_obj;
+                a.download = `adesoes-${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                URL.revokeObjectURL(url_obj);
+                
+                mostra_msg('✅ Arquivo baixado com sucesso!', 'success');
+            } catch (e) {
+                mostra_erro(`Erro: ${e.message}`);
+            }
+        }
+
+        // Carrega ao abrir
+        carregar();
+    </script>
+</body>
+</html>

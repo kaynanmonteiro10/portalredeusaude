@@ -1,0 +1,409 @@
+/* Sabi — assistente do portal (somente admin por enquanto) */
+.sabi-root {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  font-family: 'DM Sans', Arial, sans-serif;
+}
+
+/* ── Botão flutuante ─────────────────────────────────────────────────────── */
+.sabi-fab {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: #c6f2cf;
+  background-size: 235%;
+  background-position: 50% 15%;
+  background-repeat: no-repeat;
+  box-shadow: 0 14px 34px #0b3a4433, 0 0 0 4px #ffffff;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.sabi-fab:hover { transform: translateY(-2px) scale(1.03); box-shadow: 0 18px 40px #0b3a4440, 0 0 0 4px #ffffff; }
+.sabi-fab:focus-visible { outline: 3px solid #2fd39a; outline-offset: 3px; }
+.sabi-fab::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2fd39a, #0b8f87);
+  box-shadow: 0 0 0 3px #fff;
+}
+
+/* ── Painel ──────────────────────────────────────────────────────────────── */
+.sabi-panel {
+  position: absolute;
+  right: 0;
+  bottom: 82px;
+  width: min(372px, calc(100vw - 28px));
+  max-height: min(calc(100vh - 108px), 700px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid #e1ecea;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 30px 76px #0a2f3a33;
+  animation: sabi-in .18s ease-out;
+  scrollbar-width: thin;
+}
+.sabi-panel[hidden] { display: none; }
+@keyframes sabi-in { from { opacity: 0; transform: translateY(8px) scale(.98); } to { opacity: 1; transform: none; } }
+
+.sabi-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.sabi-title { display: flex; flex-direction: column; gap: 2px; }
+.sabi-title strong { font: 700 17px 'Space Grotesk', sans-serif; color: #10333a; letter-spacing: -.02em; }
+.sabi-title small { color: #6c8589; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.sabi-head-actions { display: flex; gap: 6px; }
+.sabi-icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 10px;
+  background: #f0f7f6;
+  color: #416a67;
+  font: 600 15px/1 'DM Sans', sans-serif;
+  cursor: pointer;
+  position: relative;
+}
+.sabi-icon:hover { background: #e2f2ef; }
+.sabi-sound { font-size: 14px; }
+.sabi-sound.is-muted { color: #a8b9b7; }
+.sabi-sound.is-muted::after {
+  content: '';
+  position: absolute;
+  width: 17px;
+  height: 2px;
+  border-radius: 2px;
+  background: #b23d43;
+  transform: rotate(-42deg);
+}
+.sabi-close { font-size: 18px; }
+
+/* ── Corpo do Sabi ───────────────────────────────────────────────────────── */
+.sabi-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 196px;
+  margin-bottom: 11px;
+  overflow: hidden;
+  border: 1px solid #b6e8c5;
+  border-radius: 20px;
+  background: #c6f2cf;
+  box-shadow: inset 0 0 0 1px #ffffff55, 0 10px 24px #0b3a4414;
+}
+.sabi-stage img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: 50% 82%;
+  animation: sabi-idle 4.4s ease-in-out infinite;
+  will-change: transform;
+}
+.sabi-halo {
+  position: absolute;
+  inset: -30% 45% 35% -25%;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff9e, #ffffff00 68%);
+  pointer-events: none;
+}
+.sabi-notes { position: absolute; top: 14px; right: 28px; width: 46px; height: 62px; pointer-events: none; }
+.sabi-notes i {
+  position: absolute;
+  font-style: normal;
+  font-size: 20px;
+  color: #0b8f87;
+  text-shadow: 0 1px 0 #ffffffb8;
+  opacity: 0;
+}
+.sabi-notes i:nth-child(1) { left: 2px; bottom: 2px; animation: sabi-note 1.8s ease-out infinite; }
+.sabi-notes i:nth-child(2) { right: 0; bottom: 16px; font-size: 24px; animation: sabi-note 1.8s ease-out .35s infinite; }
+.sabi-notes i:nth-child(3) { left: 18px; bottom: 34px; animation: sabi-note 1.8s ease-out .7s infinite; }
+.sabi-stage[data-mood="sing"] .sabi-notes i,
+.sabi-stage[data-mood="whistle"] .sabi-notes i { opacity: 1; }
+.sabi-stage[data-mood="wave"] img { animation: sabi-wave .52s ease-in-out 3; }
+.sabi-stage[data-mood="sing"] img { animation: sabi-sing 1.05s ease-in-out infinite; }
+.sabi-stage[data-mood="whistle"] img { animation: sabi-sing 1.35s ease-in-out 2; }
+.sabi-stage.is-thinking::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(100deg, #ffffff00 30%, #ffffff5c 50%, #ffffff00 70%);
+  background-size: 220% 100%;
+  animation: sabi-shimmer 1.2s linear infinite;
+  pointer-events: none;
+}
+@keyframes sabi-idle { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-5px) rotate(-.7deg); } }
+@keyframes sabi-wave { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-2.6deg); } 75% { transform: rotate(2.6deg); } }
+@keyframes sabi-sing { 0%, 100% { transform: translateY(0) rotate(-1.6deg); } 50% { transform: translateY(-4px) rotate(1.6deg); } }
+@keyframes sabi-note {
+  0% { opacity: 0; transform: translateY(8px) scale(.8) rotate(-8deg); }
+  22% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(-30px) scale(1.06) rotate(8deg); }
+}
+@keyframes sabi-shimmer { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+
+/* ── Fala ────────────────────────────────────────────────────────────────── */
+.sabi-bubble {
+  padding: 12px 13px;
+  border: 1px solid #dcefe9;
+  border-radius: 16px;
+  background: linear-gradient(150deg, #f7fdfb, #eefaf6 65%, #f2fbf4);
+}
+.sabi-tip { margin: 0; color: #23484b; font-size: 13px; line-height: 1.54; }
+.sabi-tip strong { color: #0b6f66; }
+.sabi-answer { margin-top: 9px; padding-top: 9px; border-top: 1px solid #dcefe9; color: #23484b; font-size: 12.5px; line-height: 1.52; }
+.sabi-answer[hidden] { display: none; }
+.sabi-answer p { margin: 0 0 6px; }
+.sabi-answer p:last-child { margin-bottom: 0; }
+.sabi-answer ul { margin: 0 0 6px; padding-left: 17px; }
+.sabi-answer li { margin: 2px 0; }
+.sabi-answer li:last-child { margin-bottom: 0; }
+
+/* ── Confirmação ─────────────────────────────────────────────────────────── */
+.sabi-confirm {
+  margin-top: 10px;
+  padding: 11px 12px;
+  border: 1px solid #f0d7a6;
+  border-radius: 14px;
+  background: #fff8e8;
+}
+.sabi-confirm[hidden] { display: none; }
+.sabi-confirm p { margin: 0 0 9px; color: #6b4c11; font-size: 12.5px; line-height: 1.5; }
+.sabi-confirm-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.sabi-primary,
+.sabi-ghost {
+  padding: 8px 13px;
+  border-radius: 999px;
+  font: 700 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: .18s;
+}
+.sabi-primary { border: 1px solid #0b8f87; background: #0b8f87; color: #ffffff; }
+.sabi-primary:hover { background: #08766f; border-color: #08766f; }
+.sabi-ghost { border: 1px solid #dceae7; background: #ffffff; color: #416a67; }
+.sabi-ghost:hover { background: #f1f8f6; }
+.sabi-primary:disabled, .sabi-ghost:disabled { opacity: .55; cursor: progress; }
+
+/* ── Campo de pedido ─────────────────────────────────────────────────────── */
+.sabi-ask { display: flex; gap: 7px; margin-top: 11px; }
+.sabi-ask input {
+  flex: 1;
+  min-width: 0;
+  height: 39px;
+  padding: 0 13px;
+  border: 1px solid #dbeae7;
+  border-radius: 12px;
+  background: #fbfefd;
+  color: #173b3f;
+  font: 500 12.5px 'DM Sans', sans-serif;
+  outline: none;
+}
+.sabi-ask input::placeholder { color: #96aaac; }
+.sabi-ask input:focus { border-color: #7fd9c6; box-shadow: 0 0 0 3px #2fd39a26; }
+.sabi-ask button {
+  height: 39px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 12px;
+  background: #10333a;
+  color: #eafff9;
+  font: 700 12px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.sabi-ask button:hover { background: #0b6f66; }
+.sabi-ask.is-busy { opacity: .7; }
+
+/* ── Atalhos ─────────────────────────────────────────────────────────────── */
+.sabi-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 2px; }
+.sabi-actions button,
+.sabi-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid #dceae7;
+  border-radius: 999px;
+  background: #f6fbfa;
+  color: #24524f;
+  font: 600 11.5px 'DM Sans', sans-serif;
+  text-decoration: none;
+  cursor: pointer;
+  transition: .18s;
+}
+.sabi-actions button:hover,
+.sabi-actions a:hover { background: #e8f6f2; border-color: #bfe3db; color: #0b6f66; }
+
+/* ── Looks ───────────────────────────────────────────────────────────────── */
+.sabi-looks { margin-top: 13px; padding-top: 11px; border-top: 1px solid #edf3f2; }
+.sabi-looks summary {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  cursor: pointer;
+  list-style: none;
+}
+.sabi-looks summary::-webkit-details-marker { display: none; }
+.sabi-looks summary span { font: 700 11.5px 'DM Sans', sans-serif; color: #34595a; letter-spacing: .04em; }
+.sabi-looks summary small { color: #8aa0a3; font-size: 10.5px; }
+.sabi-looks[open] summary { margin-bottom: 8px; }
+.sabi-look-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.sabi-look {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  padding: 7px 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 13px;
+  background: transparent;
+  cursor: pointer;
+  transition: .18s;
+}
+.sabi-look:hover { background: #f3faf8; }
+.sabi-look img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; object-position: 50% 15%; background: #c6f2cf; box-shadow: 0 0 0 1px #dcefe9; }
+.sabi-look span { font: 600 10.5px/1.25 'DM Sans', sans-serif; color: #6a8586; text-align: center; }
+.sabi-look[aria-pressed="true"] { border-color: #b7e6dc; background: #eefaf6; }
+.sabi-look[aria-pressed="true"] span { color: #0b6f66; }
+.sabi-look:disabled { opacity: .55; cursor: progress; }
+
+.sabi-note { margin: 10px 0 0; color: #93a7a9; font-size: 10px; line-height: 1.45; }
+.sabi-error { margin: 9px 0 0; color: #b23d43; font-size: 11.5px; font-weight: 600; }
+.sabi-error[hidden] { display: none; }
+
+/* ── Modo noturno ────────────────────────────────────────────────────────── */
+body[data-theme="dark"] .sabi-fab { box-shadow: 0 14px 34px #00000066, 0 0 0 4px #13272c; }
+body[data-theme="dark"] .sabi-fab::after { box-shadow: 0 0 0 3px #13272c; }
+body[data-theme="dark"] .sabi-panel { background: #172a2f; border-color: #2e464c; box-shadow: 0 30px 76px #00000080; }
+body[data-theme="dark"] .sabi-title strong { color: #e9f5f3; }
+body[data-theme="dark"] .sabi-title small { color: #86a5a3; }
+body[data-theme="dark"] .sabi-icon { background: #22393f; color: #b8d6d3; }
+body[data-theme="dark"] .sabi-icon:hover { background: #2c484f; }
+body[data-theme="dark"] .sabi-stage { border-color: #2b4a41; box-shadow: inset 0 0 0 1px #ffffff22; }
+body[data-theme="dark"] .sabi-bubble { background: linear-gradient(150deg, #1e353a, #1b3136); border-color: #2e484d; }
+body[data-theme="dark"] .sabi-tip,
+body[data-theme="dark"] .sabi-answer { color: #cfe5e1; }
+body[data-theme="dark"] .sabi-tip strong { color: #6fe0c6; }
+body[data-theme="dark"] .sabi-answer { border-color: #2e484d; }
+body[data-theme="dark"] .sabi-confirm { background: #3a3220; border-color: #5c4a25; }
+body[data-theme="dark"] .sabi-confirm p { color: #f0d9a4; }
+body[data-theme="dark"] .sabi-ghost { background: #20373d; border-color: #355158; color: #cfe5e1; }
+body[data-theme="dark"] .sabi-ghost:hover { background: #2a464d; }
+body[data-theme="dark"] .sabi-ask input { background: #1b3136; border-color: #355158; color: #e9f7f4; }
+body[data-theme="dark"] .sabi-ask input::placeholder { color: #7f9b9d; }
+body[data-theme="dark"] .sabi-ask button { background: #2fd39a; color: #062a26; }
+body[data-theme="dark"] .sabi-ask button:hover { background: #4ae0ad; }
+body[data-theme="dark"] .sabi-actions button,
+body[data-theme="dark"] .sabi-actions a { background: #20373d; border-color: #355158; color: #cfe5e1; }
+body[data-theme="dark"] .sabi-actions button:hover,
+body[data-theme="dark"] .sabi-actions a:hover { background: #2a464d; color: #e9f7f4; }
+body[data-theme="dark"] .sabi-looks { border-color: #2a4248; }
+body[data-theme="dark"] .sabi-looks summary span { color: #c4dcda; }
+body[data-theme="dark"] .sabi-looks summary small { color: #7f9b9d; }
+body[data-theme="dark"] .sabi-look:hover { background: #20373d; }
+body[data-theme="dark"] .sabi-look span { color: #a9c4c1; }
+body[data-theme="dark"] .sabi-look[aria-pressed="true"] { background: #1e3b3a; border-color: #2f5f57; }
+body[data-theme="dark"] .sabi-look[aria-pressed="true"] span { color: #7fe3cb; }
+body[data-theme="dark"] .sabi-note { color: #728d8d; }
+body[data-theme="dark"] .sabi-error { color: #ff9aa0; }
+
+/* ── Passo a passo ───────────────────────────────────────────────────────── */
+.sabi-tour { position: fixed; inset: 0; z-index: 70; }
+.sabi-tour[hidden] { display: none; }
+.sabi-spot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-radius: 14px;
+  outline: 2px solid #2fd39a;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 9999px #061a1f8f;
+  pointer-events: none;
+  transition: all .22s ease;
+}
+.sabi-coach {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 72;
+  width: min(340px, calc(100vw - 24px));
+  max-height: min(70vh, 420px);
+  overflow-y: auto;
+  padding: 14px;
+  border: 1px solid #dcefe9;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px #041f2633;
+}
+.sabi-coach-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+.sabi-coach-head img { width: 44px; height: 44px; border-radius: 14px; object-fit: cover; object-position: 50% 15%; background: #c6f2cf; box-shadow: 0 0 0 1px #dcefe9; }
+.sabi-coach-head div { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.sabi-coach-head strong { font: 700 14px 'Space Grotesk', sans-serif; color: #10333a; }
+.sabi-coach-head small { color: #7a9497; font-size: 10.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sabi-coach-close {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 9px;
+  background: #f0f7f6;
+  color: #416a67;
+  font: 600 17px/1 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.sabi-coach p { margin: 0 0 11px; color: #23484b; font-size: 12.5px; line-height: 1.55; }
+.sabi-coach-actions { display: flex; justify-content: flex-end; gap: 7px; }
+.sabi-coach.is-loading p { opacity: .45; }
+.sabi-coach.is-loading .sabi-coach-actions { opacity: .45; }
+
+body[data-theme="dark"] .sabi-coach { background: #172a2f; border-color: #2e464c; }
+body[data-theme="dark"] .sabi-coach-head strong { color: #e9f5f3; }
+body[data-theme="dark"] .sabi-coach-head small { color: #86a5a3; }
+body[data-theme="dark"] .sabi-coach-close { background: #22393f; color: #b8d6d3; }
+body[data-theme="dark"] .sabi-coach p { color: #cfe5e1; }
+
+/* ── Telas pequenas ──────────────────────────────────────────────────────── */
+@media (max-width: 760px) {
+  .sabi-root { right: 16px; bottom: 92px; }
+  .sabi-fab { width: 58px; height: 58px; }
+  .sabi-panel { width: min(360px, calc(100vw - 24px)); bottom: 72px; padding: 14px; }
+  .sabi-stage { height: 168px; }
+  .sabi-stage img { width: 100%; height: 100%; }
+  .sabi-coach { width: calc(100vw - 24px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sabi-fab, .sabi-look, .sabi-actions button, .sabi-actions a { transition: none; }
+  .sabi-panel { animation: none; }
+  .sabi-stage img,
+  .sabi-stage[data-mood="wave"] img,
+  .sabi-stage[data-mood="sing"] img,
+  .sabi-stage[data-mood="whistle"] img { animation: none; }
+  .sabi-notes i { animation: none; opacity: 0 !important; }
+  .sabi-stage.is-thinking::after { animation: none; opacity: 0; }
+  .sabi-spot { transition: none; }
+}

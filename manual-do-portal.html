@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Manual de uso do Portal do Setor da Rede Saúde: demandas, relatórios, treinamentos, conversas e administração.">
+<title>Manual de uso · Portal do Setor</title>
+<style>
+  :root{
+    --teal:#0b8f87;--teal-bright:#0fb5a6;--teal-soft:#e2f4f0;--teal-line:#bfe3dd;
+    --ink:#14343a;--muted:#5e757a;--line:#d7e5e4;--bg:#f1f7f6;--card:#fff;
+    --dark:#0f3b3a;--amber:#a96a12;--red:#b23b4b;--radius:18px;
+    --shadow:0 16px 40px #14343a12;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:linear-gradient(180deg,#edf6f4,#f8fbfa 38%,#f1f7f6);color:var(--ink);font:15px/1.65 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal)}
+  img{max-width:100%}
+  [hidden]{display:none!important}
+  :focus-visible{outline:3px solid #0fb5a655;outline-offset:2px;border-radius:6px}
+  .skip-link{position:fixed;left:14px;top:-60px;z-index:120;background:#fff;color:var(--teal);padding:10px 16px;border-radius:10px;font-weight:800;box-shadow:var(--shadow);transition:top .18s}
+  .skip-link:focus{top:14px}
+
+  .shell{display:grid;grid-template-columns:298px minmax(0,1fr);min-height:100vh}
+
+  /* ── coluna lateral ── */
+  .side{position:sticky;top:0;align-self:start;height:100vh;display:flex;flex-direction:column;gap:14px;padding:22px 18px;background:linear-gradient(180deg,#0f3b3a,#123c3c 58%,#0c2b2c);color:#dff3ef;overflow:auto;z-index:20}
+  .side::-webkit-scrollbar{width:0}
+  .brand{display:flex;align-items:center;gap:11px;padding-bottom:14px;border-bottom:1px solid #ffffff1c}
+  .brand-logo{width:44px;height:44px;border-radius:12px;object-fit:contain;background:#ffffff12;padding:4px;flex:0 0 auto}
+  .brand-copy{min-width:0;line-height:1.25}
+  .brand-copy strong{display:block;color:#fff;font:800 14px/1.2 "Segoe UI",system-ui,sans-serif;letter-spacing:.02em}
+  .brand-copy small{display:block;color:#9ecfc6;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;margin-top:3px}
+
+  .side-search{position:relative}
+  .side-search input{width:100%;padding:11px 34px 11px 13px;border-radius:10px;border:1px solid #ffffff24;background:#ffffff10;color:#fff;font:600 13px inherit}
+  .side-search input::placeholder{color:#9ecfc6}
+  .side-search input:focus{outline:none;border-color:#4fd0bf;background:#ffffff18;box-shadow:0 0 0 3px #0fb5a62e}
+  .side-search .icon{position:absolute;right:11px;top:50%;transform:translateY(-50%);color:#9ecfc6;font-size:14px;pointer-events:none}
+  .search-count{min-height:14px;margin:-6px 2px 0;color:#8fc7bd;font-size:10px;font-weight:700;letter-spacing:.04em}
+
+  .toc{display:flex;flex-direction:column;gap:2px;overflow:auto;padding:2px 0}
+  .toc a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:#c4ded9;text-decoration:none;font:600 12.5px/1.3 inherit;transition:background .15s,color .15s}
+  .toc a:hover{background:#ffffff12;color:#fff}
+  .toc a.active{background:linear-gradient(135deg,#0fb5a6,#0b8f87);color:#fff;box-shadow:0 8px 18px #0b8f8740}
+  .toc .toc-num{display:inline-flex;align-items:center;justify-content:center;width:21px;height:21px;border-radius:6px;background:#ffffff14;color:#a9e1d9;font-size:10px;font-weight:800;flex:0 0 auto}
+  .toc a.active .toc-num{background:#ffffff2b;color:#fff}
+  .side-foot{margin-top:auto;padding-top:14px;border-top:1px solid #ffffff1c;display:flex;flex-direction:column;gap:8px}
+  .side-foot a{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 12px;border-radius:10px;text-decoration:none;font:700 12px inherit;color:#0f3b3a;background:#dff3ef;transition:background .15s,transform .15s}
+  .side-foot a:hover{background:#fff;transform:translateY(-1px)}
+  .side-foot small{color:#8fc7bd;font-size:10px;text-align:center;line-height:1.4}
+
+  /* ── conteúdo ── */
+  .main{width:100%;max-width:1010px;padding:38px clamp(20px,4vw,52px) 72px}
+  .top{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line)}
+  .eyebrow{display:inline-flex;align-items:center;gap:7px;margin:0 0 8px;color:var(--teal);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+  .eyebrow:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--teal-bright)}
+  h1{margin:0;font-size:clamp(30px,3.6vw,42px);line-height:1.12;letter-spacing:-.02em;color:var(--dark)}
+  .lead{max-width:62ch;margin:12px 0 0;color:var(--muted);font-size:15px}
+  .top-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 15px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);font:700 12.5px inherit;text-decoration:none;cursor:pointer;box-shadow:0 6px 16px #14343a0d;transition:transform .15s,box-shadow .15s,background .15s}
+  .btn:hover{transform:translateY(-1px);box-shadow:0 10px 22px #14343a14}
+  .btn-primary{background:linear-gradient(135deg,var(--teal-bright),var(--teal));border-color:transparent;color:#fff;box-shadow:0 10px 22px #0b8f8738}
+  .btn-primary:hover{box-shadow:0 14px 28px #0b8f8748}
+  .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px;color:var(--muted);font-size:11.5px;font-weight:600}
+  .meta span{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:#fff;border:1px solid var(--line)}
+  .meta i{width:6px;height:6px;border-radius:50%;background:var(--teal-bright);display:inline-block}
+
+  section.doc{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:clamp(20px,3vw,32px);margin-top:24px;box-shadow:var(--shadow);scroll-margin-top:18px}
+  .sec-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
+  .sec-num{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#0fb5a6,#0b8f87);color:#fff;font:800 15px "Segoe UI",system-ui,sans-serif;flex:0 0 auto;box-shadow:0 8px 18px #0b8f8730}
+  .sec-head h2{margin:2px 0 0;font-size:clamp(22px,2.4vw,27px);line-height:1.2;color:var(--dark);letter-spacing:-.01em}
+  .sec-head .eyebrow{margin-bottom:4px}
+  .doc h3{margin:26px 0 8px;font-size:16.5px;color:var(--dark);letter-spacing:-.01em}
+  .doc h3:first-of-type{margin-top:18px}
+  .doc p{margin:9px 0;color:#315158}
+  .doc p.muted{color:var(--muted);font-size:13.5px}
+  .doc ul,.doc ol{margin:9px 0;padding-left:22px;color:#315158}
+  .doc li{margin:5px 0}
+  .doc li::marker{color:var(--teal)}
+  .doc strong{color:var(--dark)}
+
+  .steps{list-style:none;padding:0;margin:12px 0 4px;counter-reset:step;display:grid;gap:11px}
+  .steps li{counter-increment:step;position:relative;padding-left:44px;margin:0;color:#315158}
+  .steps li:before{content:counter(step);position:absolute;left:0;top:-1px;width:29px;height:29px;border-radius:50%;background:var(--teal-soft);color:var(--teal);font:800 12.5px "Segoe UI",system-ui,sans-serif;display:grid;place-items:center;border:1px solid var(--teal-line)}
+  .steps li strong{display:inline}
+
+  .callout{margin:16px 0;padding:14px 16px 14px 17px;border-radius:12px;border:1px solid var(--line);border-left:4px solid var(--teal);background:#f6fbfa;color:#315158;font-size:13.5px}
+  .callout strong{display:block;margin-bottom:3px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--teal)}
+  .callout.warn{border-left-color:#d79a2b;background:#fffaf0}
+  .callout.warn strong{color:var(--amber)}
+  .callout.danger{border-left-color:var(--red);background:#fff6f7}
+  .callout.danger strong{color:var(--red)}
+  .callout p{margin:4px 0;font-size:13.5px}
+  .callout ul{margin:6px 0 0;font-size:13.5px}
+
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+  .mini{padding:14px 15px;border:1px solid var(--line);border-radius:12px;background:#fbfdfd}
+  .mini strong{display:block;margin-bottom:3px;color:var(--dark);font-size:13.5px}
+  .mini p{margin:0;color:var(--muted);font-size:12.5px;line-height:1.5}
+
+  .table-wrap{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:520px}
+  th,td{padding:10px 13px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+  th{background:#eef7f5;color:var(--dark);font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;white-space:nowrap}
+  tbody tr:last-child td{border-bottom:0}
+  tbody tr:nth-child(even){background:#fbfdfd}
+  td code,th code,p code,li code{background:#eef7f5;border:1px solid #d9ebe7;border-radius:5px;padding:1px 5px;font:600 12px ui-monospace,SFMono-Regular,Consolas,monospace;color:#0a6f69}
+
+  kbd{display:inline-block;padding:1px 6px;border-radius:5px;border:1px solid #c9d9d8;border-bottom-width:2px;background:#fff;font:700 11px ui-monospace,Consolas,monospace;color:#315158}
+
+  .faq{display:grid;gap:10px;margin:14px 0}
+  .faq-item{padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:#fbfdfd}
+  .faq-item h3{margin:0 0 4px;font-size:14.5px}
+  .faq-item p{margin:0;font-size:13.5px;color:#415f65}
+
+  .empty-search{margin-top:24px;padding:26px;border:1px dashed var(--teal-line);border-radius:var(--radius);background:#f6fbfa;text-align:center;color:var(--muted)}
+  .empty-search strong{display:block;color:var(--dark);font-size:16px;margin-bottom:4px}
+
+  .doc-footer{margin-top:28px;padding:18px 4px;text-align:center;color:var(--muted);font-size:11.5px;line-height:1.7}
+  .doc-footer strong{color:var(--dark)}
+
+  @media (max-width:980px){
+    .shell{display:block}
+    .side{position:static;height:auto;padding:16px 16px 14px;gap:10px}
+    .brand{padding-bottom:10px}
+    .toc{flex-direction:row;gap:6px;overflow-x:auto;padding:2px 0 6px;scrollbar-width:thin}
+    .toc a{white-space:nowrap;padding:8px 11px;background:#ffffff0e;border:1px solid #ffffff1a}
+    .toc .toc-num{width:18px;height:18px}
+    .side-foot{margin-top:0;padding-top:10px;flex-direction:row;align-items:center;justify-content:space-between}
+    .side-foot small{text-align:right}
+    .main{max-width:none;padding:26px 18px 56px}
+  }
+  @media (max-width:620px){
+    .grid-2{grid-template-columns:1fr}
+    .top-actions{width:100%}
+    .top-actions .btn{flex:1}
+    section.doc{padding:20px 17px;border-radius:14px}
+    .sec-head{gap:10px}
+    .sec-num{width:34px;height:34px;border-radius:10px;font-size:13px}
+    .doc h3{font-size:15.5px}
+    .steps li{padding-left:39px}
+  }
+  @media print{
+    @page{margin:14mm 13mm}
+    body{background:#fff!important;color:#000;font-size:11.2pt}
+    .side,.top-actions,.side-search,.search-count,.empty-search,.skip-link{display:none!important}
+    .shell{display:block}
+    .main{max-width:none;padding:0}
+    .top{border-bottom:1px solid #ccc;padding-bottom:10px}
+    .top h1{font-size:24pt}
+    .meta span{border:1px solid #ccc;background:#fff}
+    section.doc{box-shadow:none;border:0;border-top:1px solid #d8d8d8;border-radius:0;padding:12pt 0 4pt;margin:0;break-inside:auto}
+    .sec-num{background:#0b8f87!important;color:#fff!important;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .sec-head h2{font-size:17pt}
+    .doc h3{font-size:12.5pt}
+    .doc p,.doc li,.steps li,.callout,.mini p,.faq-item p{color:#222!important;font-size:10.5pt}
+    .callout,.mini,.faq-item{break-inside:avoid;background:#f7f7f7!important}
+    .table-wrap{overflow:visible;border:1px solid #bbb}
+    table{min-width:0;font-size:9.5pt}
+    th{background:#e8f0ef!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+    tr,img{break-inside:avoid}
+    a{color:#000!important;text-decoration:none}
+    .doc-footer{margin-top:14pt}
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#manualInicio">Ir para o conteúdo</a>
+
+<div class="shell">
+  <aside class="side" aria-label="Sumário do manual">
+    <div class="brand">
+      <img class="brand-logo" src="assets/rede-saude-icone.png" alt="">
+      <div class="brand-copy"><strong>Manual de uso</strong><small>Portal do Setor</small></div>
+    </div>
+
+    <div class="side-search">
+      <label for="manualSearch" class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Buscar no manual</label>
+      <input id="manualSearch" type="search" placeholder="Buscar no manual..." autocomplete="off">
+      <span class="icon" aria-hidden="true">⌕</span>
+    </div>
+    <p class="search-count" id="searchCount" aria-live="polite"></p>
+
+    <nav class="toc" id="manualToc" aria-label="Seções">
+      <a href="#visao" data-toc><span class="toc-num">1</span>O portal em 5 minutos</a>
+      <a href="#acesso" data-toc><span class="toc-num">2</span>Acesso, perfil e preferências</a>
+      <a href="#demandas" data-toc><span class="toc-num">3</span>Demandas</a>
+      <a href="#calendario" data-toc><span class="toc-num">4</span>Calendário</a>
+      <a href="#relatorios" data-toc><span class="toc-num">5</span>Relatórios</a>
+      <a href="#treinamentos" data-toc><span class="toc-num">6</span>Treinamentos e Manuais</a>
+      <a href="#conversas" data-toc><span class="toc-num">7</span>Conversas</a>
+      <a href="#aniversariantes" data-toc><span class="toc-num">8</span>Aniversariantes</a>
+      <a href="#semanal" data-toc><span class="toc-num">9</span>Relatório Semanal</a>
+      <a href="#mala-direta" data-toc><span class="toc-num">10</span>Mala Direta</a>
+      <a href="#outras-telas" data-toc><span class="toc-num">11</span>Quadro, Sindicatos e Contratos</a>
+      <a href="#comissoes" data-toc><span class="toc-num">12</span>Comissões</a>
+      <a href="#financeiro" data-toc><span class="toc-num">13</span>Financeiro (rateios do P4X)</a>
+      <a href="#apuracao" data-toc><span class="toc-num">13a</span>Apuração de empresas</a>
+      <a href="#cobranca-s4e" data-toc><span class="toc-num">14</span>Cobrança de empresas (S4E)</a>
+      <a href="#gestao" data-toc><span class="toc-num">15</span>Painel da Gestão</a>
+      <a href="#admin" data-toc><span class="toc-num">16</span>Administração</a>
+      <a href="#seguranca" data-toc><span class="toc-num">17</span>Segurança, LGPD e backup</a>
+      <a href="#faq" data-toc><span class="toc-num">18</span>Dúvidas frequentes</a>
+    </nav>
+
+    <div class="side-foot">
+      <a href="index.html">← Voltar ao portal</a>
+      <small>Guia do time · novembro de 2026</small>
+    </div>
+  </aside>
+
+  <main class="main" id="manualInicio">
+    <header class="top">
+      <div>
+        <p class="eyebrow">REDE SAÚDE · PORTAL DO SETOR</p>
+        <h1>Manual de uso</h1>
+        <p class="lead">Tudo o que o time precisa para trabalhar no portal: registrar demandas, acompanhar prazos, emitir relatórios, concluir treinamentos e manter a rotina do setor organizada.</p>
+      </div>
+      <div class="top-actions">
+        <button class="btn" type="button" id="printManual">Imprimir ou salvar em PDF</button>
+        <a class="btn btn-primary" href="index.html">Voltar ao portal</a>
+      </div>
+    </header>
+
+    <div class="meta">
+      <span><i></i>Linguagem simples, direto ao ponto</span>
+      <span><i></i>Funciona sem internet</span>
+      <span><i></i>Versão de outubro de 2026</span>
+    </div>
+
+    <!-- 1 -->
+    <section class="doc" id="visao" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">1</span>
+        <div><p class="eyebrow">COMECE POR AQUI</p><h2>O portal em 5 minutos</h2></div>
+      </div>
+      <p>O Portal do Setor reúne, em um só lugar, as demandas do dia, os indicadores da operação, os treinamentos do time, as conversas internas e as rotinas de cadastro e cobrança. Ele roda no servidor local do setor e sincroniza as informações entre os computadores conectados.</p>
+
+      <div class="callout">
+        <strong>Regra de ouro</strong>
+        <p>Se não está no portal, não aconteceu. Registre a demanda, marque as etapas do checklist e conclua quando terminar. É isso que permite ao setor saber o que está pendente e quem está com cada assunto.</p>
+      </div>
+
+      <h3>Mapa das telas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tela</th><th>Para que serve</th><th>Quem vê</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Demandas</strong></td><td>Organizar o que precisa ser feito, com prazo, responsável e prioridade.</td><td>Todos</td></tr>
+            <tr><td><strong>Aniversariantes</strong></td><td>Datas do time e dos parceiros, com a próxima comemoração em destaque.</td><td>Todos</td></tr>
+            <tr><td><strong>Treinamentos e Manuais</strong></td><td>Trilhas com progresso, biblioteca de arquivos, links, anotações e fluxogramas.</td><td>Todos</td></tr>
+            <tr><td><strong>Conversas</strong></td><td>Chat interno da equipe, canais por setor, pessoas e grupos.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Relatórios</strong></td><td>Indicadores do período, gráficos, lista de atrasadas e leitura por pessoa.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Relatório Semanal</strong></td><td>Cadastros de empresas e estabelecimentos, resumo e envio para a gerência.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Mala Direta</strong></td><td>Montar competências em aberto e baixar a planilha de cobrança.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Quadro de Planilhas</strong></td><td>Abrir o sistema de processamento de planilhas dentro do portal.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Sindicatos</strong></td><td>Consultar a lista de sindicatos do sistema da Rede Saúde.</td><td>Quem recebeu a tela</td></tr>
+            <tr><td><strong>Contratos</strong></td><td>Cadastrar empresas e vidas por planilha, consultar a ficha de cada empresa e exportar listas.</td><td>Quem recebeu a tela (valores só para gestão)</td></tr>
+            <tr><td><strong>Comissões</strong></td><td>Controle das empresas, vidas e comissões de 40% do vendedor; cada vendedor vê o próprio resultado.</td><td>Vendedores (o próprio), gestão e administração</td></tr>
+            <tr><td><strong>Painel da Gestão</strong></td><td>Visão da equipe: carga, conclusão, atrasos e último acesso.</td><td>Gestão e administração</td></tr>
+            <tr><td><strong>Admin</strong></td><td>Contas, setores, telas, comunicados, aniversários e dados.</td><td>Administração</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">As telas marcadas como “quem recebeu a tela” são liberadas pessoa por pessoa no Admin. Se você precisa de uma tela que não aparece no menu, fale com o administrador do portal.</p>
+
+      <h3>A rotina de um dia</h3>
+      <ol class="steps">
+        <li><strong>Abra Demandas.</strong> Confira os cartões “Para hoje” e “Atrasadas” antes de qualquer outra coisa.</li>
+        <li><strong>Assuma o que é seu.</strong> Use o botão <em>Assumir</em> para deixar claro quem está cuidando da demanda.</li>
+        <li><strong>Trabalhe pelo checklist.</strong> Marque cada etapa concluída; o progresso fica visível para o setor.</li>
+        <li><strong>Conclua ao terminar.</strong> Clique no círculo ao lado do título. Se a demanda se repete, a próxima já é criada automaticamente.</li>
+        <li><strong>Registre o que travou.</strong> Use a observação para anotar dependências, protocolos e próximos passos.</li>
+        <li><strong>Feche o dia conferindo.</strong> Veja se sobrou algo atrasado e ajuste o prazo ou peça apoio no chat.</li>
+      </ol>
+
+      <div class="grid-2">
+        <div class="mini"><strong>Tudo sincroniza</strong><p>O rodapé mostra “Sincronizado às…” quando a alteração chegou ao servidor. Se aparecer “Salvo neste computador”, a conexão falhou: avise o responsável técnico.</p></div>
+        <div class="mini"><strong>Tudo fica registrado</strong><p>Quem criou, quem concluiu, quando concluiu e quanto tempo levou. Isso alimenta os relatórios automaticamente.</p></div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="doc" id="acesso" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">2</span>
+        <div><p class="eyebrow">PRIMEIROS PASSOS</p><h2>Acesso, perfil e preferências</h2></div>
+      </div>
+
+      <h3>Entrar no portal</h3>
+      <ol class="steps">
+        <li>Abra o atalho do portal no navegador (Chrome ou Edge). No servidor local, o endereço é <code>http://127.0.0.1:5500</code>.</li>
+        <li>Informe o <strong>usuário</strong> e a <strong>senha</strong> que o administrador criou para você.</li>
+        <li>Clique em <strong>Entrar</strong>. A sessão fica lembrada nesse navegador; você só precisa entrar de novo se clicar em <strong>Sair</strong>.</li>
+      </ol>
+      <div class="callout warn">
+        <strong>Senha é pessoal</strong>
+        <p>Não compartilhe sua senha e não use a conta de outra pessoa. O portal registra quem assumiu e quem concluiu cada demanda, e o progresso dos treinamentos é individual. Se esqueceu a senha, peça a redefinição ao administrador — não existe recuperação automática por e-mail.</p>
+      </div>
+
+      <h3>Sair com segurança</h3>
+      <p>No rodapé do menu lateral, clique em <strong>Sair</strong>. Faça isso sempre que usar um computador compartilhado.</p>
+
+      <h3>Seu perfil e sua foto</h3>
+      <ol class="steps">
+        <li>Clique no seu <strong>avatar</strong> (a bolinha com suas iniciais) ou no seu <strong>nome</strong>, no rodapé do menu.</li>
+        <li>Use <strong>Trocar foto</strong> para enviar uma imagem JPG, PNG ou WebP de até <strong>6 MB</strong>.</li>
+        <li>A foto aparece no menu, nas conversas e no cartão do seu aniversário. Para removê-la, clique em <strong>Remover foto</strong>.</li>
+      </ol>
+
+      <h3>Modo noturno e menu</h3>
+      <ul>
+        <li>O botão <strong>Modo noturno</strong>, no topo do Plantão, alterna entre o tema claro e o escuro. A escolha fica salva no navegador.</li>
+        <li>O botão <strong>Recolher</strong>, no rodapé do menu, deixa a barra lateral só com ícones e libera espaço para o conteúdo.</li>
+        <li>No celular, o menu abre pelo botão <strong>☰</strong> no canto inferior esquerdo.</li>
+      </ul>
+      <div class="callout">
+        <strong>Dica</strong>
+        <p>Mantenha o navegador atualizado. Se alguma tela não abrir ou um arquivo não baixar, tente novamente em uma janela anônima antes de abrir chamado.</p>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="doc" id="demandas" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">3</span>
+        <div><p class="eyebrow">O DIA A DIA</p><h2>Demandas</h2></div>
+      </div>
+      <p>É a tela principal do portal. Cada cartão é uma demanda com prazo, responsável, prioridade, checklist e anexos. Demandas do seu setor aparecem aqui; quem é da gestão ou administração vê todos os setores.</p>
+
+      <h3>Os quatro indicadores do topo</h3>
+      <div class="grid-2">
+        <div class="mini"><strong>Para hoje</strong><p>Demandas cujo período inclui o dia de hoje e ainda não foram concluídas.</p></div>
+        <div class="mini"><strong>Atrasadas</strong><p>O prazo final já passou e a demanda continua aberta. É a fila de decisão do dia.</p></div>
+        <div class="mini"><strong>Em andamento</strong><p>Demandas marcadas como “Em andamento”, ou seja, já estão sendo cuidadas.</p></div>
+        <div class="mini"><strong>Concluídas</strong><p>O que já foi finalizado dentro do que você pode ver.</p></div>
+      </div>
+      <p>Clique em qualquer indicador para filtrar a lista. Clique de novo para voltar. O texto abaixo do número mostra quantas demandas do mês estão naquela situação.</p>
+
+      <h3>Abas e filtros</h3>
+      <ul>
+        <li><strong>Hoje</strong> mostra o que está no período de hoje; <strong>Todas</strong> mostra todo o histórico disponível para você.</li>
+        <li><strong>Status</strong>: pendentes, em andamento ou concluídas.</li>
+        <li><strong>Responsável</strong>: filtra por pessoa.</li>
+        <li><strong>Prioridade</strong>: crítica, alta, normal ou baixa.</li>
+        <li><strong>Período</strong>: escolha a data inicial e final e clique em <strong>Limpar</strong> para voltar.</li>
+        <li><strong>Buscar demanda</strong>: procura no título e no conteúdo. Os filtros funcionam juntos.</li>
+      </ul>
+
+      <h3>Criar uma demanda</h3>
+      <ol class="steps">
+        <li>Clique em <strong>+ Nova demanda</strong> (no topo ou no botão flutuante do celular).</li>
+        <li>Escreva o que precisa ser feito, de forma direta: “Fechar relatório do convênio”, “Conferir guias do mês”.</li>
+        <li>Informe a <strong>data inicial</strong> e a <strong>data final</strong>. O período é o que define o que aparece em “Para hoje”.</li>
+        <li>Escolha o <strong>setor</strong>, o <strong>responsável</strong>, a <strong>categoria</strong> e a <strong>prioridade</strong>.</li>
+        <li>Defina a <strong>frequência</strong>: uma vez, diária, semanal, quinzenal ou mensal.</li>
+        <li>Monte o <strong>checklist</strong> com as etapas reais do trabalho.</li>
+        <li>Se precisar, escreva uma <strong>observação</strong> e anexe arquivos de até <strong>4 MB</strong> cada (PDF, planilha, documento, imagem ou TXT).</li>
+        <li>Clique em <strong>Adicionar demanda</strong>.</li>
+      </ol>
+
+      <h3>Prioridades</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Prioridade</th><th>Quando usar</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Crítica — agora</strong></td><td>Impede o trabalho de alguém, tem prazo legal ou risco financeiro imediato.</td></tr>
+            <tr><td><strong>Alta — próxima</strong></td><td>Precisa entrar na fila logo depois do que é crítico.</td></tr>
+            <tr><td><strong>Normal — planejar</strong></td><td>Rotina do setor, com prazo conhecido.</td></tr>
+            <tr><td><strong>Baixa — quando der</strong></td><td>Melhoria ou assunto sem prazo rígido.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Assumir, editar e excluir</h3>
+      <ul>
+        <li><strong>Assumir</strong>: coloca você como responsável e avisa o setor. Aparece quando a demanda é de outra pessoa e ainda está aberta.</li>
+        <li><strong>Editar</strong>: abre a demanda com todos os campos para ajuste, inclusive checklist e anexos.</li>
+        <li><strong>×</strong>: exclui a demanda. A exclusão é definitiva — confirme antes.</li>
+        <li><strong>+ Adicionar etapa</strong>: inclui um item no checklist sem abrir o formulário completo.</li>
+      </ul>
+
+      <h3>Concluir e repetir</h3>
+      <p>Clique no círculo à esquerda do título para marcar como concluída. O portal registra a data e a hora e toca uma pequena sequência musical de confirmação. Para reabrir, clique no mesmo círculo.</p>
+      <p>Em <strong>Meu perfil</strong>, cada pessoa pode escolher o próprio som de conclusão e usar <strong>Ouvir</strong> para testar. Há opções suaves, sininho, brilho, fanfarra, vitória, celebração, confirmação digital, sino duplo, alerta positivo, sem som e uma comemoração curta de gol, sem torcida.</p>
+      <div class="callout">
+        <strong>Demandas que se repetem</strong>
+        <p>Ao concluir uma demanda com frequência definida, o portal cria automaticamente a próxima ocorrência, com o mesmo checklist e os mesmos anexos, já no próximo período. Você não precisa cadastrar de novo.</p>
+      </div>
+
+      <h3>Lembrete de check-in</h3>
+      <p>Com os avisos ligados, o portal lembra na bandeja do Windows quando uma demanda do dia ou atrasada ainda está aberta. Ao clicar no aviso, o portal abre na lista de demandas para você concluir o que for preciso.</p>
+      <p class="muted">O lembrete respeita a opção <strong>Prazos vencidos</strong> da janela de avisos. Para receber, ligue os avisos e mantenha o portal aberto.</p>
+
+      <h3>Exportar e proteger os dados</h3>
+      <p>No topo, o menu <strong>Exportar</strong> oferece:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Opção</th><th>O que gera</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Baixar checklist TXT</strong></td><td>Lista simples das demandas e etapas, boa para imprimir ou colar em e-mail.</td></tr>
+            <tr><td><strong>Baixar relatório Excel</strong></td><td>Planilha com as demandas, útil para análises externas.</td></tr>
+            <tr><td><strong>Baixar backup JSON</strong></td><td>Cópia completa de demandas, histórico, mala direta e treinamentos.</td></tr>
+            <tr><td><strong>Restaurar backup JSON</strong></td><td>Substitui os dados atuais pelo conteúdo do arquivo escolhido.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout danger">
+        <strong>Atenção ao restaurar</strong>
+        <p>A restauração troca todas as demandas, históricos e treinamentos pelos dados do arquivo. Use apenas com orientação de quem administra o portal e guarde o backup atual antes.</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="doc" id="calendario" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">4</span>
+        <div><p class="eyebrow">VISÃO OPERACIONAL</p><h2>Calendário</h2></div>
+      </div>
+      <p>O calendário mostra as demandas distribuídas pelos dias, o que ajuda a enxergar acúmulos e semanas sobrecarregadas.</p>
+      <ol class="steps">
+        <li>No topo da lista, clique em <strong>Calendário</strong> (ao lado de “Lista”).</li>
+        <li>Navegue com <strong>‹</strong> e <strong>›</strong> para mudar de mês; use <strong>Hoje</strong> para voltar ao mês atual.</li>
+        <li>Cada bloco colorido é uma demanda dentro do período dela. As cores seguem a prioridade.</li>
+        <li>Clique em um dia para abrir a agenda completa daquela data.</li>
+        <li>Na janela do dia, você pode <strong>Concluir</strong> ou <strong>Reabrir</strong>, <strong>Assumir</strong>, <strong>Editar</strong> ou criar uma <strong>Nova demanda neste dia</strong>.</li>
+      </ol>
+      <div class="callout">
+        <strong>Dica</strong>
+        <p>Se uma demanda aparece em vários dias, é porque o período inicial e final dela abrange esse intervalo. Ajuste as datas na edição para controlar melhor o calendário.</p>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="doc" id="relatorios" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">5</span>
+        <div><p class="eyebrow">ACOMPANHAMENTO</p><h2>Relatórios</h2></div>
+      </div>
+      <p>Os relatórios mostram o ritmo do setor: o que entrou, o que saiu, quem está sobrecarregado e onde o trabalho está travado. Abra pelo menu lateral ou pelo botão <strong>Relatórios</strong> no topo do Plantão.</p>
+
+      <h3>Escolher o período</h3>
+      <ul>
+        <li>Use os atalhos <strong>Tudo</strong>, <strong>7 dias</strong>, <strong>30 dias</strong>, <strong>Este mês</strong> e <strong>Este ano</strong>.</li>
+        <li>Ou informe <strong>De</strong> e <strong>Até</strong> manualmente. O atalho “Personalizado” assume o controle.</li>
+        <li>Quem é da gestão ou administração também pode filtrar por <strong>setor</strong>.</li>
+        <li><strong>Limpar</strong> volta para o período completo.</li>
+      </ul>
+
+      <h3>Indicadores do período</h3>
+      <p>São seis cartões com comparação em relação ao período anterior:</p>
+      <ul>
+        <li><strong>Atividade no período</strong>: total de demandas consideradas.</li>
+        <li><strong>Criadas</strong>: quantas entraram.</li>
+        <li><strong>Concluídas</strong>: quantas saíram e o percentual dentro do prazo.</li>
+        <li><strong>Taxa de conclusão</strong>: proporção de concluídas sobre o total.</li>
+        <li><strong>Atrasadas agora</strong>: demandas abertas com prazo vencido.</li>
+        <li><strong>Ciclo médio</strong>: tempo médio entre criação e conclusão.</li>
+      </ul>
+      <p>Clique em qualquer cartão para abrir a lista de demandas que compõe aquele número. Na lista, clique em uma demanda para abrir e editar.</p>
+
+      <h3>Leitura automática</h3>
+      <p>Logo abaixo do cabeçalho, o sistema interpreta o recorte atual e escreve o que os dados estão dizendo, sem depender de IA. Os cartões cobrem:</p>
+      <ul>
+        <li><strong>Ritmo</strong>: se entraram mais demandas do que saíram.</li>
+        <li><strong>Prazo</strong>: quantas estão atrasadas e há quantos dias.</li>
+        <li><strong>Gargalo</strong>: demandas paradas ou concentradas em um setor ou pessoa.</li>
+        <li><strong>Carga</strong>: se o trabalho está equilibrado entre a equipe.</li>
+        <li><strong>Qualidade</strong>: entregas dentro do prazo e ciclo médio.</li>
+        <li><strong>Tendência</strong>: comparação com o período anterior de mesmo tamanho.</li>
+        <li><strong>Prioridades</strong>: críticas e altas ainda em aberto.</li>
+        <li><strong>Próximo passo</strong>: a ação que destrava o período.</li>
+      </ul>
+      <p>Cada cartão tem <strong>Ver lista</strong>, que abre as demandas por trás do número, e <strong>Gerar prompt</strong>, que já leva aquele foco para o relatório com IA.</p>
+
+      <h3>Relatório com apoio de IA</h3>
+      <p>O botão <strong>Prompt para IA</strong> monta, no próprio navegador, um texto completo com os dados do recorte para ser colado em qualquer assistente de IA. Nada é enviado para fora do portal: o texto só sai quando você copia e cola.</p>
+      <ul>
+        <li><strong>O que o relatório precisa responder</strong>: marque um ou mais focos (atrasos, produtividade, gargalos, qualidade, tendência, prioridades, comparação entre setores e recomendações).</li>
+        <li><strong>Pedido específico do setor</strong>: escreva a pergunta que o setor mais precisa ver respondida.</li>
+        <li><strong>Formato de saída</strong>: relatório analítico, resumo executivo de uma página ou apresentação de 6 a 8 slides.</li>
+        <li><strong>Base de demandas</strong>: por padrão, envia somente indicadores e destaques para reduzir o consumo de créditos. A lista completa é opcional e aumenta o tamanho do prompt.</li>
+        <li><strong>Copiar prompt</strong> e <strong>Baixar .txt</strong> levam o texto para a IA escolhida.</li>
+      </ul>
+      <p>O prompt já inclui as regras de análise, exige que a IA faça tudo em uma única resposta, gere pelo menos três gráficos com os dados reais e use linguagem profissional e respeitosa, sem culpar ou humilhar pessoas. Ele também exige o modelo visual padrão: fundo branco, colagem de pessoas em tons suaves, marca d’água verde e azul e o logotipo da Rede Saúde. Use <strong>Baixar imagem modelo</strong> e anexe essa imagem na conversa com a IA junto do prompt.</p>
+      <p>As escolhas de foco, formato e pedido ficam guardadas por setor no navegador. Assim, cada setor reabre o gerador já configurado para o que costuma precisar.</p>
+      <div class="callout">
+        <strong>Dados sensíveis</strong>
+        <p>O prompt respeita a visão de cada pessoa: quem não é da gestão gera o relatório apenas com as demandas do próprio setor. Revise o texto antes de colar em ferramentas externas e anexe somente o modelo visual institucional.</p>
+      </div>
+
+      <h3>Gráficos e listas</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Bloco</th><th>O que responde</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Criadas x concluídas</strong></td><td>O setor está dando conta do que entra?</td></tr>
+            <tr><td><strong>Status no período</strong></td><td>Quanto está pendente, em andamento e concluído.</td></tr>
+            <tr><td><strong>Quem está com o quê</strong></td><td>Carga por pessoa. Clique em um nome para ver a lista.</td></tr>
+            <tr><td><strong>Prioridades em aberto</strong></td><td>Peso do que está crítico e alto.</td></tr>
+            <tr><td><strong>Volume por setor</strong></td><td>Distribuição entre setores (visão da gestão).</td></tr>
+            <tr><td><strong>Ciclo médio por prioridade</strong></td><td>Quanto tempo cada nível de prioridade leva para concluir.</td></tr>
+            <tr><td><strong>Envelhecimento</strong></td><td>Há quanto tempo as demandas abertas estão paradas.</td></tr>
+            <tr><td><strong>Atrasadas há mais tempo</strong></td><td>A fila que exige decisão primeiro.</td></tr>
+            <tr><td><strong>Sem movimento</strong></td><td>Demandas sem atualização recente.</td></tr>
+            <tr><td><strong>Conclusões por dia</strong></td><td>Entregas diárias dentro do período.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Leitura por pessoa</h3>
+      <p>Abaixo dos gráficos, cada pessoa aparece com total no período, concluídas, em aberto, atrasadas, taxa de conclusão e ciclo médio. Use <strong>Baixar por pessoa</strong> para gerar um CSV com essa tabela.</p>
+
+      <h3>Imprimir e exportar</h3>
+      <ul>
+        <li><strong>Imprimir</strong>: abre a impressão com um layout limpo, sem menu e sem controles. Escolha “Salvar como PDF” para arquivar ou enviar à gerência.</li>
+        <li><strong>Baixar CSV</strong>: planilha com todas as demandas do período, inclusive status, prioridade, responsável, setor, datas e dias até concluir.</li>
+      </ul>
+      <div class="callout">
+        <strong>Privacidade entre setores</strong>
+        <p>Quem não é da gestão vê apenas as demandas do próprio setor — nos indicadores, nos gráficos, nas listas e nos arquivos exportados. A gestão e a administração veem todos os setores.</p>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="doc" id="treinamentos" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">6</span>
+        <div><p class="eyebrow">BASE DE CONHECIMENTO DO SETOR</p><h2>Treinamentos e Manuais</h2></div>
+      </div>
+      <p>Esta tela guarda o que o setor sabe fazer: trilhas de aprendizagem com progresso, materiais, links, anotações de processos e fluxogramas. Tudo fica disponível para quem é do setor.</p>
+
+      <h3>Trilhas</h3>
+      <p>Cada trilha tem etapas. O progresso é calculado pelas etapas marcadas e é individual.</p>
+      <ol class="steps">
+        <li>Abra a aba <strong>Trilhas</strong>.</li>
+        <li>Marque cada etapa concluída. A barra de progresso e o percentual atualizam na hora.</li>
+        <li>Ao marcar todas as etapas, a trilha é considerada concluída e o botão <strong>Certificado</strong> é liberado.</li>
+        <li>Se precisar refazer, use <strong>Refazer trilha</strong>. O progresso atual é apagado.</li>
+      </ol>
+      <ul>
+        <li><strong>Obrigatórias</strong>: aparecem com etiqueta e entram nos indicadores de pendência.</li>
+        <li><strong>Filtros</strong>: Todas, Obrigatórias, Em aberto e Concluídas.</li>
+        <li><strong>Busca</strong>: procura por título, descrição, categoria, material e anotação.</li>
+        <li><strong>Gestão</strong>: quem é gestor ou administrador vê também quantas pessoas começaram e concluíram, e pode editar ou excluir a trilha.</li>
+      </ul>
+
+      <h3>Criar uma trilha</h3>
+      <ol class="steps">
+        <li>Clique em <strong>+ Nova trilha</strong>.</li>
+        <li>Dê um nome claro (“Onboarding do cadastro”, “LGPD no dia a dia”).</li>
+        <li>Explique para que serve e o que a pessoa deve saber ao final.</li>
+        <li>Escolha a categoria e o setor. Quem não é da gestão cria para o próprio setor.</li>
+        <li>Marque <strong>Trilha obrigatória para o setor</strong> se ela for exigência.</li>
+        <li>Adicione as etapas uma a uma. Elas devem ser ações concretas: “Ler o manual do convênio”, “Fazer um cadastro de teste”.</li>
+        <li>Clique em <strong>Salvar trilha</strong>.</li>
+      </ol>
+
+      <h3>Certificado</h3>
+      <p>Com 100% das etapas concluídas, clique em <strong>Certificado</strong>. O portal abre uma página pronta para impressão com seu nome, a trilha, a carga estimada (15 minutos por etapa) e a data de conclusão. Use <strong>Imprimir</strong> e escolha “Salvar como PDF”.</p>
+      <div class="callout warn">
+        <strong>Pop-up bloqueado?</strong>
+        <p>Se o certificado não abrir, libere pop-ups para o endereço do portal nas configurações do navegador e tente novamente.</p>
+      </div>
+
+      <h3>Biblioteca</h3>
+      <p>Reúne os arquivos do setor: PDF, planilhas, documentos e imagens. Use <strong>Enviar arquivo</strong> no topo da tela. Cada arquivo pode ter até <strong>4 MB</strong>.</p>
+      <div class="callout">
+        <strong>Arquivos grandes</strong>
+        <p>Os materiais ficam guardados no armazenamento do portal. Prefira arquivos leves; acima de 4 MB o envio é recusado. Se o navegador avisar que o armazenamento encheu, remova materiais antigos antes de continuar.</p>
+      </div>
+
+      <h3>Links úteis</h3>
+      <p>Na aba <strong>Biblioteca</strong>, clique em <strong>+ Adicionar link</strong>, dê um nome e cole o endereço completo (começando com <code>https://</code>). Links abrem em nova aba e podem ser editados pelo ícone de lápis.</p>
+
+      <h3>Anotações — “Como fazemos”</h3>
+      <p>Registre regras, atalhos e decisões que não podem ficar só na cabeça de uma pessoa.</p>
+      <ol class="steps">
+        <li>Clique em <strong>+ Anotação</strong>.</li>
+        <li>Escreva um título objetivo e o passo a passo no conteúdo.</li>
+        <li>Salve. Para ajustar depois, use o ícone de lápis; para excluir, o <strong>×</strong>.</li>
+      </ol>
+      <p class="muted">Boa anotação: começa pelo objetivo, lista os passos na ordem e aponta os cuidados e exceções.</p>
+
+      <h3>Fluxos</h3>
+      <p>Na aba <strong>Fluxos</strong> você desenha o caminho de um processo.</p>
+      <ul>
+        <li><strong>+ Novo fluxo</strong>: cria um fluxograma e pede o nome.</li>
+        <li><strong>+ Etapa</strong>: adiciona uma caixa. Escolha a forma antes: processo, início/fim, decisão, documento, entrada/saída, banco de dados ou ação manual.</li>
+        <li><strong>Modo conectar</strong>: clique na etapa de origem e depois na de destino para criar a seta.</li>
+        <li>Arraste as caixas para organizar o desenho.</li>
+        <li><strong>Limpar setas</strong> remove as conexões; <strong>Limpar tudo</strong> apaga o fluxo; <strong>Renomear</strong> muda o nome.</li>
+      </ul>
+
+      <h3>Ferramentas</h3>
+      <p>A aba <strong>Ferramentas</strong> reúne os aplicativos do setor (automação de cancelamento, gerador de recibos, gerador de planilhas e o quadro Flask).</p>
+      <div class="callout warn">
+        <strong>O navegador não executa programas</strong>
+        <p>Arquivos <code>.exe</code> e <code>.bat</code> são baixados para a pasta Downloads. Depois, abra o arquivo pelo Windows. O botão <strong>Copiar caminho da pasta</strong> ajuda a localizar os arquivos no Explorador.</p>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="doc" id="conversas" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">7</span>
+        <div><p class="eyebrow">CHAT INTERNO</p><h2>Conversas</h2></div>
+      </div>
+      <p>O chat resolve o que é rápido e evita perder informação em conversas paralelas. Ele tem três abas: <strong>Conversas</strong>, <strong>Pessoas</strong> e <strong>Grupos</strong>.</p>
+
+      <h3>Conversas</h3>
+      <ul>
+        <li><strong>Canais</strong>: o canal <strong>Equipe</strong> reúne todos os perfis; o canal do setor reúne quem trabalha naquela área.</li>
+        <li><strong>Pessoas</strong>: abre uma conversa individual.</li>
+        <li>O contador no menu lateral mostra mensagens não lidas.</li>
+        <li>A busca encontra conversa, pessoa ou grupo pelo nome.</li>
+      </ul>
+
+      <h3>Enviar mensagens e arquivos</h3>
+      <ol class="steps">
+        <li>Escolha o canal ou a pessoa na lista da esquerda.</li>
+        <li>Escreva no campo inferior. <kbd>Enter</kbd> envia; <kbd>Shift</kbd> + <kbd>Enter</kbd> quebra linha.</li>
+        <li>Use o clipe para anexar <strong>foto, vídeo ou documento</strong> (PDF, Word, Excel, PowerPoint, TXT, CSV, ZIP); a prévia aparece antes do envio. Cada arquivo pode ter até 8 MB para foto, 40 MB para vídeo e 20 MB para documento.</li>
+        <li>Use o microfone para gravar um <strong>áudio</strong>. Autorize o microfone no navegador na primeira vez. Você pode cancelar ou enviar depois de gravar.</li>
+      </ol>
+
+      <h3>Pessoas e grupos</h3>
+      <ul>
+        <li>Na aba <strong>Pessoas</strong>, clique em alguém para abrir a ficha com os dados do perfil e o atalho para conversar.</li>
+        <li>Na aba <strong>Grupos</strong>, aparecem o grupo da equipe e o grupo de cada setor, com a lista de participantes e o volume de demandas.</li>
+        <li>O botão <strong>i</strong>, no topo da conversa, mostra informações do contato ou do grupo.</li>
+      </ul>
+      <div class="callout">
+        <strong>Boa convivência</strong>
+        <p>Assunto que precisa de prazo, responsável ou histórico deve virar demanda no Plantão. O chat é para alinhamento rápido; a demanda é o registro oficial.</p>
+      </div>
+
+      <h3>Avisos no Windows</h3>
+      <p>O portal pode avisar na bandeja do Windows (a área de notificações da barra de tarefas) quando chega mensagem no chat, quando entra uma demanda para você e quando um prazo vence. O controle fica no botão <strong>Ativar avisos</strong>, no topo do portal.</p>
+      <ol class="steps">
+        <li>Abra o portal no computador e clique em <strong>Ativar avisos</strong>.</li>
+        <li>O navegador pede autorização. Escolha <strong>Permitir</strong>.</li>
+        <li>Na janela <strong>Avisos neste computador</strong>, marque o que você quer receber e clique em <strong>Concluir</strong>.</li>
+        <li>O botão passa a mostrar <strong>Avisos ativos</strong>. Repita isso em cada notebook, porque a autorização vale por computador e por navegador.</li>
+      </ol>
+      <p class="muted">A escolha do que receber fica guardada para a sua conta neste navegador. Para mudar depois, clique no botão <strong>Avisos ativos</strong> e ajuste as caixas.</p>
+      <ul>
+        <li><strong>Mensagens do chat</strong>: Equipe, setor e conversas individuais.</li>
+        <li><strong>Novas demandas</strong>: demandas com responsável você ou <strong>Ambos</strong>.</li>
+        <li><strong>Demandas atribuídas depois</strong>: quando alguém coloca uma demanda no seu nome.</li>
+        <li><strong>Prazos vencidos</strong>: lembrete de demandas abertas fora do prazo.</li>
+        <li><strong>O que não chega</strong>: suas próprias mensagens, a conversa que já está aberta com a janela em foco, mensagens antigas que já estavam sem ler no login e demandas de outras pessoas.</li>
+        <li>Clicar no aviso abre o portal direto na conversa ou na lista de demandas.</li>
+        <li>Use <strong>Enviar aviso de teste</strong> dentro da janela para conferir se o Windows está mostrando os avisos.</li>
+        <li>Desmarque <strong>Receber avisos neste computador</strong> para desligar tudo naquele computador sem perder as escolhas.</li>
+      </ul>
+      <div class="callout">
+        <strong>Para os avisos funcionarem</strong>
+        <p>Use o endereço seguro do portal (<strong>https://192.168.1.11:5443</strong>) e abra pelo atalho <strong>Portal do Setor</strong>; o navegador não libera avisos em endereços HTTP da rede. O portal precisa estar aberto em uma aba — pode ficar minimizado, mas fechar o navegador interrompe os avisos. No Windows, confirme também que as notificações do navegador estão permitidas e que o modo <strong>Não perturbe</strong> está desligado.</p>
+        <p>Se o botão mostrar <strong>Avisos bloqueados</strong>, libere as notificações nas permissões do site no navegador e recarregue o portal. Se mostrar <strong>Avisos indisponíveis</strong>, você está em um endereço HTTP: troque para o endereço HTTPS acima.</p>
+        <p>No endereço HTTPS o navegador pode mostrar <strong>Não seguro</strong> enquanto este computador não tiver o certificado do portal. O responsável técnico roda uma vez o <strong>Preparar-Portal.bat</strong> em cada computador: ele instala o certificado, ajusta o Firefox e cria o atalho <strong>Portal do Setor</strong>. Depois disso, feche todas as janelas do Firefox e abra pelo atalho.</p>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="doc" id="aniversariantes" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">8</span>
+        <div><p class="eyebrow">GENTE DO SETOR</p><h2>Aniversariantes</h2></div>
+      </div>
+      <p>A tela reúne as datas do time e dos parceiros, com a próxima comemoração em destaque e a contagem de dias.</p>
+      <ul>
+        <li><strong>Próximos</strong>: ordem de quem faz aniversário primeiro.</li>
+        <li><strong>Este mês</strong>: somente as datas do mês atual.</li>
+        <li><strong>Todos</strong>: lista completa por mês.</li>
+        <li><strong>Buscar pessoa</strong>: encontra pelo nome.</li>
+      </ul>
+      <p>As fotos aparecem nos cartões quando cadastradas. Quem não tem foto recebe as iniciais.</p>
+      <p class="muted">O cadastro é feito pelo administrador em <strong>Admin → Aniversariantes</strong>, inclusive para parceiros que não têm conta no portal. Se a sua data estiver errada ou faltando, avise o administrador.</p>
+    </section>
+
+    <!-- 9 -->
+    <section class="doc" id="semanal" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">9</span>
+        <div><p class="eyebrow">RELATÓRIO PARA A GERÊNCIA</p><h2>Relatório Semanal</h2></div>
+      </div>
+      <p>Serve para registrar cada empresa ou estabelecimento cadastrado e enviar o resumo da semana para a gerência.</p>
+
+      <h3>Registrar um cadastro</h3>
+      <ol class="steps">
+        <li>Escolha o <strong>tipo</strong>: empresa ou estabelecimento.</li>
+        <li>Escreva o <strong>nome</strong> do que foi cadastrado.</li>
+        <li>Informe a <strong>data do cadastro</strong>.</li>
+        <li>Selecione <strong>quem cadastrou</strong>.</li>
+        <li>Clique em <strong>Adicionar</strong>. O registro entra na tabela da semana.</li>
+      </ol>
+
+      <h3>Navegar e conferir</h3>
+      <ul>
+        <li>Use <strong>‹</strong> e <strong>›</strong> para mudar de semana e <strong>Semana atual</strong> para voltar.</li>
+        <li>Os cartões mostram empresas, estabelecimentos e total de cadastros da semana.</li>
+        <li>A tabela lista dia, tipo, cadastro e quem cadastrou. Use o <strong>×</strong> para remover um registro errado.</li>
+      </ul>
+
+      <h3>Enviar para a gerência</h3>
+      <ul>
+        <li><strong>Copiar mensagem para envio</strong>: gera o texto pronto da semana no formato usado pela gerência. Depois é só colar no e-mail ou no chat.</li>
+        <li><strong>Baixar Excel</strong>: planilha com os registros da semana para arquivar ou anexar.</li>
+      </ul>
+      <div class="callout">
+        <strong>Rotina recomendada</strong>
+        <p>Cadastre no mesmo dia em que o cadastro foi feito. Na sexta-feira, confira a semana, copie a mensagem e envie antes do fechamento.</p>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="doc" id="mala-direta" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">10</span>
+        <div><p class="eyebrow">COBRANÇA</p><h2>Mala Direta</h2></div>
+      </div>
+      <p>Monta a planilha de competências em aberto a partir do texto copiado do sistema financeiro.</p>
+
+      <h3>Montar a planilha</h3>
+      <ol class="steps">
+        <li>Escolha o <strong>nome usado na planilha</strong>: nome comercial ou razão social.</li>
+        <li>Preencha a <strong>empresa</strong> e os <strong>e-mails</strong> encontrados, separados por vírgula.</li>
+        <li>Cole o texto do sistema financeiro na caixa grande. O portal identifica vencimentos, competências e valores.</li>
+        <li>Clique em <strong>Identificar competências</strong> e confira as linhas na fila.</li>
+        <li>Se tiver um modelo de planilha, carregue em <strong>Carregar modelo Excel</strong>.</li>
+        <li>Clique em <strong>Baixar planilha de mala direta</strong>.</li>
+        <li>Use <strong>Limpar formulário para próxima empresa</strong> para começar o próximo cliente sem perder a fila.</li>
+      </ol>
+
+      <h3>Histórico de cobranças</h3>
+      <p>Ao baixar a planilha, o portal registra a cobrança no histórico, com empresa, e-mail, dias cobrados, quantidade e competências enviadas. Isso permite acompanhar recorrência e evitar cobrança repetida.</p>
+      <div class="callout warn">
+        <strong>Confira antes de baixar</strong>
+        <p>Revise empresa, e-mails, valores e competências na prévia. A planilha gerada é o documento que segue para o cliente.</p>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="doc" id="outras-telas" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">11</span>
+        <div><p class="eyebrow">SISTEMAS DO SETOR</p><h2>Quadro de Planilhas, Sindicatos e Contratos</h2></div>
+      </div>
+
+      <h3>Quadro de Planilhas</h3>
+      <p>Abre o sistema Python de processamento de planilhas dentro do portal.</p>
+      <ol class="steps">
+        <li>Antes de usar, inicie o serviço pelo arquivo <strong>iniciar_windows.bat</strong>, na pasta do sistema.</li>
+        <li>Abra a tela no menu. O quadro carrega no espaço principal.</li>
+        <li>Se o navegador bloquear a exibição, use <strong>Abrir quadro em nova aba</strong>.</li>
+      </ol>
+      <p class="muted">O endereço usado pelo quadro aparece ao lado do botão. Se a tela ficar em branco, confirme se o serviço está em execução.</p>
+
+      <h3>Sindicatos</h3>
+      <p>Mostra a lista de sindicatos do sistema da Rede Saúde. Se o carregamento for bloqueado, use <strong>Abrir em nova aba</strong> ou <strong>Recarregar</strong>. Esta tela depende de conexão com a internet.</p>
+
+      <h3>Contratos</h3>
+      <p>A tela de Contratos agora é nativa do portal. O cadastro da empresa é feito apenas pela planilha: o sistema lê os campos e monta a ficha da empresa com todas as vidas.</p>
+      <ol class="steps">
+        <li>Clique em <strong>Importar planilha</strong> e escolha o arquivo <strong>.xlsx</strong> de cadastro.</li>
+        <li>Confira a prévia: nome, CNPJ, contato, telefone, e-mail e a lista de vidas encontradas.</li>
+        <li>Clique em <strong>Importar planilha</strong> para gravar. Se a empresa já existir, os dados são atualizados sem duplicar vidas.</li>
+      </ol>
+      <p><strong>Campos reconhecidos automaticamente:</strong> empresa, CNPJ, contato, telefone, e-mail, contador, e-mail do contador, plano, valor mensal, vendedor e início do contrato. Na tabela de colaboradores: nome, CPF, nascimento, nome da mãe, celular, e-mail e cargo.</p>
+      <ul>
+        <li><strong>Ficha da empresa:</strong> mostra todos os dados do contrato e todas as vidas, com idade e aniversários do mês.</li>
+        <li><strong>CPFs protegidos:</strong> aparecem mascarados por padrão. Use <strong>Mostrar CPFs</strong> somente quando necessário.</li>
+        <li><strong>Busca e filtros:</strong> procure por nome, CNPJ, contato ou plano, filtre por status e ordene por nome, vidas ou atualização.</li>
+        <li><strong>Filtro por mês:</strong> no topo da lista, escolha o campo <strong>Início</strong> ou <strong>Atualizado em</strong> e depois o mês. As opções de mês são montadas a partir das datas dos contratos visíveis; se algum contrato estiver sem data, aparece a opção <strong>Sem data</strong>.</li>
+        <li><strong>Status de cadastro:</strong> cada vida é marcada como <strong>Cadastrada</strong> ou <strong>Pendente</strong>. Na ficha da empresa aparece o resumo (<em>x de y cadastradas</em>) e no cartão da lista um selo com o total. Só administração e quem tem a tela <strong>Contratos</strong> podem mudar esse status.</li>
+        <li><strong>Editar empresa e vidas:</strong> você pode complementar plano, valor, vendedor, observações e cadastrar vidas manualmente. Esses ajustes são preservados nas próximas importações.</li>
+        <li><strong>Exportar vidas:</strong> gera um CSV (abre no Excel) com as vidas da empresa aberta ou de toda a base.</li>
+        <li><strong>Histórico:</strong> cada importação fica registrada com arquivo, empresa, vidas novas, atualizadas, removidas e quem importou.</li>
+      </ul>
+      <div class="callout">
+        <strong>Atenção à LGPD</strong>
+        <p>A planilha de cadastro contém CPF, nascimento e nome da mãe. Importe e exporte apenas em ambiente autorizado e não compartilhe os arquivos fora do setor.</p>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="doc" id="comissoes" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">12</span>
+        <div><p class="eyebrow">CONTROLE DO VENDEDOR</p><h2>Comissões</h2></div>
+      </div>
+      <p>A tela de Comissões é separada da tela de Contratos. Ela reúne as empresas fechadas por cada vendedor, as vidas de cada contrato e o valor a receber. A comissão é de <strong>40% fixa</strong> sobre a receita inicial do contrato e sobre cada movimentação lançada nos três primeiros meses.</p>
+      <p>Os contratos aparecem em <strong>cartões compactos</strong>, um por empresa, com o selo de cadastro das vidas e a comissão total ao lado. Clique no cartão para abrir a ficha completa da empresa.</p>
+
+      <h3>Quem vê o quê</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Perfil</th><th>O que aparece</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Administração e gestão</strong></td><td>Todas as empresas, todos os vendedores, valores de receita e comissões.</td></tr>
+            <tr><td><strong>Vendedor</strong></td><td>Somente as empresas em que ele é o vendedor. Vê os próprios valores e comissões.</td></tr>
+            <tr><td><strong>Setores com acesso a Contratos</strong></td><td>Veem empresas e vidas na tela de Contratos, mas <strong>sem receita, sem comissão e sem valor a receber</strong>. A tela de Comissões não aparece no menu.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted">Essa proteção é feita no servidor: quem não tem permissão não recebe os valores financeiros, mesmo que abra o endereço da API diretamente.</p>
+
+      <h3>Ficha do contrato</h3>
+      <p>Ao clicar no cartão, abre a ficha com os dados da empresa, o resumo financeiro (receita e comissão inicial, movimentações e total), as movimentações lançadas e a lista de vidas.</p>
+      <ul>
+        <li><strong>Vidas:</strong> busca por nome, CPF, celular ou e-mail. O CPF aparece mascarado; use <strong>Mostrar CPFs</strong> apenas quando precisar.</li>
+        <li><strong>Adicionar vida:</strong> o próprio vendedor cadastra vidas no contrato, como na tela de Contratos.</li>
+        <li><strong>Editar e excluir vida:</strong> use os botões de cada linha. Toda alteração atualiza na hora o selo de cadastro do cartão.</li>
+        <li><strong>Status de cadastro:</strong> em Comissões o status é apenas leitura. A marcação <strong>Cadastrada</strong> ou <strong>Pendente</strong> é feita na ficha da empresa em <strong>Contratos</strong>, pela administração, pela gestão ou por quem tem a tela <strong>Contratos</strong>. Ter somente a tela <strong>Comissões</strong> não libera a marcação.</li>
+      </ul>
+
+      <h3>Como a comissão é calculada</h3>
+      <ul>
+        <li><strong>Receita inicial:</strong> o valor mensal do contrato. Se o contrato for por vida, é o valor por vida multiplicado pelas vidas iniciais.</li>
+        <li><strong>Comissão inicial:</strong> 40% da receita inicial, mostrada na prévia antes de salvar.</li>
+        <li><strong>Movimentações:</strong> vidas adicionadas × valor por vida = total do mês; a comissão é 40% desse total.</li>
+        <li><strong>Meses 1, 2 e 3:</strong> apenas essas movimentações geram comissão. O mês é escolhido ao lançar.</li>
+      </ul>
+
+      <h3>Cadastrar uma empresa</h3>
+      <ol class="steps">
+        <li>Abra <strong>Comissões</strong> no menu e clique em <strong>Novo contrato</strong>.</li>
+        <li>Preencha nome, CNPJ, contato, telefone, e-mail, plano e início do contrato.</li>
+        <li>Informe o <strong>valor mensal</strong> ou o <strong>valor por vida</strong> com as vidas iniciais.</li>
+        <li>Confira a prévia da comissão e clique em <strong>Salvar contrato</strong>.</li>
+      </ol>
+      <p>O vendedor que cria o contrato já fica registrado automaticamente com o próprio nome. A gestão e a administração podem escolher o vendedor no campo correspondente.</p>
+
+      <h3>Importar a planilha</h3>
+      <p>O vendedor também pode subir a planilha de cadastro direto na tela de Comissões.</p>
+      <ol class="steps">
+        <li>Clique em <strong>Importar planilha</strong> no topo da tela.</li>
+        <li>Escolha o arquivo <strong>.xlsx</strong> de cadastro da empresa.</li>
+        <li>Confira a prévia com os dados da empresa, as vidas encontradas e o resumo financeiro: vendedor, receita inicial e comissão de 40%.</li>
+        <li>Clique em <strong>Importar planilha</strong>. O contrato já é gravado no seu nome, o mês filtrado volta para “Todos os meses” e o cartão da empresa abre com a comissão calculada.</li>
+      </ol>
+      <p>Se a empresa já estiver vinculada a outro vendedor, a importação é bloqueada. Se já for sua, a planilha atualiza o cadastro e completa as vidas, sem duplicar.</p>
+
+      <h3>Lançar movimentações</h3>
+      <ol class="steps">
+        <li>Clique no cartão da empresa para abrir os detalhes e a lista de movimentações.</li>
+        <li>Clique em <strong>Lançar movimentação</strong>, escolha o mês (1 a 3) e informe as vidas adicionadas e o valor por vida.</li>
+        <li>Confira o total do mês e a comissão na prévia e confirme.</li>
+        <li>Use os botões da linha para <strong>editar</strong> ou <strong>excluir</strong> uma movimentação.</li>
+      </ol>
+
+      <h3>Editar, excluir e exportar</h3>
+      <ul>
+        <li><strong>Editar empresa:</strong> abre o mesmo formulário do cadastro. Vendedores só podem editar as próprias empresas e não podem trocar o vendedor.</li>
+        <li><strong>Excluir empresa:</strong> remove a empresa, as vidas e as movimentações. Confirme antes; não há como desfazer.</li>
+        <li><strong>Busca e filtros:</strong> procure por empresa, CNPJ ou contato, filtre por status, filtre pelo <strong>mês de início do contrato</strong> e ordene a lista. O filtro de mês é montado com os meses existentes na sua lista e inclui a opção “Sem data de início”.</li>
+        <li><strong>Exportar CSV:</strong> baixa a lista atual com receitas e comissões. O arquivo respeita a permissão: o vendedor exporta apenas as próprias empresas.</li>
+      </ul>
+
+      <h3>Preparar o vendedor</h3>
+      <ol class="steps">
+        <li>No <strong>Admin → Pessoas</strong>, edite a conta do vendedor.</li>
+        <li>Preencha o <strong>Nome de vendedor (comissões)</strong>. É esse nome que liga a conta às empresas dos contratos.</li>
+        <li>Marque o setor de acesso e a tela <strong>Comissões</strong>.</li>
+        <li>Peça para a pessoa entrar novamente no portal.</li>
+      </ol>
+      <div class="callout warn">
+        <strong>O nome do vendedor precisa bater</strong>
+        <p>Os contratos são ligados ao vendedor pelo nome. Se o campo <strong>Nome de vendedor</strong> estiver diferente do nome usado no contrato, o vendedor abre a tela e não vê nenhuma empresa. Compare com a grafia usada na planilha ou no cadastro do contrato.</p>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="doc" id="financeiro" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">13</span>
+        <div><p class="eyebrow">RATEIOS RECEBIDOS · P4X</p><h2>Financeiro</h2></div>
+      </div>
+      <p>A tela <strong>Financeiro</strong> traz para o portal os <strong>rateios recebidos</strong> do P4X. Ela mostra os totais, permite buscar por pagador, conferir por arquivo e exportar o que estiver filtrado. O primeiro passo é importar o resultado do P4X.</p>
+
+      <h3>O que é preciso antes de começar</h3>
+      <ul>
+        <li>Um login <strong>próprio no P4X</strong>. O portal não guarda a senha do P4X.</li>
+        <li>O computador preparado para o Financeiro, com a extensão <strong>P4X - Exportar Rateios</strong> instalada e atualizada.</li>
+        <li>A tela <strong>Financeiro</strong> liberada na conta em <strong>Admin → Pessoas</strong>.</li>
+      </ul>
+      <p class="muted">A preparação é feita uma vez em cada computador pelo responsável do portal, com o arquivo <strong>Instalar-Portal-Financeiro.bat</strong>. No Edge, ele instala o suporte à importação e cria o atalho <strong>Portal Financeiro</strong> na Área de Trabalho. Depois disso, a equipe não instala nada: usa sempre esse atalho e o botão <strong>Importar do P4X</strong>.</p>
+
+      <h3>Importar do P4X em um clique</h3>
+      <ol class="steps">
+        <li>No P4X, abra <strong>Extratos → Rateios recebidos</strong>.</li>
+        <li>Aplique o filtro desejado — período, sacador, recebedor, ocorrência — e clique em <strong>Pesquisar</strong>. É exatamente esse resultado que será importado, com todas as páginas.</li>
+        <li>Volte ao portal, abra <strong>Financeiro</strong> e clique em <strong>Importar do P4X</strong>.</li>
+        <li>A extensão abre a aba do P4X, percorre o resultado pesquisado e envia os rateios direto para o portal. Não é preciso baixar arquivo.</li>
+        <li>Aguarde o aviso de conclusão na aba do P4X. Em seguida o portal é atualizado sozinho, com os lançamentos e os totais.</li>
+      </ol>
+      <div class="callout warn">
+        <strong>Pesquise antes de importar</strong>
+        <p>O portal importa o <strong>filtro pesquisado</strong>, não a tela inteira do P4X. Se você não clicar em <strong>Pesquisar</strong> depois de mudar o filtro, a importação pode trazer o resultado anterior. Confira o período e o sacador antes de clicar em <strong>Importar do P4X</strong>.</p>
+      </div>
+
+      <h3>Se a extensão não responder</h3>
+      <p>O portal avisa quando a extensão não está disponível. Nesse caso:</p>
+      <ol class="steps">
+        <li>Abra o P4X e clique no ícone da extensão <strong>P4X - Exportar Rateios</strong>.</li>
+        <li>Use <strong>Baixar Excel do filtro</strong> e salve o arquivo.</li>
+        <li>No portal, clique em <strong>Enviar arquivo .xlsx</strong> e escolha o arquivo salvo.</li>
+      </ol>
+      <p class="muted">Se a extensão estiver instalada mas o botão disser que ela não foi encontrada, confirme se o P4X está aberto no mesmo navegador onde ela foi instalada e recarregue a página do portal.</p>
+
+      <h3>Conferir os rateios</h3>
+      <ul>
+        <li><strong>Indicadores:</strong> quantidade de lançamentos, arquivos do P4X, valor nominal, tarifas, valor pago e rateio total.</li>
+        <li><strong>Busca:</strong> procure por pagador, CPF/CNPJ, nosso número ou arquivo.</li>
+        <li><strong>Período:</strong> escolha se a data usada é a do pagamento, do vencimento, do crédito ou do rateio e informe de/até.</li>
+        <li><strong>Filtros:</strong> arquivo, recebedor, ocorrência e importação. Use <strong>Limpar filtros</strong> para voltar à visão completa.</li>
+        <li><strong>Ordenação:</strong> pagamento mais recente ou mais antigo, maior ou menor rateio, pagador ou arquivo.</li>
+        <li><strong>Exportar filtro (.xlsx):</strong> gera uma planilha com exatamente as linhas que estão na tela.</li>
+      </ul>
+
+      <h3>Baixar CSV de pagamento</h3>
+      <p>O <strong>Baixar CSV</strong> gera o arquivo de pagamento no formato <code>NN;Pagamento;Valor;data crédito</code>, em <code>;</code> e acentuação do Windows. Cada arquivo do P4X vira um CSV separado, com o mesmo nome do arquivo original (por exemplo, <code>COBFB_9000157_237_03112026.TXT.csv</code>).</p>
+      <ul>
+        <li><strong>Um arquivo só:</strong> o CSV é baixado direto.</li>
+        <li><strong>Vários arquivos:</strong> o portal baixa um ZIP com um CSV para cada arquivo.</li>
+        <li><strong>Por arquivo:</strong> clique no nome do arquivo na tabela de rateios para abrir a janela já com a importação dele; a busca, o período e o recebedor atuais continuam valendo.</li>
+        <li><strong>Por importação:</strong> use o botão <strong>CSV</strong> em <strong>Importações recentes</strong> para baixar tudo o que veio naquela importação, dividido por arquivo. Nesse caso os filtros da tela não são aplicados.</li>
+        <li><strong>Pelo filtro atual:</strong> use o botão <strong>Baixar CSV</strong> no topo da tela.</li>
+      </ul>
+      <p>Ao abrir a janela de download, o portal indica exatamente <strong>de onde</strong> o CSV está sendo gerado: a data e o nome do arquivo importado (por exemplo, <code>06/11/2026, 14:11 · P4X_20261106_1411.xlsx</code>), o arquivo do P4X escolhido na tabela ou os filtros atuais da tela. Confira essa linha antes de continuar.</p>
+      <p>Logo abaixo está o campo <strong>Importação</strong>. Ele mostra apenas as importações já feitas, cada uma identificada com data e hora, nome do arquivo importado, quem importou e o período. A importação clicada já vem selecionada; para exportar todo o período da tela, escolha <strong>Todas as importações</strong>. Com mais de um arquivo do P4X na escolha, o download vem em ZIP com um CSV por arquivo.</p>
+      <p>Depois marque <strong>quais descrições devem ir no CSV</strong>, como <em>LIQUIDAÇÃO</em> ou <em>PIX</em>. Cada opção mostra a quantidade de lançamentos e o valor pago. Use <strong>Todas</strong> ou <strong>Nenhuma</strong> para marcar de uma vez. As descrições sem data de pagamento, como <em>ENTRADA CONFIRMADA</em> e <em>BAIXA</em>, aparecem na lista desmarcadas e não podem ser escolhidas — é por isso que, em muitos arquivos, só LIQUIDAÇÃO e PIX ficam disponíveis. Na importação, essa escolha vale só para a importação selecionada e ignora os filtros da tela.</p>
+      <div class="callout warn">
+        <strong>Código da primeira linha</strong>
+        <p>Depois de escolher as descrições, digite o código que deve abrir o CSV, como <strong>PDNN00001005112026</strong>. Quando o pagamento é de outro dia, só muda a data no final. O portal lembra o último código digitado.</p>
+      </div>
+      <p>A descrição da ocorrência <strong>não entra</strong> no CSV: ela só seleciona quais lançamentos serão incluídos. Só entram registros com <strong>nosso número</strong> e <strong>data de pagamento</strong>; entradas confirmadas e baixas sem pagamento ficam de fora. O valor sai com vírgula decimal e sem zeros à toa, como no modelo usado pelo financeiro.</p>
+
+      <h3>Importações recentes</h3>
+      <p>Cada importação fica registrada com data, nome do arquivo, quantidade de lançamentos, arquivos do P4X, rateio total, período e quem importou. Use essa lista para conferir de onde veio cada valor.</p>
+      <ul>
+        <li><strong>Reimportar o mesmo conteúdo:</strong> substitui a importação anterior, sem duplicar valores.</li>
+        <li><strong>Excluir uma importação:</strong> remove o registro e todos os rateios dele. Confirme antes; não há como desfazer.</li>
+      </ul>
+
+      <div class="callout">
+        <strong>Quem vê os rateios</strong>
+        <p>A tela aparece para a gestão, para a administração e para quem recebeu a tela <strong>Financeiro</strong> no Admin. Os valores são financeiros: trate as planilhas exportadas como documento interno e não compartilhe fora do setor.</p>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="doc" id="apuracao" data-doc-section>
+      <div class="section-head"><div><p class="eyebrow">CONSULTA · GERÊNCIA E ADMIN</p><h2>Apuração de empresas</h2></div></div>
+      <p>A tela <strong>Apuração</strong> é o telão do faturamento: mostra empresas totais, empresas que pagaram e empresas sem pagamento, por competência e grupo-mãe. É independente da Cobrança e do sistema manual de planilhas, que continuam disponíveis.</p>
+      <ol>
+        <li>Abra <strong>Apuração</strong> no menu e selecione o mês.</li>
+        <li>Clique em <strong>Apurar agora</strong> para consultar o relatório do S4E usando a conta já salva no portal.</li>
+        <li>Acompanhe os cartões e os dias de vencimento do SINTEG. Use <strong>Modo telão</strong> para ampliar; Esc sai da tela cheia.</li>
+        <li>Use <strong>Baixar planilha</strong> ou <strong>Histórico semanal</strong> para obter o arquivo de uma execução concluída.</li>
+      </ol>
+      <p><strong>Automático:</strong> de segunda a sexta, das <strong>7h às 19h</strong>, a cada <strong>30 minutos</strong>, horário de Brasília, para a competência do mês atual. O servidor deve estar ligado e a conta salva do S4E precisa estar válida. Se o portal voltar mais tarde no mesmo dia, a próxima execução acontece em até 30 minutos; nada fica pendente de um dia para o outro. As 24 execuções mais recentes de cada competência ficam guardadas no histórico.</p>
+      <p><strong>Regras:</strong> entram empresas com CNPJ e parcela positiva da competência. Como no sistema manual, a data de crédito determina o pagamento; isso não significa quitação integral. Na planilha, o mesmo CNPJ e mês de vencimento dentro da mesma aba é atualizado, não duplicado. Os totais contam CNPJs distintos; a mesma empresa pode aparecer em mais de um grupo, portanto a soma dos cartões pode superar o total geral.</p>
+      <p>Empresas sem grupo ficam em <strong>Ceará</strong>. Grupos novos ganham novas abas. Em <strong>Organizar grupos</strong>, somente o admin pode vincular grupos do S4E a um grupo-mãe, inclusive por tipo de pagamento. A mudança vale para a próxima apuração e preserva o histórico.</p>
+      <p>Cada execução gera um arquivo próprio, organizado por ano, mês e semana (dias 1–7, 8–14, 15–21, 22–28 e 29–31). A planilha inclui Resumo e abas por grupo, com código, empresa, CNPJ, vidas, vencimento, NF, valores e data de pagamento/crédito. Uma falha não substitui o último telão concluído.</p>
+      <p><strong>Somente consulta:</strong> não envia e-mails ou WhatsApp, não cobra empresas e não altera dados no S4E. O acesso à tela e aos arquivos é exclusivo da gerência e do admin.</p>
+    </section>
+
+    <section class="doc" id="cobranca-s4e" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">14</span>
+        <div><p class="eyebrow">COBRANÇA DE EMPRESAS</p><h2>Cobrança (S4E)</h2></div>
+      </div>
+      <p>A tela <strong>Cobrança</strong> junta, num só lugar, os títulos em atraso das <strong>empresas</strong> — mensalidade do plano, adesão, sindicato, acordo e demais valores — já com o contato da empresa e o texto pronto para enviar por e-mail ou WhatsApp. A cobrança é sempre da empresa (CNPJ); títulos de associados (CPF) ficam fora da fila.</p>
+      <p>Cada empresa aparece <strong>uma única vez</strong> na tabela, mesmo quando tem vários cadastros no S4E. A coluna <strong>Composição</strong> mostra o que ela deve (mensalidades, parcelas de acordo, adesões, sindicato) e a ficha consolidada reúne todos os títulos e contatos da empresa.</p>
+      <p>O agrupamento usa <strong>CNPJ + nome fantasia + grupo empresa</strong>. Se o mesmo CNPJ tiver nomes fantasia ou grupos diferentes no S4E, cada combinação vira uma empresa separada na fila — assim uma cobrança não mistura empresas diferentes. A tabela é exibida inteira, sem paginação.</p>
+
+      <h3>Como ler a tela</h3>
+      <ul>
+        <li><strong>Empresas na fila:</strong> total de empresas no filtro atual, com a soma dos títulos em aberto.</li>
+        <li><strong>A cobrar:</strong> empresas que podem receber cobrança, com quantidade de títulos e valor.</li>
+        <li><strong>Depósito bancário</strong> e <strong>Canceladas:</strong> empresas fora da cobrança, com o valor que continua no histórico.</li>
+        <li><strong>Com acordo:</strong> empresas com parcela de acordo na composição — a mensagem detalha cada parcela.</li>
+        <li><strong>Sem e-mail</strong> e <strong>Sem WhatsApp:</strong> empresas que precisam do contato atualizado no S4E.</li>
+        <li><strong>Cobradas hoje:</strong> empresas com contato registrado na data.</li>
+        <li>Clique nos indicadores <strong>Empresas na fila</strong>, <strong>A cobrar</strong>, <strong>Depósito bancário</strong> ou <strong>Canceladas</strong> para filtrar a tabela na hora.</li>
+      </ul>
+
+      <h3>Pesquisar e filtrar a fila</h3>
+      <p>São dois recursos diferentes, na mesma barra acima da tabela:</p>
+      <ul>
+        <li><strong>Pesquisar</strong> (campo de texto) localiza uma empresa pelo nome, pelo <strong>CNPJ</strong> (com ou sem pontuação) ou pelo nome do <strong>grupo</strong>. Pesquisar por empresa ou CNPJ traz todos os títulos daquela empresa e de seus cadastros.</li>
+        <li><strong>Filtrar</strong> (as listas logo depois de <em>Filtrar por</em>) restringe a fila de verdade: a tabela, os indicadores do topo, a exportação em planilha e o <strong>Cobrar todos por e-mail</strong> passam a considerar só o que sobrou do filtro.</li>
+      </ul>
+      <p>Os filtros funcionam juntos e podem ser combinados com a pesquisa:</p>
+      <ul>
+        <li><strong>Situação:</strong> em aberto (fila), novos, em cobrança, prometeu pagar, sem contato, baixados, encerrados ou todos.</li>
+        <li><strong>Grupo:</strong> mostra apenas as empresas do grupo escolhido, com a quantidade de títulos ao lado do nome.</li>
+        <li><strong>Contato:</strong> separa quem está <strong>com ou sem e-mail</strong> e <strong>com ou sem WhatsApp</strong> — útil para priorizar cadastros incompletos.</li>
+        <li><strong>Cobrança:</strong> toda a fila, só cobrar, depósito bancário ou empresas canceladas.</li>
+        <li><strong>Tipo e período de vencimento:</strong> recortam pelo tipo de título e pela data de vencimento (vence de / até).</li>
+        <li><strong>Ordenar:</strong> escolha por vencimento (mais antigo ou mais recente), maior valor, empresa (A-Z), último contato ou atualização. Ordenar só muda a ordem, não o conjunto.</li>
+        <li><strong>Limpar filtros:</strong> volta à visão completa da fila.</li>
+      </ul>
+      <p>As quantidades mostradas nas listas acompanham os demais filtros: ao escolher um <strong>grupo</strong>, os tipos passam a mostrar apenas os títulos daquele grupo, e os indicadores de situação também se ajustam. Todas as opções continuam na lista, com a contagem recalculada (inclusive zero), então você pode trocar de filtro sem perder o que já escolheu.</p>
+      <div class="callout">
+        <strong>Os filtros valem para o lote também</strong>
+        <p>Quando existe filtro aplicado, a tela mostra as etiquetas do que está valendo logo abaixo da barra. O <strong>Cobrar todos por e-mail</strong> abre com os filtros da tela já copiados e tem filtros próprios dentro do modal — mudar lá não altera a tabela. A exportação em planilha segue os filtros da tela.</p>
+      </div>
+
+      <h3>Grupo da empresa, cópias e e-mails internos</h3>
+      <ul>
+        <li>A linha da empresa mostra o <strong>CNPJ e o grupo empresa</strong> do S4E. Você também pode buscar pelo nome do grupo.</li>
+        <li>E-mails internos da Rede Saúde (endereços que contêm <strong>“redesaude”</strong>, como <code>@appredesaude.com.br</code>) <strong>nunca recebem cobrança como destinatário</strong>. A ficha da empresa mostra quais endereços foram ignorados no envio.</li>
+        <li><strong>Cópias por grupo:</strong> use o botão <strong>Cópias por grupo</strong>, acima da tabela, para cadastrar um ou mais e-mails que devem receber <strong>cópia de todas as cobranças</strong> enviadas às empresas daquele grupo. Separe vários endereços por vírgula ou por linha.</li>
+        <li>As cópias valem para o envio individual e para o envio em lote. Só a gestão e a administração podem alterar; os demais consultam.</li>
+        <li>Endereços internos da Rede Saúde <strong>podem</strong> ser usados em cópia (por exemplo, para acompanhamento da gestão). Endereços com formato inválido são recusados na hora de salvar, com aviso de quais ficaram de fora.</li>
+      </ul>
+
+      <h3>Importar direto do portal (um clique, sem senha)</h3>
+      <p>O portal lê o relatório do S4E por conta própria, usando uma conta do S4E salva no servidor. Depois de configurada, qualquer pessoa com acesso à Cobrança só clica em <strong>Importar do S4E</strong> — não digita senha, não baixa arquivo e não sai do portal.</p>
+      <p><strong>Automático:</strong> com a conta salva, o portal importa sozinho <strong>a cada 3 horas, de segunda a sexta, das 7h às 19h</strong> (horário de Brasília, servidor ligado). Ele reaproveita os contatos já salvos e só consulta o S4E para empresas sem e-mail ou sem WhatsApp, reduzindo a carga no S4E. Com a tela de Cobrança aberta, a fila também se atualiza a cada 5 minutos. O botão <strong>Importar do S4E</strong> continua disponível para atualizar na hora.</p>
+      <h4>Configurar a conta (uma vez, pela gerência)</h4>
+      <ol class="steps">
+        <li>Abra <strong>Cobrança → Importar do S4E</strong>.</li>
+        <li>Abra <strong>Conta do S4E usada pelo portal</strong>, digite o <strong>CPF</strong> (11 dígitos) e a <strong>senha do S4E</strong> e clique em <strong>Salvar conta e conectar</strong>.</li>
+        <li>A senha é guardada criptografada com a proteção do Windows (DPAPI): não fica em texto no banco, não pode ser aberta em outro computador e nunca volta para a tela. O portal avisa qual conta está salva e quem configurou.</li>
+        <li>Para trocar de conta, use <strong>Remover conta salva</strong> e configure de novo. Só a gerência vê e altera essa seção.</li>
+      </ol>
+      <h4>Importar no dia a dia</h4>
+      <ol class="steps">
+        <li>Clique em <strong>Importar do S4E</strong>. O portal entra sozinho e começa a importar; a barra mostra a leitura do relatório e a busca dos contatos.</li>
+        <li>No fim, a fila é atualizada sozinha e o portal avisa quantas empresas foram criadas, atualizadas e baixadas. Se você fechar o diálogo, a importação continua no servidor.</li>
+        <li>Em <strong>Opções desta importação</strong> ficam o período (<strong>Vence de / até</strong> — em branco lê tudo em atraso) e a busca de e-mail e WhatsApp nas fichas. Use <strong>Só pré-visualizar</strong> quando quiser ver os números antes de gravar.</li>
+      </ol>
+      <p>A importação pode levar alguns minutos: o portal lê o relatório de cada tipo de empresa e consulta a ficha de contatos de cada CNPJ. Cada título vira um caso com empresa, CNPJ, competência, vencimento, valor e tipo; reimportar o mesmo relatório atualiza os casos, sem duplicar.</p>
+      <div class="callout warn">
+        <strong>Somente leitura</strong>
+        <p>O conector só consulta o S4E: baixa o relatório de contas a receber e abre a ficha da empresa para ler e-mail e telefone. Não gera acordo, não altera boleto ou situação e não dispara rotina nenhuma. Tudo o que você envia é registrado apenas no portal.</p>
+      </div>
+
+      <h3>Usar a extensão do Chrome (alternativa)</h3>
+      <p>A extensão continua disponível para quem já usa. Ela faz a mesma leitura pela sessão do navegador, sem digitar a senha no portal.</p>
+      <ol class="steps">
+        <li>Baixe o arquivo <a href="extensions/cobranca-s4e/Cobranca_S4E_Chromium_v1.0.0.zip" download><strong>Cobranca_S4E_Chromium_v1.0.0.zip</strong></a> (o mesmo link está na tela Cobrança).</li>
+        <li>Descompacte em uma pasta fixa do computador.</li>
+        <li>No Chrome ou Edge, abra <code>chrome://extensions</code> (ou <code>edge://extensions</code>), ligue o <strong>Modo do desenvolvedor</strong> e clique em <strong>Carregar sem compactação</strong>, escolhendo a pasta descompactada.</li>
+        <li>No S4E, abra <strong>Faturamento → Contas a Receber</strong>, ajuste o período e clique em <strong>Buscar</strong>.</li>
+        <li>No portal, abra <strong>Importar do S4E</strong>, expanda <strong>Usar a extensão do Chrome em vez do conector</strong> e clique em <strong>Importar pela extensão instalada</strong>.</li>
+      </ol>
+
+      <h3>Baixa automática</h3>
+      <p>Na importação do portal <strong>sem período escolhido</strong> (de / até em branco), os casos que não aparecem mais são baixados como pagos, com registro no histórico. Se você escolher um período, nada é baixado automaticamente: um caso ausente pode estar apenas fora do recorte. A extensão segue a mesma regra e só baixa quando o relatório do S4E foi buscado sem filtros.</p>
+
+      <h3>Apagar cobranças (somente administrador)</h3>
+      <p>Para corrigir a fila ou refazer um teste, o administrador pode apagar registros do portal. Nada é alterado no S4E — as exclusões valem só para o portal.</p>
+      <ul>
+        <li><strong>Um título:</strong> abra a empresa, vá em <strong>Títulos</strong> e clique na lixeira ao lado do título. O histórico de contato daquele título também sai.</li>
+        <li><strong>Uma empresa:</strong> clique na lixeira ao lado do botão <strong>Cobrar</strong>, na tabela, ou em <strong>Excluir empresa da fila</strong> dentro da ficha. Saem todos os títulos e o histórico de contatos daquela empresa.</li>
+        <li><strong>Tudo:</strong> clique em <strong>Limpar cobranças</strong>, no topo da tela, e confirme digitando <strong>LIMPAR</strong>. Apaga a fila, o histórico de contatos e o registro das importações. Os modelos de mensagem e as cópias por grupo continuam salvos.</li>
+        <li>As exclusões não podem ser desfeitas. Depois de limpar, basta clicar em <strong>Importar do S4E</strong> para trazer a fila de novo.</li>
+      </ul>
+
+      <h3>Depósito bancário (não cobrar)</h3>
+      <p>Empresas que pagam por <strong>depósito bancário</strong> não recebem cobrança. Elas continuam na fila e no histórico, mas aparecem com o selo <strong>Depósito bancário</strong>, sem o texto de cobrança e sem o botão Cobrar.</p>
+      <ul>
+        <li>Use o filtro <strong>Toda a fila</strong> (acima da tabela) para ver tudo; escolha <strong>Só cobrar</strong> ou <strong>Depósito bancário</strong> para separar.</li>
+        <li>O indicador <strong>Depósito bancário</strong>, no topo, mostra quantas empresas e quanto valor estão fora da cobrança.</li>
+        <li>Ao abrir a empresa, a ficha mostra o aviso de depósito no lugar da mensagem; o histórico de contatos continua disponível para anotações.</li>
+        <li>Na planilha exportada, a aba <strong>Empresas</strong> traz a coluna <strong>Situação</strong> (A cobrar, Depósito ou Cancelada) e a aba <strong>Títulos</strong> indica <strong>Sim</strong> ou <strong>Não</strong> em <strong>Cobrar</strong> para cada título.</li>
+      </ul>
+
+      <h3>Empresas canceladas (não cobrar)</h3>
+      <p>Quando a situação da empresa no S4E é <strong>CANCELADO</strong>, <strong>CANCELADO POR INADIMPLÊNCIA</strong> ou <strong>SUSPENSO PARA CANCELAMENTO</strong>, ela continua na fila e no histórico, mas não pode ser cobrada. Na tabela aparece com o selo <strong>Empresa cancelada</strong> e sem o botão Cobrar; na ficha, no lugar da mensagem, aparece o aviso com a situação exata do S4E.</p>
+      <ul>
+        <li>O filtro <strong>Toda a fila</strong> mostra tudo; escolha <strong>Empresas canceladas</strong> para consultar só elas.</li>
+        <li>O indicador <strong>Canceladas</strong>, no topo, mostra quantas empresas e quanto valor estão fora da cobrança.</li>
+        <li>O envio em lote ignora automaticamente as empresas canceladas e informa quantos títulos ficaram de fora.</li>
+        <li>Se a empresa voltar a ficar ativa no S4E, a próxima importação remove a marca e ela volta a ser cobrável.</li>
+      </ul>
+
+      <h3>Mensagem adaptativa</h3>
+      <p>O portal monta a mensagem de acordo com a composição da empresa. Empresa com 3 mensalidades atrasadas recebe um texto diferente de outra com 7 meses e parcela de acordo; empresa com adesão, sindicato ou outros valores recebe esses títulos nomeados na mesma tabela.</p>
+      <ul>
+        <li>A abertura muda conforme o caso: só mensalidades, só acordo ou os dois, sempre indicando o que está em aberto.</li>
+        <li>Cada parcela do acordo aparece em uma linha própria, identificada pelo número da parcela.</li>
+        <li>Mensalidades da mesma competência são somadas em uma única linha.</li>
+        <li>Empresa com vários cadastros recebe <strong>uma única tabela</strong>, com o aviso de quantos cadastros foram consolidados.</li>
+        <li>O e-mail sai em HTML: cabeçalho, cartões de resumo, tabela de competência e valor, aviso sobre depósito e comprovante, pedido de regularização e assinatura do Faturamento com telefone e WhatsApp.</li>
+        <li>Clique em <strong>Modelo da mensagem</strong>, acima da tabela, para ver o passo a passo do modelo aplicado.</li>
+      </ul>
+
+      <h3>Cobrar todos por e-mail</h3>
+      <p>O botão <strong>Cobrar todos por e-mail</strong> monta um e-mail por empresa, já adaptado ao que ela deve. Empresas com vários cadastros recebem uma única mensagem. É o caminho mais rápido para dar conta da fila do dia, com a seleção toda editável antes do envio.</p>
+      <ol class="steps">
+        <li>Em <strong>Filtros deste lote</strong>, escolha quem entra neste envio: pesquisar por empresa, CNPJ ou grupo, <strong>grupo</strong>, <strong>tipo</strong>, <strong>contato</strong> e <strong>vencimento</strong>. O resumo de empresas, títulos e valor recalcula na hora. O lote abre com os filtros da tela copiados; <strong>Usar filtros da tela</strong> refaz a cópia e <strong>Limpar filtros</strong> volta ao lote completo.</li>
+        <li>Confira o resumo: quantas empresas estão selecionadas, quantos títulos e o valor total. Logo acima da lista, a linha <strong>Só entram nesta lista…</strong> repete os filtros que estão valendo — se ela mostrar o grupo ou o tipo errado, corrija nos filtros antes de seguir.</li>
+        <li>Na lista <strong>Empresas deste envio</strong>, você pode <strong>editar o e-mail</strong> de cada empresa e <strong>remover</strong> quem não deve receber agora. O filtro da lista serve apenas para achar uma empresa na tela, sem mudar quem está selecionado.</li>
+        <li>Clique na seta <strong>▸</strong> ao lado da empresa para abrir, dentro do próprio modal, os <strong>títulos</strong> (tipo, competência, parcela, vencimento, valor e situação), o <strong>e-mail de destino</strong>, o <strong>assunto</strong> e a lista completa de <strong>cópias (CC)</strong>. O botão <strong>Ver prévia deste e-mail</strong> abre essa mensagem no painel de prévia.</li>
+        <li>Use <strong>Marcar todas com e-mail</strong> ou <strong>Limpar seleção</strong> para começar de novo. Empresa sem e-mail pode ser incluída, mas você precisa digitar o endereço antes de enviar.</li>
+        <li>No painel <strong>Prévia de cada e-mail</strong>, escolha a empresa na lista para ver exatamente o que ela vai receber: destinatário, assunto, cópias e o corpo completo da mensagem, em tamanho grande. Cada empresa tem um e-mail próprio.</li>
+        <li>Veja também o que fica fora do lote (depósitos, empresas canceladas, empresas sem e-mail cadastrado e títulos que vencem hoje).</li>
+        <li>Deixe marcado <strong>Pular empresas que já receberam contato hoje</strong> para não mandar o mesmo e-mail duas vezes no mesmo dia.</li>
+        <li>Deixe marcado <strong>Não cobrar títulos que vencem hoje</strong> para o lote considerar só títulos já vencidos. Os vencimentos do próprio dia continuam na fila e entram nos próximos envios — assim uma empresa que paga no dia não recebe cobrança antes da compensação. Desmarque apenas se quiser cobrar também o que vence hoje.</li>
+        <li>Clique em <strong>Enviar agora</strong> e confirme. Cada empresa cobrada entra no histórico com a data, o valor e as cópias do grupo.</li>
+      </ol>
+      <div class="callout">
+        <strong>Como conferir antes de enviar</strong>
+        <p>A linha de escopo confirma os filtros do lote; a seta <strong>▸</strong> mostra os títulos e as cópias de cada empresa; o painel <strong>Prévia de cada e-mail</strong> mostra o assunto e o corpo da mensagem da empresa escolhida. As cópias aparecem com o endereço completo — se o grupo tiver cópia cadastrada, ela estará listada ali e também no rodapé do e-mail enviado.</p>
+      </div>
+      <div class="callout warn">
+        <strong>Antes de enviar</strong>
+        <p>O portal avisa se alguma empresa selecionada estiver com e-mail vazio, inválido ou interno e bloqueia o envio até a correção. O envio é real e a mensagem é o modelo adaptativo da ficha — não há edição de assunto ou texto no lote; confira o assunto e a prévia. O limite é de 300 empresas por envio. A cobrança por WhatsApp continua sendo feita empresa por empresa.</p>
+      </div>
+      <p>As <strong>cópias do grupo</strong> são somadas automaticamente a cada e-mail. Para mudar os endereços de cópia, use <strong>Cópias por grupo</strong>.</p>
+
+      <h3>Envios registrados</h3>
+      <p>O botão <strong>Envios</strong>, acima da tabela, mostra cada e-mail que o portal entregou ao provedor (Microsoft Graph ou SMTP): empresa, destinatário, cópias, quantidade de títulos, valor, horário, quem enviou e a <strong>referência do provedor</strong> — o identificador que o suporte da Microsoft usa para localizar a mensagem. Falhas de envio também aparecem, com o motivo.</p>
+      <ul>
+        <li>A ficha de cada empresa mostra os envios dela dentro de <strong>Envios registrados</strong>, abaixo do histórico de contatos.</li>
+        <li>Use a busca por empresa, CNPJ ou e-mail e o filtro <strong>Só enviados</strong> / <strong>Só falhas</strong> para conferir um lote específico.</li>
+        <li>Os envios que já estavam no histórico de contatos são importados uma vez para a lista, identificados como <strong>Histórico de contatos</strong> e sem referência do provedor — ela não era guardada antes. A partir daí, cada novo envio é registrado com a referência completa. É só leitura: abrir a lista não reenvia nada e não altera o S4E.</li>
+      </ul>
+
+      <h3>Conta de e-mail do portal</h3>
+      <p>O envio em lote usa uma conta de e-mail conectada ao portal. A configuração fica na própria tela de <strong>Cobrar todos por e-mail</strong>, na seção <strong>Conta de envio</strong> — só gestão e administração podem conectar, salvar e testar.</p>
+
+      <h4>Conectar a conta Microsoft (recomendado)</h4>
+      <ol class="steps">
+        <li>Em <strong>Cobrar todos por e-mail</strong>, clique em <strong>Conectar conta Microsoft</strong>.</li>
+        <li>Abra o endereço mostrado na tela (<code>login.microsoft.com/device</code>) e entre com a conta do faturamento.</li>
+        <li>Digite o código de letras e números que o portal exibe. A Microsoft confirma e o portal mostra <strong>Conta Microsoft conectada</strong> com o endereço da conta.</li>
+        <li>Clique em <strong>Enviar teste</strong> para o seu próprio e-mail. O teste usa o mesmo assunto e o mesmo HTML da empresa escolhida na prévia, e o campo ao lado aceita <strong>cópias</strong> separadas por vírgula. Se o teste chegar, o envio em lote está liberado.</li>
+      </ol>
+      <p>Esse caminho não exige administrador do Microsoft 365 e não usa senha: a conta autoriza o portal uma vez e o acesso é renovado sozinho. Se a conexão expirar ou a senha da conta mudar, clique em <strong>Conectar conta Microsoft</strong> de novo.</p>
+
+      <h4>Configurar SMTP (alternativa)</h4>
+      <ol class="steps">
+        <li>Abra <strong>Configurar conta SMTP</strong> e preencha <strong>servidor</strong>, <strong>porta</strong>, <strong>usuário</strong> e <strong>senha</strong>. Para Microsoft 365 / Outlook: <code>smtp.office365.com</code>, porta <code>587</code>, TLS marcado e o endereço completo como usuário.</li>
+        <li>Ajuste o <strong>nome do remetente</strong> e o <strong>e-mail do remetente</strong> (o mesmo do usuário).</li>
+        <li>Clique em <strong>Salvar conta SMTP</strong> e depois em <strong>Enviar teste</strong>. O teste também usa o HTML da empresa escolhida na prévia e aceita cópias.</li>
+        <li>Deixar a senha em branco mantém a senha já salva.</li>
+      </ol>
+      <div class="callout">
+        <strong>Conta Microsoft 365 (Outlook)</strong>
+        <p>O SMTP da Microsoft vem bloqueado por padrão. Se o teste falhar com “autenticação recusada”, o administrador do Microsoft 365 precisa liberar o envio autenticado da caixa: <em>Centro de administração → Usuários → conta → Email → Gerenciar aplicativos de email → marcar <strong>SMTP autenticado</strong></em>. Se a conta usa verificação em duas etapas, use uma <strong>senha de aplicativo</strong>. Quando existir uma conta Microsoft conectada, o portal envia por ela e deixa o SMTP como reserva. No Gmail, use <code>smtp.gmail.com</code>, porta <code>465</code>, com senha de aplicativo.</p>
+      </div>
+      <p class="muted">Sem a conta Microsoft conectada e sem SMTP salvo, o botão <strong>Enviar agora</strong> fica desativado — o portal não envia nada por conta própria.</p>
+
+      <h3>Cobrar uma empresa</h3>
+      <ol class="steps">
+        <li>Use a busca e os filtros de <strong>grupo</strong>, <strong>contato</strong>, <strong>tipo</strong>, <strong>situação</strong>, <strong>depósito/cancelada</strong> e <strong>período</strong> para achar a empresa. A busca por nome, CNPJ ou grupo traz a empresa inteira, com todos os títulos dela.</li>
+        <li>Clique na empresa. A ficha consolidada mostra valor em aberto, títulos, vencimento mais antigo, cadastros, contatos e o que ela deve (mensalidades, acordo, adesões).</li>
+        <li>Confira a mensagem nas abas <strong>Prévia do e-mail</strong>, <strong>Texto</strong> e <strong>Títulos</strong>. Na aba de títulos você vê cada linha do e-mail e, em <strong>Ver os títulos e cadastros do S4E</strong>, a origem de cada valor.</li>
+        <li>Escolha <strong>e-mail</strong> ou <strong>WhatsApp</strong>, ajuste o destinatário se precisar e envie. O envio por e-mail mostra os endereços <strong>em cópia</strong> do grupo e pede confirmação antes de sair.</li>
+        <li>Registre o resultado: enviado, prometeu pagar, sem resposta, negociou acordo, pagou ou outro. A situação é salva em <strong>todos os títulos da empresa</strong> e o histórico fica na própria ficha.</li>
+        <li>Use <strong>Exportar (.xlsx)</strong> quando precisar da lista em planilha, com as abas <strong>Empresas</strong> e <strong>Títulos</strong>.</li>
+      </ol>
+      <p>Empresas sem e-mail ou sem WhatsApp aparecem nos indicadores do topo e com aviso na própria linha para você priorizar o cadastro do contato. O botão <strong>Modelo da mensagem</strong> explica o formato aplicado a cada composição.</p>
+
+      <h3>Se a importação não começar</h3>
+      <ul>
+        <li><strong>Conector:</strong> se aparecer <strong>CPF ou senha não conferem</strong>, a conta salva está desatualizada (senha trocada no S4E, por exemplo). A gerência abre <strong>Conta do S4E usada pelo portal</strong>, remove a conta salva e salva de novo.</li>
+        <li><strong>Conector:</strong> se aparecer <strong>Nenhuma conta do S4E configurada</strong>, a gerência precisa salvar a conta uma vez. Se o S4E não confirmar o login, use a extensão como alternativa.</li>
+        <li><strong>Extensão:</strong> confirme que a aba do S4E está logada, com o <strong>Contas a Receber</strong> aberto, atualize a aba (F5) e clique em <strong>Importar pela extensão instalada</strong>.</li>
+        <li><strong>Extensão:</strong> se o portal avisar que a extensão não foi encontrada, confira em <code>chrome://extensions</code> se <strong>Cobrança S4E</strong> está ativa e recarregue a página do portal.</li>
+        <li>Se a conta do S4E não tiver acesso ao <strong>Faturamento</strong>, o relatório não é liberado. Peça o acesso em Admin → Acessos.</li>
+      </ul>
+    </section>
+
+    <!-- 15 -->
+    <section class="doc" id="gestao" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">15</span>
+        <div><p class="eyebrow">VISÃO DA EQUIPE</p><h2>Painel da Gestão</h2></div>
+      </div>
+      <p>Disponível para quem é gestor ou administrador. Mostra o parecer geral da equipe, sem substituir os relatórios detalhados.</p>
+      <ul>
+        <li><strong>Resumo</strong>: indicadores gerais da equipe.</li>
+        <li><strong>Desempenho por pessoa</strong>: volume, conclusão, atrasos e último acesso ao portal.</li>
+        <li><strong>Carga da equipe</strong>: gráfico de demandas por pessoa, para identificar sobrecarga.</li>
+        <li><strong>Atualizar</strong>: recarrega os dados na hora.</li>
+      </ul>
+      <div class="callout">
+        <strong>Como usar na prática</strong>
+        <p>Comece por quem está com mais demandas abertas e mais atrasos. Depois confira o último acesso: quem não entra há muito tempo pode estar sem apoio ou sem demandas atribuídas.</p>
+      </div>
+    </section>
+
+    <!-- 16 -->
+    <section class="doc" id="admin" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">16</span>
+        <div><p class="eyebrow">CENTRAL DE CONTROLE</p><h2>Administração</h2></div>
+      </div>
+      <p>A tela Admin concentra contas, setores, telas, comunicados e dados. As abas ficam no topo.</p>
+
+      <h3>Visão geral</h3>
+      <p>Resumo do portal com últimos usuários, próximos aniversários, setores/telas e comunicados. Os botões levam direto para a aba correspondente.</p>
+
+      <h3>Pessoas</h3>
+      <ol class="steps">
+        <li>Preencha <strong>nome</strong>, <strong>usuário de login</strong> e <strong>senha</strong> (mínimo 4 caracteres).</li>
+        <li>Escolha o <strong>papel</strong>: usuário ou administrador.</li>
+        <li>Informe a <strong>data de aniversário</strong> — ela aparece para todo o time na tela Aniversariantes.</li>
+        <li>Se a pessoa vende contratos, preencha o <strong>Nome de vendedor (comissões)</strong> com o mesmo nome usado no contrato.</li>
+        <li>Marque <strong>É gestor(a)</strong> para liberar o Painel da Gestão e a visão de todos os setores.</li>
+        <li>Marque os <strong>setores de acesso</strong> e as <strong>telas específicas</strong>.</li>
+        <li>Clique em <strong>Criar conta</strong>. Para alterar alguém, use <strong>Editar</strong> na lista da direita.</li>
+      </ol>
+      <h3>Lista de telas da conta</h3>
+      <p>Ao criar ou editar uma conta, as telas aparecem em quatro grupos:</p>
+      <ul>
+        <li><strong>Telas de todo mundo:</strong> Demandas, Aniversariantes, Conversas e Treinamentos do Setor. Já vêm marcadas e bloqueadas — não precisam de liberação.</li>
+        <li><strong>Painel da Gestão:</strong> não é marcado na mão. Ele acompanha o campo <strong>É gestor(a)</strong>; ao marcar, a linha muda para “liberada pelo campo É gestor(a)”.</li>
+        <li><strong>Telas nativas:</strong> Contratos, Comissões, Financeiro, Relatórios, Sindicatos, Mala Direta, Quadro de Planilhas, Relatório Semanal e Pessoas e Grupos.</li>
+        <li><strong>Telas de setor:</strong> as telas específicas criadas em <strong>Setores e telas</strong>.</li>
+      </ul>
+      <div class="callout warn">
+        <strong>Setor define o que a pessoa vê</strong>
+        <p>Um usuário comum só enxerga demandas, relatórios e treinamentos dos setores marcados. A gestão e a administração veem todos. Revise essa marcação com cuidado.</p>
+      </div>
+
+      <h3>Bloquear o acesso de uma conta</h3>
+      <p>Use quando alguém sai da empresa, muda de área ou precisa perder o acesso imediatamente.</p>
+      <ol class="steps">
+        <li>Abra <strong>Admin → Pessoas</strong> e localize a conta.</li>
+        <li>Clique em <strong>Bloquear acesso</strong>. Também é possível usar <strong>Editar</strong> e desmarcar <strong>Acesso liberado</strong>.</li>
+        <li>Confirme. O bloqueio vale na hora: as sessões abertas são encerradas, o login passa a ser recusado e todo o histórico da conta continua salvo.</li>
+        <li>Para devolver o acesso, clique em <strong>Liberar acesso</strong>.</li>
+      </ol>
+      <div class="callout">
+        <strong>Funciona à distância</strong>
+        <p>O bloqueio é aplicado no servidor do portal, não no aparelho da pessoa. Ele vale para qualquer computador ou celular, esteja ela onde estiver, desde que o servidor esteja ligado e acessível para quem fizer o bloqueio (rede local, VPN ou acesso remoto autorizado). Trocar a senha também encerra as sessões. Se a conta bloqueada estiver com o portal aberto, a próxima ação dela já cai na tela de login.</p>
+      </div>
+      <p class="muted">Se você vai deixar a empresa, o bloqueio precisa ser feito por outro administrador. Mantenha pelo menos dois administradores com acesso liberado para não perder o controle do portal.</p>
+
+      <h3>Aniversariantes</h3>
+      <p>Cadastre nome, foto, dia, mês, ano (opcional), tipo (time ou parceiro), conta vinculada e observação. A lista de <strong>contas sem data de aniversário</strong> ajuda a completar o cadastro.</p>
+
+      <h3>Setores e telas</h3>
+      <ul>
+        <li><strong>Nova tela específica</strong>: cria uma tela vinculada a um setor, com nome e descrição.</li>
+        <li><strong>Criar setor</strong>: cadastra uma nova área e sua descrição.</li>
+        <li>Os catálogos abaixo mostram o que já existe e permitem gerenciar.</li>
+      </ul>
+
+      <h3>Comunicados</h3>
+      <p>Crie avisos com foto, data e recado. O comunicado abre uma vez na entrada do portal e pode ser reaberto pelo botão no canto. Use para avisos gerais, eventos e mudanças de rotina.</p>
+
+      <h3>Dados</h3>
+      <ul>
+        <li><strong>Organizar demandas existentes</strong>: escolha um setor e atribua todas as demandas ou apenas as que ainda não têm setor.</li>
+        <li><strong>Baixar backup (.db)</strong>: gera uma cópia do banco de dados com contas, demandas e comunicados.</li>
+      </ul>
+      <div class="callout danger">
+        <strong>Guarde o backup</strong>
+        <p>O arquivo <code>.db</code> contém dados de pessoas e do setor. Guarde em local seguro e restrito. Não envie por canais abertos.</p>
+      </div>
+
+      <h3>Bloqueio geral do portal</h3>
+      <p>O cartão <strong>Bloquear o portal</strong> suspende o acesso de todos ao sistema, inclusive de quem está com sessão aberta. Use em manutenção, incidente de segurança ou quando o portal precisar ficar indisponível.</p>
+      <ol class="steps">
+        <li>Opcionalmente, escreva o aviso que aparece na tela de bloqueio (ex.: “Manutenção até as 14h”).</li>
+        <li>Clique em <strong>Bloquear portal</strong> e confirme. As sessões abertas são encerradas na hora.</li>
+        <li>Quem tentar entrar vê a tela <strong>Sistema em manutenção</strong>. Nenhuma tela, API, anexo ou foto fica acessível.</li>
+        <li>Para reabrir, informe usuário e senha de uma conta de administrador ativa na própria tela de bloqueio.</li>
+      </ol>
+      <p>Se você estiver fora do escritório, é necessário ter acesso à rede do portal (VPN ou rede interna) para abrir a tela e bloquear. O bloqueio fica gravado no banco e continua valendo mesmo se o servidor for reiniciado.</p>
+      <div class="callout warn">
+        <strong>Não é bloqueio de uma pessoa</strong>
+        <p>Para tirar o acesso de uma conta específica, use <strong>Pessoas → Bloquear acesso</strong>. O bloqueio geral atinge o portal inteiro e não substitui esse controle.</p>
+      </div>
+      <div class="callout">
+        <strong>Encerrar o portal de vez</strong>
+        <p>Se o portal vai sair do ar (mudança de responsável, fim de contrato ou desligamento), faça o encerramento combinado: baixe o backup, pare o <code>portal_server.py</code>, remova a inicialização automática, bloqueie as portas 5500 e 5443 no firewall, tire o computador da rede/VPN e entregue contas e backup para a empresa. O bloqueio geral serve para pausar o uso, não para impedir a empresa de retomar o próprio sistema.</p>
+      </div>
+    </section>
+
+    <!-- 17 -->
+    <section class="doc" id="seguranca" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">17</span>
+        <div><p class="eyebrow">RESPONSABILIDADE</p><h2>Segurança, LGPD e backup</h2></div>
+      </div>
+
+      <h3>Quem vê o quê</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Perfil</th><th>Alcance</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Usuário</strong></td><td>Somente os setores marcados na conta. Vê as demandas, relatórios e treinamentos desses setores.</td></tr>
+            <tr><td><strong>Gestor</strong></td><td>Todos os setores, além do Painel da Gestão, de todas as comissões e dos rateios do Financeiro.</td></tr>
+            <tr><td><strong>Vendedor</strong></td><td>Somente as próprias empresas e comissões na tela de Comissões. Não vê contratos de outros vendedores.</td></tr>
+            <tr><td><strong>Conta com a tela Financeiro</strong></td><td>Rateios recebidos do P4X, com valores financeiros. A tela só aparece se for liberada no Admin.</td></tr>
+            <tr><td><strong>Administrador</strong></td><td>Todos os setores, o Painel da Gestão, todas as comissões, os rateios do Financeiro e a tela Admin.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Esse isolamento é aplicado no servidor, não apenas na tela. Ele existe para cumprir a LGPD e proteger dados pessoais e financeiros de cada área. Na tela de Contratos, os valores financeiros são omitidos para quem não é da gestão ou da administração.</p>
+
+      <h3>Boas práticas obrigatórias</h3>
+      <ul>
+        <li>Use apenas a sua conta. Não empreste usuário nem senha.</li>
+        <li>Não registre senhas, tokens ou dados de cartão em demandas, anotações ou no chat.</li>
+        <li>Anexe somente o necessário. Contratos, guias e comprovantes contêm dados pessoais.</li>
+        <li>Antes de sair de um computador compartilhado, clique em <strong>Sair</strong>.</li>
+        <li>Trate os relatórios exportados como documentos internos. Não compartilhe fora do setor sem autorização.</li>
+        <li>Fotos de pessoas só devem ser usadas com consentimento e para a finalidade do portal.</li>
+      </ul>
+
+      <h3>Backup e recuperação</h3>
+      <ul>
+        <li><strong>Backup JSON</strong>: menu <strong>Exportar</strong> no Plantão. Contém demandas, histórico, mala direta e treinamentos.</li>
+        <li><strong>Backup do banco (.db)</strong>: aba <strong>Admin → Dados</strong>. Contém tudo, inclusive contas.</li>
+        <li>Faça backup antes de grandes alterações e guarde mais de uma cópia.</li>
+        <li>A restauração do JSON substitui os dados atuais. Confirme com quem administra antes de usar.</li>
+      </ul>
+      <div class="callout">
+        <strong>Em caso de dúvida</strong>
+        <p>Se desconfiar de acesso indevido, senha compartilhada ou arquivo exposto, avise imediatamente o administrador do portal e troque a senha da conta envolvida.</p>
+      </div>
+    </section>
+
+    <!-- 18 -->
+    <section class="doc" id="faq" data-doc-section>
+      <div class="sec-head">
+        <span class="sec-num">18</span>
+        <div><p class="eyebrow">SOCORRO RÁPIDO</p><h2>Dúvidas frequentes</h2></div>
+      </div>
+
+      <div class="faq">
+        <div class="faq-item"><h3>Não vejo uma tela no menu. O que faço?</h3><p>As telas são liberadas por pessoa no Admin. Fale com o administrador e informe qual tela você precisa e para qual setor.</p></div>
+
+        <div class="faq-item"><h3>Esqueci minha senha.</h3><p>Não há recuperação automática. Peça ao administrador para redefinir em <strong>Admin → Pessoas → Editar</strong>.</p></div>
+
+        <div class="faq-item"><h3>Minha alteração não apareceu no computador da colega.</h3><p>Confira o rodapé do portal: se estiver “Sincronizado às…”, aguarde alguns segundos e recarregue a página. Se estiver “Salvo neste computador”, a conexão com o servidor falhou — avise o responsável técnico.</p></div>
+
+        <div class="faq-item"><h3>O anexo não sobe.</h3><p>Verifique o tamanho (até 4 MB por arquivo) e o formato (PDF, XLSX, XLS, DOCX, DOC, PNG, JPG, JPEG ou TXT). Para arquivos maiores, comprima antes de anexar.</p></div>
+        <div class="faq-item"><h3>Posso mandar documento pelas Conversas?</h3><p>Sim. No clipe da conversa você anexa PDF, Word, Excel, PowerPoint, TXT, CSV e ZIP de até 20 MB — fotos até 8 MB e vídeos até 40 MB. O arquivo aparece como um cartão com nome e tamanho; quem recebe clica para baixar.</p></div>
+
+        <div class="faq-item"><h3>O certificado do treinamento não abre.</h3><p>Libere pop-ups para o endereço do portal no navegador. Depois, clique em <strong>Certificado</strong> novamente.</p></div>
+
+        <div class="faq-item"><h3>O Excel não baixa.</h3><p>Verifique se o navegador está liberando downloads. Se estiver sem internet, use o <strong>CSV</strong> nos relatórios, que funciona localmente.</p></div>
+
+        <div class="faq-item"><h3>Perdi uma demanda de vista.</h3><p>Confira a aba <strong>Todas</strong>, limpe os filtros e use a busca pelo título. Demandas excluídas não podem ser recuperadas pela tela.</p></div>
+
+        <div class="faq-item"><h3>As notificações de check-in não aparecem.</h3><p>Clique em <strong>Ativar avisos</strong> no topo, autorize o navegador, confirme os tipos que quer receber e mantenha a aba aberta. Se o botão mostrar “Avisos indisponíveis”, abra o portal pelo endereço <strong>https://192.168.1.11:5443</strong> e aceite o certificado. Confira também as notificações do navegador nos ajustes do Windows.</p></div>
+
+        <div class="faq-item"><h3>Como escolho o que receber de aviso?</h3><p>Clique em <strong>Avisos ativos</strong> (ou <strong>Ativar avisos</strong>) no topo do portal e marque ou desmarque: mensagens do chat, novas demandas, demandas atribuídas depois e prazos vencidos. A escolha fica guardada para a sua conta neste navegador; refaça em cada computador.</p></div>
+
+        <div class="faq-item"><h3>O navegador diz que o endereço HTTPS “não é seguro”.</h3><p>O portal usa um certificado interno do setor. Rode uma vez o <strong>Preparar-Portal.bat</strong> neste computador: ele instala o certificado e ajusta o Firefox. No Firefox, feche <strong>todas</strong> as janelas e abra de novo — ele só lê a nova configuração ao iniciar. Se o aviso continuar, chame o responsável técnico do portal.</p></div>
+
+        <div class="faq-item"><h3>Uma demanda aparece em vários dias no calendário.</h3><p>É o período inicial e final dela. Se quiser que apareça em um único dia, edite e deixe as duas datas iguais.</p></div>
+
+        <div class="faq-item"><h3>Posso usar o portal no celular?</h3><p>Sim. O menu abre pelo botão ☰ e as telas se adaptam à largura. Para trabalhar com planilhas e anexos grandes, prefira o computador.</p></div>
+
+        <div class="faq-item"><h3>O que é “Salvo apenas neste computador”?</h3><p>Significa que a alteração ficou no navegador, mas não chegou ao servidor central. Recarregue a página e refaça a alteração; se persistir, avise o responsável técnico.</p></div>
+
+        <div class="faq-item"><h3>Cliquei em “Importar do P4X” e nada aconteceu.</h3><p>Confira se o P4X está aberto e logado no <strong>mesmo navegador</strong> onde a extensão <strong>P4X - Exportar Rateios</strong> está instalada e atualizada. Depois de mudar o filtro no P4X, clique em <strong>Pesquisar</strong> antes de importar. Se o portal avisar que a extensão não foi encontrada, baixe o Excel pelo ícone da extensão e use <strong>Enviar arquivo .xlsx</strong>.</p></div>
+
+        <div class="faq-item"><h3>Como sugiro uma melhoria no portal?</h3><p>Registre uma demanda com prioridade baixa, descrevendo o problema e o ganho esperado, e marque o responsável pela administração do portal.</p></div>
+      </div>
+    </section>
+
+    <footer class="doc-footer">
+      <strong>Manual de uso · Portal do Setor · Rede Saúde</strong><br>
+      Documento interno do setor. Atualizado em novembro de 2026.<br>
+      Dúvidas sobre acesso, telas ou permissões: fale com o administrador do portal.
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  const search = document.getElementById('manualSearch');
+  const sections = Array.from(document.querySelectorAll('[data-doc-section]'));
+  const links = Array.from(document.querySelectorAll('[data-toc]'));
+  const count = document.getElementById('searchCount');
+  const toc = document.getElementById('manualToc');
+
+  const emptyBox = document.createElement('div');
+  emptyBox.className = 'empty-search';
+  emptyBox.id = 'noResults';
+  emptyBox.hidden = true;
+  emptyBox.innerHTML = '<strong>Nenhuma seção encontrada.</strong>Tente outra palavra, como “demanda”, “relatório”, “certificado” ou “backup”.';
+  document.querySelector('.main').insertBefore(emptyBox, document.querySelector('section.doc'));
+
+  function apply() {
+    const query = search.value.trim().toLowerCase();
+    let shown = 0;
+    sections.forEach(section => {
+      const matches = !query || section.textContent.toLowerCase().includes(query);
+      section.hidden = !matches;
+      if (matches) shown += 1;
+    });
+    links.forEach(link => {
+      const target = document.getElementById(link.getAttribute('href').slice(1));
+      link.hidden = !target || target.hidden;
+    });
+    emptyBox.hidden = shown > 0;
+    toc.hidden = shown === 0;
+    count.textContent = query ? (shown ? `${shown} de ${sections.length} seções encontradas` : 'Nenhum resultado') : '';
+  }
+
+  search.addEventListener('input', apply);
+
+  search.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      search.value = '';
+      apply();
+      search.blur();
+    }
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      const first = sections.find(section => !section.hidden);
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+
+  document.getElementById('printManual').addEventListener('click', () => {
+    if (search.value) {
+      search.value = '';
+      apply();
+    }
+    window.print();
+  });
+
+  window.addEventListener('beforeprint', () => {
+    if (search.value) {
+      search.value = '';
+      apply();
+    }
+  });
+
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        links.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + entry.target.id);
+        });
+      });
+    }, { rootMargin: '-24% 0px -62% 0px', threshold: 0 });
+    sections.forEach(section => observer.observe(section));
+  }
+})();
+</script>
+</body>
+</html>

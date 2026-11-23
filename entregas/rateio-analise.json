@@ -1,0 +1,896 @@
+{
+  "apuracao": {
+    "id": "a6fbc349-53d4-4ed5-9c39-923a2fc41273",
+    "competencia": "Novembro/2026",
+    "concluidaEm": "2026-11-19T13:44:23.354810+00:00",
+    "linhas": 1329
+  },
+  "resumo": {
+    "faturado": 878346.05,
+    "recebido": 351625.34,
+    "emAberto": 526720.71,
+    "taxaRecebimento": 40.03,
+    "grupos": 29,
+    "gruposComRegra": 4,
+    "gruposSemRegra": 25,
+    "faturadoSemRegra": 846418.1,
+    "faturadoComRegra": 31927.95
+  },
+  "grupos": [
+    {
+      "grupo": "SINTEG",
+      "titulos": 100,
+      "faturado": 583944.4,
+      "recebido": 139397.44000000003,
+      "aberto": 443844.4,
+      "vidas": 11627
+    },
+    {
+      "grupo": "NOVA IGUAÇU ESP.",
+      "titulos": 84,
+      "faturado": 57015.0,
+      "recebido": 54268.5,
+      "aberto": 2746.5,
+      "vidas": 11199
+    },
+    {
+      "grupo": "CARGA CCT-ACT ESP.",
+      "titulos": 641,
+      "faturado": 45292.5,
+      "recebido": 35684.0,
+      "aberto": 9608.5,
+      "vidas": 8241
+    },
+    {
+      "grupo": "FRETAMENTO ESP.",
+      "titulos": 43,
+      "faturado": 25311.0,
+      "recebido": 17924.5,
+      "aberto": 7386.5,
+      "vidas": 4602
+    },
+    {
+      "grupo": "SINDICATO RODOVIARIOS RIO",
+      "titulos": 1,
+      "faturado": 24260.5,
+      "recebido": 23896.59,
+      "aberto": 0.0,
+      "vidas": 4501
+    },
+    {
+      "grupo": "Ceará",
+      "titulos": 34,
+      "faturado": 22949.000000000004,
+      "recebido": 11635.880000000001,
+      "aberto": 11196.399999999998,
+      "vidas": 4352
+    },
+    {
+      "grupo": "SINDBREF-PB",
+      "titulos": 5,
+      "faturado": 21025.0,
+      "recebido": 5456.48,
+      "aberto": 15718.0,
+      "vidas": 725
+    },
+    {
+      "grupo": "SEAC RJ",
+      "titulos": 3,
+      "faturado": 20661.2,
+      "recebido": 752.0,
+      "aberto": 19909.2,
+      "vidas": 1010
+    },
+    {
+      "grupo": "SINDIMOTOS",
+      "titulos": 103,
+      "faturado": 14761.899999999992,
+      "recebido": 10783.689999999995,
+      "aberto": 3987.6,
+      "vidas": 551
+    },
+    {
+      "grupo": "SINATC EXP",
+      "titulos": 14,
+      "faturado": 10774.0,
+      "recebido": 10650.630000000001,
+      "aberto": 0.0,
+      "vidas": 448
+    },
+    {
+      "grupo": "SINTRASECE",
+      "titulos": 33,
+      "faturado": 10179.0,
+      "recebido": 8221.0,
+      "aberto": 1971.0,
+      "vidas": 389
+    },
+    {
+      "grupo": "SINATC",
+      "titulos": 43,
+      "faturado": 9571.0,
+      "recebido": 8857.0,
+      "aberto": 714.0,
+      "vidas": 563
+    },
+    {
+      "grupo": "NITEROI ESP.",
+      "titulos": 21,
+      "faturado": 6037.799999999998,
+      "recebido": 5979.799999999999,
+      "aberto": 57.99999999999999,
+      "vidas": 1040
+    },
+    {
+      "grupo": "PARACATU ESP.",
+      "titulos": 86,
+      "faturado": 5304.0,
+      "recebido": 4675.0,
+      "aberto": 629.0,
+      "vidas": 616
+    },
+    {
+      "grupo": "SINTEEP-RO",
+      "titulos": 47,
+      "faturado": 3764.0,
+      "recebido": 0.0,
+      "aberto": 3764.0,
+      "vidas": 939
+    },
+    {
+      "grupo": "SIND ROV NOVA IGUAÇU - FRETAMENTO",
+      "titulos": 4,
+      "faturado": 3710.5,
+      "recebido": 3710.0,
+      "aberto": 0.0,
+      "vidas": 743
+    },
+    {
+      "grupo": "SINTRUCAD ACT",
+      "titulos": 5,
+      "faturado": 3284.0000000000005,
+      "recebido": 3258.75,
+      "aberto": 25.9,
+      "vidas": 141
+    },
+    {
+      "grupo": "SINTRARAÇÕES",
+      "titulos": 1,
+      "faturado": 2475.0,
+      "recebido": 2437.88,
+      "aberto": 0.0,
+      "vidas": 98
+    },
+    {
+      "grupo": "FECOMERCIO",
+      "titulos": 10,
+      "faturado": 2212.2999999999997,
+      "recebido": 545.11,
+      "aberto": 1633.5000000000002,
+      "vidas": 5244
+    },
+    {
+      "grupo": "PARACATU",
+      "titulos": 8,
+      "faturado": 1282.5,
+      "recebido": 696.17,
+      "aberto": 594.0,
+      "vidas": 93
+    },
+    {
+      "grupo": "ANASEG",
+      "titulos": 1,
+      "faturado": 1105.5,
+      "recebido": 1088.92,
+      "aberto": 0.0,
+      "vidas": 204
+    },
+    {
+      "grupo": "SINPRO-RO",
+      "titulos": 20,
+      "faturado": 1096.0,
+      "recebido": 0.0,
+      "aberto": 1096.0,
+      "vidas": 295
+    },
+    {
+      "grupo": "STIAPAR ESP.",
+      "titulos": 6,
+      "faturado": 674.5,
+      "recebido": 674.5,
+      "aberto": 0.0,
+      "vidas": 38
+    },
+    {
+      "grupo": "CLIN DIGITAL",
+      "titulos": 5,
+      "faturado": 567.0,
+      "recebido": 567.0,
+      "aberto": 0.0,
+      "vidas": 127
+    },
+    {
+      "grupo": "SEJA BEM-ESTAR",
+      "titulos": 2,
+      "faturado": 464.2,
+      "recebido": 0.0,
+      "aberto": 464.2,
+      "vidas": 17
+    },
+    {
+      "grupo": "SITIAL",
+      "titulos": 3,
+      "faturado": 413.25,
+      "recebido": 304.5,
+      "aberto": 108.75,
+      "vidas": 19
+    },
+    {
+      "grupo": "SINDIERJ ESP.",
+      "titulos": 4,
+      "faturado": 160.0,
+      "recebido": 160.0,
+      "aberto": 0.0,
+      "vidas": 16
+    },
+    {
+      "grupo": "SINDCOMERCIO JUIZ DE FORA",
+      "titulos": 1,
+      "faturado": 45.5,
+      "recebido": 0.0,
+      "aberto": 45.5,
+      "vidas": 8
+    },
+    {
+      "grupo": "SIND CARGAS TERESOPOLIS E GUAPIMIRIM",
+      "titulos": 1,
+      "faturado": 5.5,
+      "recebido": 0.0,
+      "aberto": 5.5,
+      "vidas": 1
+    }
+  ],
+  "formas": [
+    {
+      "forma": "ABERTO",
+      "grupos": {
+        "Ceará": 11196.399999999998,
+        "SINATC": 714.0,
+        "SINPRO-RO": 1096.0,
+        "SINTEEP-RO": 3764.0,
+        "SINTEG": 443784.4,
+        "SINTRASECE": 1971.0,
+        "SINDIMOTOS": 3987.6,
+        "FRETAMENTO ESP.": 7386.5,
+        "SITIAL": 108.75,
+        "SINTRUCAD ACT": 25.9,
+        "PARACATU ESP.": 629.0,
+        "SEAC RJ": 19909.2,
+        "PARACATU": 594.0,
+        "SINDCOMERCIO JUIZ DE FORA": 45.5,
+        "SIND CARGAS TERESOPOLIS E GUAPIMIRIM": 5.5,
+        "FECOMERCIO": 1633.5000000000002,
+        "CARGA CCT-ACT ESP.": 9608.5,
+        "NITEROI ESP.": 57.99999999999999,
+        "NOVA IGUAÇU ESP.": 2746.5,
+        "SEJA BEM-ESTAR": 464.2,
+        "SINDBREF-PB": 15718.0
+      },
+      "titulos": 296,
+      "faturado": 525446.4500000001,
+      "recebido": 0.0
+    },
+    {
+      "forma": "P4X FITBANK SINTEG",
+      "grupos": {
+        "Ceará": 75.8,
+        "SINTEG": 140040.0
+      },
+      "titulos": 53,
+      "faturado": 140115.8,
+      "recebido": 139415.47000000003
+    },
+    {
+      "forma": "DEPOSITO BANCARIO",
+      "grupos": {
+        "PARACATU ESP.": 4675.0,
+        "CARGA CCT-ACT ESP.": 35684.0,
+        "NITEROI ESP.": 5979.799999999999,
+        "SINATC": 8857.0,
+        "STIAPAR ESP.": 674.5,
+        "SINDIERJ ESP.": 160.0,
+        "FRETAMENTO ESP.": 17924.5,
+        "NOVA IGUAÇU ESP.": 54268.5,
+        "SIND ROV NOVA IGUAÇU - FRETAMENTO": 3710.5
+      },
+      "titulos": 813,
+      "faturado": 131933.8,
+      "recebido": 131933.3
+    },
+    {
+      "forma": "FITBANK BOLETO PJ - MENSALIDADE",
+      "grupos": {
+        "SINDBREF-PB": 5307.0,
+        "Ceará": 11676.8,
+        "FECOMERCIO": 578.8,
+        "SINDICATO RODOVIARIOS RIO": 24260.5,
+        "SINATC EXP": 9647.0,
+        "SINTRARAÇÕES": 2475.0,
+        "CLIN DIGITAL": 567.0,
+        "ANASEG": 1105.5
+      },
+      "titulos": 34,
+      "faturado": 55617.59999999999,
+      "recebido": 55073.459999999985
+    },
+    {
+      "forma": "P4X SINTRASECE",
+      "grupos": {
+        "SINTRASECE": 8208.0
+      },
+      "titulos": 25,
+      "faturado": 8208.0,
+      "recebido": 8221.0
+    },
+    {
+      "forma": "P4X SINDIMOTOS CCT 2026",
+      "grupos": {
+        "SINDIMOTOS": 5404.799999999995
+      },
+      "titulos": 65,
+      "faturado": 5404.799999999995,
+      "recebido": 5414.189999999994
+    },
+    {
+      "forma": "P4X SINDIMOTOS 2025",
+      "grupos": {
+        "SINDIMOTOS": 5369.499999999999
+      },
+      "titulos": 23,
+      "faturado": 5369.499999999999,
+      "recebido": 5369.499999999999
+    },
+    {
+      "forma": "P4X SINTRUCADRIO ACT",
+      "grupos": {
+        "SINTRUCAD ACT": 3258.1000000000004
+      },
+      "titulos": 4,
+      "faturado": 3258.1000000000004,
+      "recebido": 3258.75
+    },
+    {
+      "forma": "P4X SINATC",
+      "grupos": {
+        "SINATC EXP": 1127.0
+      },
+      "titulos": 6,
+      "faturado": 1127.0,
+      "recebido": 1127.0
+    },
+    {
+      "forma": "P4X SEEAC DC",
+      "grupos": {
+        "SEAC RJ": 752.0
+      },
+      "titulos": 2,
+      "faturado": 752.0,
+      "recebido": 752.0
+    },
+    {
+      "forma": "P4X PARACATU",
+      "grupos": {
+        "PARACATU": 688.5
+      },
+      "titulos": 4,
+      "faturado": 688.5,
+      "recebido": 696.17
+    },
+    {
+      "forma": "P4X SITIAL",
+      "grupos": {
+        "SITIAL": 304.5
+      },
+      "titulos": 2,
+      "faturado": 304.5,
+      "recebido": 304.5
+    },
+    {
+      "forma": "ACORDADO",
+      "grupos": {
+        "SINTEG": 60.0
+      },
+      "titulos": 1,
+      "faturado": 60.0,
+      "recebido": 0.0
+    },
+    {
+      "forma": "DINHEIRO",
+      "grupos": {
+        "SINTEG": 60.0
+      },
+      "titulos": 1,
+      "faturado": 60.0,
+      "recebido": 60.0
+    }
+  ],
+  "rateioRecebido": {
+    "recebedores": [
+      {
+        "nome": "APP REDE SAUDE LTDA",
+        "lancamentos": 1513,
+        "nominal": 219111.0,
+        "rateio": 219111.0
+      },
+      {
+        "nome": "CARTAO REDE SAUDE LTDA",
+        "lancamentos": 379,
+        "nominal": 50526.61999999999,
+        "rateio": 50526.61999999999
+      }
+    ],
+    "porDia": [
+      {
+        "dia": "2026-10-30",
+        "lancamentos": 3,
+        "rateio": 234.2
+      },
+      {
+        "dia": "2026-11-04",
+        "lancamentos": 1,
+        "rateio": 29.0
+      },
+      {
+        "dia": "2026-11-05",
+        "lancamentos": 4,
+        "rateio": 246.5
+      },
+      {
+        "dia": "2026-11-06",
+        "lancamentos": 4,
+        "rateio": 373.3
+      },
+      {
+        "dia": "2026-11-09",
+        "lancamentos": 3,
+        "rateio": 272.0
+      },
+      {
+        "dia": "2026-11-10",
+        "lancamentos": 20,
+        "rateio": 1296.25
+      },
+      {
+        "dia": "2026-11-11",
+        "lancamentos": 45,
+        "rateio": 3513.4
+      },
+      {
+        "dia": "2026-11-12",
+        "lancamentos": 13,
+        "rateio": 813.75
+      },
+      {
+        "dia": "2026-11-13",
+        "lancamentos": 6,
+        "rateio": 485.5
+      },
+      {
+        "dia": "2026-11-14",
+        "lancamentos": 9,
+        "rateio": 4293.3
+      },
+      {
+        "dia": "2026-11-16",
+        "lancamentos": 2,
+        "rateio": 75.4
+      },
+      {
+        "dia": "2026-11-17",
+        "lancamentos": 67,
+        "rateio": 58918.799999999996
+      }
+    ],
+    "importacoesRepetidas": [
+      {
+        "arquivo": "P4X_20261117_1200.xlsx",
+        "igualA": "P4X_20261117_1127.xlsx"
+      }
+    ],
+    "linhasBrutas": 8446,
+    "linhasUnicas": 1892,
+    "lancamentosRepetidosEntreArquivos": 6554,
+    "semEmpresaNaApuracao": 6061.6,
+    "totalNominal": 269637.62,
+    "totalRateio": 269637.62
+  },
+  "cobertura": [
+    {
+      "grupo": "SINTEG",
+      "temRegra": false,
+      "faturado": 583944.4,
+      "recebido": 139397.44,
+      "rateioP4X": 126.0,
+      "vidasS4e": 11627,
+      "totalDistribuido": 0.0,
+      "saldo": 583944.4,
+      "regras": []
+    },
+    {
+      "grupo": "NOVA IGUAÇU ESP.",
+      "temRegra": false,
+      "faturado": 57015.0,
+      "recebido": 54268.5,
+      "rateioP4X": 77407.5,
+      "vidasS4e": 11199,
+      "totalDistribuido": 0.0,
+      "saldo": 57015.0,
+      "regras": []
+    },
+    {
+      "grupo": "CARGA CCT-ACT ESP.",
+      "temRegra": false,
+      "faturado": 45292.5,
+      "recebido": 35684.0,
+      "rateioP4X": 95462.9,
+      "vidasS4e": 8241,
+      "totalDistribuido": 0.0,
+      "saldo": 45292.5,
+      "regras": []
+    },
+    {
+      "grupo": "FRETAMENTO ESP.",
+      "temRegra": false,
+      "faturado": 25311.0,
+      "recebido": 17924.5,
+      "rateioP4X": 20135.5,
+      "vidasS4e": 4602,
+      "totalDistribuido": 0.0,
+      "saldo": 25311.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINDICATO RODOVIARIOS RIO",
+      "temRegra": false,
+      "faturado": 24260.5,
+      "recebido": 23896.59,
+      "rateioP4X": 0.0,
+      "vidasS4e": 4501,
+      "totalDistribuido": 0.0,
+      "saldo": 24260.5,
+      "regras": []
+    },
+    {
+      "grupo": "Ceará",
+      "temRegra": false,
+      "faturado": 22949.0,
+      "recebido": 11635.88,
+      "rateioP4X": 0.0,
+      "vidasS4e": 4352,
+      "totalDistribuido": 0.0,
+      "saldo": 22949.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINDBREF-PB",
+      "temRegra": false,
+      "faturado": 21025.0,
+      "recebido": 5456.48,
+      "rateioP4X": 0.0,
+      "vidasS4e": 725,
+      "totalDistribuido": 0.0,
+      "saldo": 21025.0,
+      "regras": []
+    },
+    {
+      "grupo": "SEAC RJ",
+      "temRegra": true,
+      "faturado": 20661.2,
+      "recebido": 752.0,
+      "rateioP4X": 546.0,
+      "vidasS4e": 1010,
+      "vidasFaturadas": 439.6,
+      "totalDistribuido": 20661.2,
+      "saldo": 0.0,
+      "regras": [
+        {
+          "recebedor": "RS",
+          "metodo": "por_vida",
+          "valorUnitario": 42.0,
+          "total": 18463.2
+        },
+        {
+          "recebedor": "SIND. ASSEIO",
+          "metodo": "por_vida",
+          "valorUnitario": 3.0,
+          "total": 1318.8
+        },
+        {
+          "recebedor": "SEAC RJ",
+          "metodo": "por_vida",
+          "valorUnitario": 2.0,
+          "total": 879.2
+        }
+      ]
+    },
+    {
+      "grupo": "SINDIMOTOS",
+      "temRegra": false,
+      "faturado": 14761.9,
+      "recebido": 10783.69,
+      "rateioP4X": 13031.07,
+      "vidasS4e": 551,
+      "totalDistribuido": 0.0,
+      "saldo": 14761.9,
+      "regras": []
+    },
+    {
+      "grupo": "SINATC EXP",
+      "temRegra": false,
+      "faturado": 10774.0,
+      "recebido": 10650.63,
+      "rateioP4X": 1377.0,
+      "vidasS4e": 448,
+      "totalDistribuido": 0.0,
+      "saldo": 10774.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINTRASECE",
+      "temRegra": true,
+      "faturado": 10179.0,
+      "recebido": 8221.0,
+      "rateioP4X": 14448.0,
+      "vidasS4e": 389,
+      "vidasFaturadas": 377.0,
+      "totalDistribuido": 10179.0,
+      "saldo": 0.0,
+      "regras": [
+        {
+          "recebedor": "RS",
+          "metodo": "por_vida",
+          "valorUnitario": 24.0,
+          "total": 9048.0
+        },
+        {
+          "recebedor": "Fecomercio",
+          "metodo": "por_vida",
+          "valorUnitario": 1.5,
+          "total": 565.5
+        },
+        {
+          "recebedor": "Sintrasece",
+          "metodo": "por_vida",
+          "valorUnitario": 1.5,
+          "total": 565.5
+        }
+      ]
+    },
+    {
+      "grupo": "SINATC",
+      "temRegra": false,
+      "faturado": 9571.0,
+      "recebido": 8857.0,
+      "rateioP4X": 11917.0,
+      "vidasS4e": 563,
+      "totalDistribuido": 0.0,
+      "saldo": 9571.0,
+      "regras": []
+    },
+    {
+      "grupo": "NITEROI ESP.",
+      "temRegra": false,
+      "faturado": 6037.8,
+      "recebido": 5979.8,
+      "rateioP4X": 12272.6,
+      "vidasS4e": 1040,
+      "totalDistribuido": 0.0,
+      "saldo": 6037.8,
+      "regras": []
+    },
+    {
+      "grupo": "PARACATU ESP.",
+      "temRegra": false,
+      "faturado": 5304.0,
+      "recebido": 4675.0,
+      "rateioP4X": 5984.0,
+      "vidasS4e": 616,
+      "totalDistribuido": 0.0,
+      "saldo": 5304.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINTEEP-RO",
+      "temRegra": false,
+      "faturado": 3764.0,
+      "recebido": 0.0,
+      "rateioP4X": 0.0,
+      "vidasS4e": 939,
+      "totalDistribuido": 0.0,
+      "saldo": 3764.0,
+      "regras": []
+    },
+    {
+      "grupo": "SIND ROV NOVA IGUAÇU - FRETAMENTO",
+      "temRegra": false,
+      "faturado": 3710.5,
+      "recebido": 3710.0,
+      "rateioP4X": 7420.0,
+      "vidasS4e": 743,
+      "totalDistribuido": 0.0,
+      "saldo": 3710.5,
+      "regras": []
+    },
+    {
+      "grupo": "SINTRUCAD ACT",
+      "temRegra": false,
+      "faturado": 3284.0,
+      "recebido": 3258.75,
+      "rateioP4X": 1364.0,
+      "vidasS4e": 141,
+      "totalDistribuido": 0.0,
+      "saldo": 3284.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINTRARAÇÕES",
+      "temRegra": false,
+      "faturado": 2475.0,
+      "recebido": 2437.88,
+      "rateioP4X": 0.0,
+      "vidasS4e": 98,
+      "totalDistribuido": 0.0,
+      "saldo": 2475.0,
+      "regras": []
+    },
+    {
+      "grupo": "FECOMERCIO",
+      "temRegra": false,
+      "faturado": 2212.3,
+      "recebido": 545.11,
+      "rateioP4X": 0.0,
+      "vidasS4e": 5244,
+      "totalDistribuido": 0.0,
+      "saldo": 2212.3,
+      "regras": []
+    },
+    {
+      "grupo": "PARACATU",
+      "temRegra": false,
+      "faturado": 1282.5,
+      "recebido": 696.17,
+      "rateioP4X": 748.0,
+      "vidasS4e": 93,
+      "totalDistribuido": 0.0,
+      "saldo": 1282.5,
+      "regras": []
+    },
+    {
+      "grupo": "ANASEG",
+      "temRegra": false,
+      "faturado": 1105.5,
+      "recebido": 1088.92,
+      "rateioP4X": 0.0,
+      "vidasS4e": 204,
+      "totalDistribuido": 0.0,
+      "saldo": 1105.5,
+      "regras": []
+    },
+    {
+      "grupo": "SINPRO-RO",
+      "temRegra": false,
+      "faturado": 1096.0,
+      "recebido": 0.0,
+      "rateioP4X": 0.0,
+      "vidasS4e": 295,
+      "totalDistribuido": 0.0,
+      "saldo": 1096.0,
+      "regras": []
+    },
+    {
+      "grupo": "STIAPAR ESP.",
+      "temRegra": true,
+      "faturado": 674.5,
+      "recebido": 674.5,
+      "rateioP4X": 745.5,
+      "vidasS4e": 38,
+      "vidasFaturadas": 38.0,
+      "totalDistribuido": 674.5,
+      "saldo": 0.0,
+      "regras": [
+        {
+          "recebedor": "RS",
+          "metodo": "por_vida",
+          "valorUnitario": 17.75,
+          "total": 674.5
+        }
+      ]
+    },
+    {
+      "grupo": "CLIN DIGITAL",
+      "temRegra": false,
+      "faturado": 567.0,
+      "recebido": 567.0,
+      "rateioP4X": 0.0,
+      "vidasS4e": 127,
+      "totalDistribuido": 0.0,
+      "saldo": 567.0,
+      "regras": []
+    },
+    {
+      "grupo": "SEJA BEM-ESTAR",
+      "temRegra": false,
+      "faturado": 464.2,
+      "recebido": 0.0,
+      "rateioP4X": 88.2,
+      "vidasS4e": 17,
+      "totalDistribuido": 0.0,
+      "saldo": 464.2,
+      "regras": []
+    },
+    {
+      "grupo": "SITIAL",
+      "temRegra": true,
+      "faturado": 413.25,
+      "recebido": 304.5,
+      "rateioP4X": 337.25,
+      "vidasS4e": 19,
+      "vidasFaturadas": 19.0,
+      "totalDistribuido": 413.25,
+      "saldo": 0.0,
+      "regras": [
+        {
+          "recebedor": "RS",
+          "metodo": "por_vida",
+          "valorUnitario": 17.75,
+          "total": 337.25
+        },
+        {
+          "recebedor": "SINALSUL",
+          "metodo": "por_vida",
+          "valorUnitario": 2.0,
+          "total": 38.0
+        },
+        {
+          "recebedor": "SITIAL",
+          "metodo": "por_vida",
+          "valorUnitario": 2.0,
+          "total": 38.0
+        }
+      ]
+    },
+    {
+      "grupo": "SINDIERJ ESP.",
+      "temRegra": false,
+      "faturado": 160.0,
+      "recebido": 160.0,
+      "rateioP4X": 160.0,
+      "vidasS4e": 16,
+      "totalDistribuido": 0.0,
+      "saldo": 160.0,
+      "regras": []
+    },
+    {
+      "grupo": "SINDCOMERCIO JUIZ DE FORA",
+      "temRegra": false,
+      "faturado": 45.5,
+      "recebido": 0.0,
+      "rateioP4X": 0.0,
+      "vidasS4e": 8,
+      "totalDistribuido": 0.0,
+      "saldo": 45.5,
+      "regras": []
+    },
+    {
+      "grupo": "SIND CARGAS TERESOPOLIS E GUAPIMIRIM",
+      "temRegra": false,
+      "faturado": 5.5,
+      "recebido": 0.0,
+      "rateioP4X": 5.5,
+      "vidasS4e": 1,
+      "totalDistribuido": 0.0,
+      "saldo": 5.5,
+      "regras": []
+    }
+  ]
+}

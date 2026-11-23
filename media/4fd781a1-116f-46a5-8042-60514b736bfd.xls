@@ -1,0 +1,54 @@
+﻿<html><head><style type="text/css">.BODY              {font-family: "calibri"; font-size: 12px; color: #000000; background-color: #ffffff; mso-number-format: "currency";}.A                 {color: #0000ff; text-decoration: none; mso-number-format: "currency";}.FmtContabil       {font-family: "calibri"; font-size: "12px"; mso-number-format: "currency";}.FmtNumero         {font-family: "calibri"; font-size: "12px"; mso-number-format: "0\.00";}.FmtInteiro        {font-family: "calibri"; font-size: "12px"; mso-number-format: "0";}.FmtData           {font-family: "calibri"; font-size: "12px"; mso-number-format: "dd\/mm\/yyyy";}.FmtTexto          {mso-number-format: \@}.conteudo          {font-family: calibri; font-size: 12px; vertical-align: middle;}.cabecalho         {font-family: calibri; font-size: 15px; background-color: #ffff00; font-weight: bold; vertical-align: middle;}.legenda           {font-family: calibri; font-size: 12px; font-weight: bold; vertical-align: middle;}.conteudoTXT6      {font-family: calibri; font-size: 16px; vertical-align: middle;}.conteudoTXT7      {font-family: calibri; font-size: 20px; vertical-align: middle;}.conteudoTXT8      {font-family: calibri; font-size: 25px; vertical-align: middle;}.percent           {font-family: calibri; font-size: 12px; mso-number-format: "Percent"; text-align:right; }</style></head>
+<body>
+<table border="1">
+<tr>
+<th nowrap colspan="8" class="cabecalho">TABELA TABELA MULTICLINIC</th>
+</tr>
+<tr>
+<th nowrap class="cabecalho">Código</th>
+<th nowrap class="cabecalho">Valor</th>
+<th nowrap class="cabecalho">Desconto</th>
+<th nowrap class="cabecalho">Tipo Desconto</th>
+<th nowrap class="cabecalho">Código Plano</th>
+<th nowrap class="cabecalho">Tipo de valor</th>
+<th nowrap class="cabecalho">Procedimento</th>
+<th nowrap class="cabecalho">Plano</th>
+<th nowrap class="cabecalho">Tipo de Procedimento</th>
+<th nowrap class="cabecalho">Exige Documentação</th>
+<th nowrap class="cabecalho">Especialidade</th>
+<th nowrap class="cabecalho">Dias de Retorno</th>
+<th nowrap class="cabecalho">Regras do Serviço</th>
+</tr>
+<tr>
+<td nowrap class="conteudo">10013</td>
+<td nowrap class="conteudo">65,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM NUTRICIONISTA</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">NUTRIÇÃO</td>
+<td nowrap class="conteudo">0</td>
+<td nowrap class="conteudo"></td>
+</tr>
+<tr>
+<td nowrap class="conteudo">10019</td>
+<td nowrap class="conteudo">55,00</td>
+<td nowrap class="conteudo">5,00</td>
+<td nowrap class="conteudo">Porcentagem</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">R$</td>
+<td nowrap class="conteudo">CONSULTA COM PSICÓLOGO</td>
+<td nowrap class="conteudo"></td>
+<td nowrap class="conteudo">CREDENCIADO</td>
+<td nowrap class="conteudo">Não</td>
+<td nowrap class="conteudo">PSICOLOGIA</td>
+<td nowrap class="conteudo">0</td>
+<td nowrap class="conteudo"></td>
+</tr>
+</table>
+</body>
+</html>

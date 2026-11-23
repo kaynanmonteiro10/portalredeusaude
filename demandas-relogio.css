@@ -1,0 +1,122 @@
+/* Relógio das demandas — botão no topo + tela cheia com relógio de ponteiro e alarme */
+
+/* botão compacto na barra superior */
+.clock-button{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.clock-mini{width:20px;height:20px;display:grid;place-items:center;flex:none}
+.clock-mini svg{width:20px;height:20px;overflow:visible;display:block}
+.clock-mini circle{fill:none;stroke:currentColor;stroke-width:1.6}
+.clock-mini line{stroke:currentColor;stroke-width:1.8;stroke-linecap:round;transform-origin:12px 12px}
+.clock-mini-pin{fill:currentColor;stroke:none}
+.clock-copy{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05;min-width:0}
+.clock-copy strong{font:700 14px 'Space Grotesk',sans-serif;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.clock-copy small{font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.68}
+.clock-button.has-next .clock-mini{color:var(--amber)}
+body[data-theme="dark"] .clock-button.has-next .clock-mini{color:#f0c169}
+
+/* tela cheia */
+.dc-modal{padding:0;border:0;margin:0;background:transparent;max-width:none;max-height:none;width:100vw;height:100dvh;color:var(--ink);overflow:hidden}
+.dc-modal::backdrop{background:#061316e0;backdrop-filter:blur(5px)}
+.dc-modal[open]{display:grid;place-items:center}
+.dc-modal-inner{width:min(1240px,calc(100vw - 20px));height:calc(100dvh - 20px);display:flex;flex-direction:column;gap:16px;background:var(--white);border:1px solid var(--line);border-radius:22px;padding:22px 26px;box-shadow:0 30px 90px #00000066;overflow:auto}
+.dc-modal-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.dc-modal-grid{display:grid;grid-template-columns:minmax(300px,min(46vh,440px)) minmax(0,1fr);gap:28px;align-items:center;flex:1;min-height:0}
+
+/* relógio analógico */
+.dc-analog-wrap{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0}
+.dc-analog{width:min(46vh,400px);max-width:100%;height:auto;filter:drop-shadow(0 22px 40px #18333d1f)}
+.dc-bezel{fill:none;stroke:url(#dcBezelGrad);stroke-width:6}
+.dc-analog-face{fill:url(#dcFaceGrad);stroke:#d8eae6;stroke-width:1.6}
+.dc-tick{stroke:#a9bfbc;stroke-width:1.4}
+.dc-tick.major{stroke:#5f7f7a;stroke-width:2.6}
+.dc-numeral{font:600 14px 'Space Grotesk',sans-serif;fill:#5f7f7a;text-anchor:middle;dominant-baseline:central;letter-spacing:-.02em}
+.dc-brand text{font:700 7px 'DM Sans',sans-serif;letter-spacing:1.5px;fill:#9aaeab;text-anchor:middle}
+.dc-brand .dc-brand-sub{font-size:4.6px;letter-spacing:1.2px;fill:#b3c4c1}
+.dc-date-window rect{fill:#eef6f4;stroke:#cfe2de;stroke-width:1}
+.dc-date-window text{font:700 9.5px 'Space Grotesk',sans-serif;fill:#3c5654;text-anchor:middle;font-variant-numeric:tabular-nums}
+.dc-glass{fill:url(#dcGlassGrad);opacity:.55;pointer-events:none}
+.dc-hand{stroke-linecap:round;transform-origin:120px 120px;transition:transform .12s linear}
+.dc-hand-hour{stroke:var(--ink);stroke-width:6}
+.dc-hand-minute{stroke:var(--ink);stroke-width:3.6}
+.dc-hand-second{stroke:var(--teal);stroke-width:1.7}
+.dc-second-tail{fill:var(--teal);stroke:none}
+.dc-pin{fill:var(--teal);stroke:var(--white);stroke-width:2}
+.dc-pin-cap{fill:var(--white);stroke:none}
+.dc-markers .dc-marker{cursor:pointer;outline:none}
+.dc-markers .dc-marker circle{fill:var(--teal);stroke:#fff;stroke-width:2;transition:r .15s ease}
+.dc-markers .dc-marker:hover circle,.dc-markers .dc-marker:focus-visible circle{r:9.5}
+.dc-markers .dc-marker.late circle{fill:var(--red)}
+.dc-digital{margin:2px 0 0;font:700 30px 'Space Grotesk',sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:var(--ink)}
+.dc-date{margin:0;font-size:12.5px;color:var(--muted);text-align:center}
+.dc-date::first-letter{text-transform:uppercase}
+
+/* agenda ao lado do relógio */
+.dc-agenda{display:flex;flex-direction:column;gap:16px;min-width:0;min-height:0;height:100%;justify-content:center}
+.dc-next{display:flex;flex-direction:column;align-items:flex-start;gap:6px;background:#f4f9f8;border:1px solid #e0ecea;border-radius:14px;padding:16px 18px}
+.dc-label{margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+.dc-next strong{font:600 19px/1.25 'Space Grotesk',sans-serif;letter-spacing:-.02em;color:var(--ink);overflow-wrap:anywhere}
+.dc-countdown{font-size:13px;line-height:1.4;color:var(--muted);font-variant-numeric:tabular-nums}
+.dc-next .button{padding:8px 13px;font-size:12.5px;margin-top:5px}
+.dc-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;overflow:auto;min-height:120px;max-height:100%}
+.dc-list:empty::after{content:'Nenhuma demanda aberta com horário.';display:block;padding:16px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);font-size:12.5px;text-align:center}
+.dc-item button{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;border:1px solid transparent;background:#f4f8f7;border-radius:11px;padding:11px 13px;cursor:pointer;text-align:left;color:var(--ink);font:13.5px inherit;transition:background .15s ease,border-color .15s ease}
+.dc-item button:hover,.dc-item button:focus-visible{background:#e7f4f1;border-color:#bfe3d9;outline:none}
+.dc-item-time{font:700 13px 'Space Grotesk',sans-serif;color:var(--teal-dark);font-variant-numeric:tabular-nums}
+.dc-item-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.dc-item-count{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.dc-item.late button{background:#fdf1f1;border-color:#f3d4d6}
+.dc-item.late .dc-item-time,.dc-item.late .dc-item-count{color:var(--red)}
+.dc-modal-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.dc-hint{font-size:12px;color:var(--muted)}
+.dc-modal-foot .button{padding:9px 13px;font-size:12.5px}
+
+/* alarme no horário exato */
+.alarm-dialog{padding:0;border:0;border-radius:20px;max-width:min(430px,calc(100vw - 26px));width:100%;background:var(--white);color:var(--ink);box-shadow:0 30px 80px #00000066;z-index:100}
+.alarm-dialog[open]{display:block}
+.alarm-dialog::backdrop{background:#061316d9;backdrop-filter:blur(4px)}
+.alarm-inner{padding:26px 26px 22px;display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.alarm-icon{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#fdeaea;color:var(--red);animation:alarmPulse 1.4s ease-in-out infinite;margin-bottom:4px}
+.alarm-icon svg{width:27px;height:27px}
+@keyframes alarmPulse{0%,100%{box-shadow:0 0 0 0 #d94c5240}50%{box-shadow:0 0 0 15px #d94c5200}}
+.alarm-time{margin:2px 0;font:700 40px 'Space Grotesk',sans-serif;letter-spacing:-.04em;color:var(--teal-dark);font-variant-numeric:tabular-nums}
+.alarm-owner{margin:0;color:var(--muted);font-size:13.5px}
+.alarm-actions{margin-top:14px;justify-content:center;flex-wrap:wrap;gap:8px}
+.alarm-actions .button{padding:10px 13px;font-size:13px}
+.alarm-actions .alarm-dismiss{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.alarm-actions .alarm-postpone{font-weight:700}
+.alarm-actions .button:focus-visible,.dc-modal-head .close-button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+@media(max-width:900px){
+  .dc-modal-inner{width:calc(100vw - 12px);height:calc(100dvh - 12px);padding:16px;border-radius:16px}
+  .dc-modal-grid{grid-template-columns:1fr;align-items:start;gap:16px}
+  .dc-analog{width:min(62vw,300px)}
+  .dc-agenda{height:auto}
+  .dc-list{max-height:none}
+  .dc-digital{font-size:26px}
+}
+@media(max-width:560px){
+  .clock-copy small{display:none}
+  .dc-modal-foot{flex-direction:column;align-items:flex-start}
+}
+
+body[data-theme="dark"] .dc-modal-inner,body[data-theme="dark"] .alarm-dialog{background:#18282e;border-color:#344b52;color:#e8eef0}
+body[data-theme="dark"] .dc-analog-face{fill:url(#dcFaceGradDark);stroke:#2f4a4e}
+body[data-theme="dark"] .dc-tick{stroke:#58727a}
+body[data-theme="dark"] .dc-tick.major{stroke:#a9c6c2}
+body[data-theme="dark"] .dc-numeral{fill:#a9c6c2}
+body[data-theme="dark"] .dc-brand text{fill:#7f9b9b}
+body[data-theme="dark"] .dc-date-window rect{fill:#20343b;stroke:#3f5a5e}
+body[data-theme="dark"] .dc-date-window text{fill:#d7e6e3}
+body[data-theme="dark"] .dc-hand-hour,body[data-theme="dark"] .dc-hand-minute{stroke:#e8eef0}
+body[data-theme="dark"] .dc-pin{stroke:#18282e}
+body[data-theme="dark"] .dc-pin-cap{fill:#18282e}
+body[data-theme="dark"] .dc-markers .dc-marker circle{stroke:#18282e}
+body[data-theme="dark"] .dc-digital,body[data-theme="dark"] .dc-next strong,body[data-theme="dark"] .dc-item button{color:#e8eef0}
+body[data-theme="dark"] .dc-next{background:#20343b;border-color:#385256}
+body[data-theme="dark"] .dc-item button{background:#20343b}
+body[data-theme="dark"] .dc-item button:hover,body[data-theme="dark"] .dc-item button:focus-visible{background:#2b4a52;border-color:#3f7a72}
+body[data-theme="dark"] .dc-list:empty::after{border-color:#385256;color:#b8c9c9}
+body[data-theme="dark"] .dc-item.late button{background:#3d2a2c;border-color:#6b3f43}
+body[data-theme="dark"] .dc-item.late .dc-item-time,body[data-theme="dark"] .dc-item.late .dc-item-count{color:#ff9ba0}
+body[data-theme="dark"] .dc-modal-foot{border-top-color:#385256}
+body[data-theme="dark"] .alarm-icon{background:#3d2a2c;color:#ff9ba0}
+body[data-theme="dark"] .alarm-time{color:#8be0d2}

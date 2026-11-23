@@ -1,0 +1,10 @@
+{
+  "verdict": "CHANGES_REQUESTED",
+  "findings": [
+    "Missing conferencia_resultado in GET response — The GET `/api/adesoes` endpoint does not include the `conferencia_resultado` field when returning adesoes rows. The modal detail view tries to parse this JSON to display validation errors and warnings; without it, the UI shows 'Erro ao processar resultado'. Add the field to the mapping in portal_server.py line 9540.",
+    "Batch reconciliation holds database connection and S4E session across 100+ records — The `run_batch_reconciliation()` function loops through all pending records in a single database transaction and reuses a single HTTP session for all S4E calls. On a busy month (200+ records) or with S4E latency, the connection locks and may timeout. Consider chunking the batch in groups of 10–20 records per commit, or releasing and re-acquiring the S4E session periodically.",
+    "No granular progress reporting during batch conferência — The frontend shows 'Processando...' with no intermediate feedback. If the batch takes 30+ seconds, users don't know if it's stalled or working. Consider adding a lightweight polling endpoint or SSE updates to show real-time progress (e.g., '23 / 150 processadas').",
+    "Validation does not check for duplicates or cross-batch conflicts — Two lotes with the same enterprise and data_entrada pass validation independently. If the same adhesion is imported twice, both will validate and be marked as 'validado'. Consider adding a pre-check for duplicate (lote, empresa) or enforcing a unique constraint in the schema."
+  ],
+  "reviewDoc": "c:\\Users\\Administrativo\\Documents\\KAYNAN\\meusarquivos\\meusarquivos\\Organizacao/.agents/tasks/adesoes-review.md"
+}

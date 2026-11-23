@@ -1,0 +1,279 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fluxo do ASO Admissional</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Public+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: título e aviso de escopo no topo; quatro etapas lado a lado (empilham no celular); regras de pagamento e da CCT abaixo. */
+:root {
+  --bg: #f3f5f6;
+  --surface: #ffffff;
+  --fg: #14232b;
+  --muted: #566972;
+  --line: #d3dce0;
+  --company: #1f5f8b;
+  --company-soft: #e3eef6;
+  --rs: #0e7a6b;
+  --rs-soft: #dff1ee;
+  --place: #8a4b14;
+  --place-soft: #f6e9db;
+  --alert: #a3321f;
+  --alert-soft: #fbe6e1;
+  --note: #f6d44a;
+  --note-soft: #fdf3c4;
+  --note-fg: #3a2f00;
+  --font-display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Public Sans", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1a20;
+    --surface: #17262e;
+    --fg: #e6eef1;
+    --muted: #9bb0b9;
+    --line: #2b3f49;
+    --company: #7fb6e0;
+    --company-soft: #19324a;
+    --rs: #5fcdbb;
+    --rs-soft: #12362f;
+    --place: #e5a56a;
+    --place-soft: #3a2a18;
+    --alert: #f0968a;
+    --alert-soft: #3f1d18;
+    --note: #d9b92f;
+    --note-soft: #3a3410;
+    --note-fg: #f6e9a8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1a20;
+  --surface: #17262e;
+  --fg: #e6eef1;
+  --muted: #9bb0b9;
+  --line: #2b3f49;
+  --company: #7fb6e0;
+  --company-soft: #19324a;
+  --rs: #5fcdbb;
+  --rs-soft: #12362f;
+  --place: #e5a56a;
+  --place-soft: #3a2a18;
+  --alert: #f0968a;
+  --alert-soft: #3f1d18;
+  --note: #d9b92f;
+  --note-soft: #3a3410;
+  --note-fg: #f6e9a8;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  padding-block: 32px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+header { display: flex; flex-direction: column; gap: 10px; }
+.kicker {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--muted);
+}
+h1 {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.7rem, 4.2vw, 2.6rem); line-height: 1.1; margin: 0;
+  text-wrap: balance;
+}
+.scope { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.scope li {
+  font-size: 13px; font-weight: 600; padding: 4px 12px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface);
+}
+
+/* Legenda de quem faz cada etapa */
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+.dot.company { background: var(--company); }
+.dot.rs { background: var(--rs); }
+.dot.place { background: var(--place); }
+
+/* Fluxo */
+.flow {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px;
+  counter-reset: step;
+}
+.step {
+  position: relative; min-width: 0;
+  background: var(--surface); border: 1px solid var(--line); border-top-width: 5px;
+  border-radius: 8px; padding: 18px 18px 20px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.step.company { border-top-color: var(--company); }
+.step.rs { border-top-color: var(--rs); }
+.step.place { border-top-color: var(--place); }
+.step::after {
+  content: ""; position: absolute; top: 34px; right: -22px; width: 16px; height: 16px;
+  border-top: 3px solid var(--muted); border-right: 3px solid var(--muted);
+  transform: rotate(45deg); opacity: 0.7;
+}
+.step:last-child::after { display: none; }
+
+.num {
+  font-family: var(--font-display); font-weight: 700; font-size: 14px;
+  width: 30px; height: 30px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff;
+}
+.company .num { background: var(--company); }
+.rs .num { background: var(--rs); }
+.place .num { background: var(--place); }
+:root[data-theme="dark"] .num { color: #0f1a20; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .num { color: #0f1a20; } }
+
+.step-head { display: flex; align-items: center; gap: 10px; }
+.actor {
+  font-family: var(--font-display); font-weight: 700; font-size: 1.05rem;
+  line-height: 1.15; text-transform: uppercase; letter-spacing: 0.02em;
+}
+.company .actor { color: var(--company); }
+.rs .actor { color: var(--rs); }
+.place .actor { color: var(--place); }
+.step p { margin: 0; font-size: 15px; }
+.step h3 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+
+.fields { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.fields li {
+  font-size: 13px; padding: 3px 10px; border-radius: 4px;
+  background: var(--company-soft); color: var(--fg);
+}
+
+.callout {
+  border-radius: 6px; padding: 12px 14px; font-size: 14px; line-height: 1.5;
+  background: var(--alert-soft); border-left: 4px solid var(--alert);
+}
+.callout strong { color: var(--alert); }
+
+/* Regras */
+.rules { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.rule {
+  min-width: 0; border-radius: 8px; padding: 18px 20px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.rule h2 { font-family: var(--font-display); font-size: 1.15rem; margin: 0; line-height: 1.2; }
+.rule p { margin: 0; font-size: 15px; }
+.rule.pay { background: var(--surface); border: 1px solid var(--line); }
+.rule.cct { background: var(--note-soft); border: 1px solid var(--note); color: var(--note-fg); }
+
+.glossary {
+  font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-top: 14px;
+  display: flex; flex-wrap: wrap; gap: 4px 24px; margin: 0;
+}
+.glossary dt { display: inline; font-weight: 600; color: var(--fg); }
+.glossary dd { display: inline; margin: 0 0 0 4px; }
+.glossary div { min-width: 0; }
+
+a:focus-visible, button:focus-visible { outline: 3px solid var(--company); outline-offset: 2px; }
+
+@media (max-width: 1040px) {
+  .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .step:nth-child(2)::after { display: none; }
+  .step:nth-child(1)::after { right: -22px; }
+  .step:nth-child(3)::after { right: -22px; }
+}
+@media (max-width: 640px) {
+  .flow { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .step::after { top: auto; bottom: -26px; right: auto; left: 24px; transform: rotate(135deg); }
+  .step:nth-child(2)::after { display: block; }
+  .step:last-child::after { display: none; }
+  .rules { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">Procedimento interno</div>
+    <h1>Fluxo do ASO admissional</h1>
+    <ul class="scope" aria-label="Planos atendidos">
+      <li>Dore</li>
+      <li>Sanvar</li>
+      <li>Saúde Master</li>
+    </ul>
+  </header>
+
+  <div class="legend" aria-label="Legenda">
+    <span><i class="dot company"></i>Empresas do Grupo Sinteg</span>
+    <span><i class="dot rs"></i>Rede Saúde</span>
+    <span><i class="dot place"></i>Estabelecimento</span>
+  </div>
+
+  <ol class="flow">
+    <li class="step company">
+      <div class="step-head">
+        <span class="num">1</span>
+        <span class="actor">Empresas do Grupo Sinteg</span>
+      </div>
+      <p>A empresa ou a Ana Carla repassa os dados das pessoas para liberar o exame admissional.</p>
+      <h3>Dados necessários</h3>
+      <ul class="fields">
+        <li>Nome completo</li>
+        <li>CPF</li>
+        <li>Data de nascimento</li>
+        <li>Cargo</li>
+        <li>Telefone</li>
+        <li>Data para realização do exame</li>
+      </ul>
+    </li>
+
+    <li class="step rs">
+      <div class="step-head">
+        <span class="num">2</span>
+        <span class="actor">Rede Saúde</span>
+      </div>
+      <p>O cadastro recebe a lista e repassa ao estabelecimento, autorizando a realização do exame admissional.</p>
+    </li>
+
+    <li class="step place">
+      <div class="step-head">
+        <span class="num">3</span>
+        <span class="actor">Estabelecimento</span>
+      </div>
+      <p>Realiza o ASO das pessoas que estão na listagem e envia a relação de quem fez os exames.</p>
+    </li>
+
+    <li class="step rs">
+      <div class="step-head">
+        <span class="num">4</span>
+        <span class="actor">Rede Saúde</span>
+      </div>
+      <p>O cadastro confere os dados, segue cadastrando no sistema e repassa ao financeiro para efetuar o pagamento dos valores.</p>
+      <div class="callout">
+        <strong>Nome que não foi enviado pela R.S.?</strong> Reportar a Carla e a empresa.
+      </div>
+    </li>
+  </ol>
+
+  <section class="rules" aria-label="Regras do fluxo">
+    <div class="rule pay">
+      <h2>Quem é pago</h2>
+      <p>Só são pagas as vidas ligadas ao Sinteg. Se vier na relação um nome que a Rede Saúde não enviou, reportar a Carla e à empresa.</p>
+    </div>
+    <div class="rule cct">
+      <h2>Acordo da CCT</h2>
+      <p>A CCT prevê ASO admissional e periódico. A Ana Carla fica sempre copiada em todos os e-mails de tratativas.</p>
+    </div>
+  </section>
+
+  <dl class="glossary">
+    <div><dt>ASO</dt><dd>Atestado de Saúde Ocupacional</dd></div>
+    <div><dt>CCT</dt><dd>Convenção Coletiva de Trabalho</dd></div>
+    <div><dt>R.S.</dt><dd>Rede Saúde</dd></div>
+  </dl>
+</div>
+
+</body></html>

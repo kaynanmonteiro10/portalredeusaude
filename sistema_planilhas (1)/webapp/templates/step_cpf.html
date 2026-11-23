@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% set passo_atual = 2 %}
+{% block content %}
+<div class="card">
+  <h1>Passo 2 — Coluna CPF_CNPJ</h1>
+
+  {% if sem_codigo > 0 %}
+  <div class="aviso">
+    ⚠️ {{ sem_codigo }} linha(s) não possuíam um código válido no início da coluna A
+    (formato esperado: "123 - NOME DA EMPRESA"). Essas linhas continuam no processamento,
+    mas com o código em branco.
+  </div>
+  {% endif %}
+
+  <p>Foram encontrados <strong>{{ stats.total }}</strong> registros:</p>
+  <ul class="lista-stats">
+    <li>🏢 <strong>{{ stats.cnpj }}</strong> com CNPJ</li>
+    <li>👤 <strong>{{ stats.cpf }}</strong> com CPF</li>
+    <li>❓ <strong>{{ stats.outros }}</strong> outros / vazios</li>
+  </ul>
+
+  <form action="{{ url_for('step_cpf_post') }}" method="post">
+    <p><strong>Como deseja tratar essa coluna?</strong></p>
+
+    <label class="opcao">
+      <input type="radio" name="opcao" value="apenas_cnpj" {{ 'checked' if opcao_atual == 'apenas_cnpj' }}>
+      Manter apenas CNPJ (remove todas as linhas de CPF)
+    </label>
+    <label class="opcao">
+      <input type="radio" name="opcao" value="apenas_cpf" {{ 'checked' if opcao_atual == 'apenas_cpf' }}>
+      Manter apenas CPF (remove todas as linhas de CNPJ)
+    </label>
+    <label class="opcao">
+      <input type="radio" name="opcao" value="ambos" {{ 'checked' if opcao_atual == 'ambos' }}>
+      Manter CPF e CNPJ (não remove nada)
+    </label>
+
+    <br>
+    <button type="submit">Continuar →</button>
+  </form>
+</div>
+{% endblock %}
