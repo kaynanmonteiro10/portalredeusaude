@@ -1470,6 +1470,54 @@ $('#downloadBackupBtn')?.addEventListener('click', async () => {
   }
 });
 
+const importDatabaseFile = $('#importDatabaseFile');
+const importDatabaseBtn = $('#importDatabaseBtn');
+const importDatabaseStatus = $('#importDatabaseStatus');
+
+$('#selectImportDatabaseBtn')?.addEventListener('click', () => importDatabaseFile?.click());
+
+importDatabaseFile?.addEventListener('change', () => {
+  const file = importDatabaseFile.files?.[0];
+  if (!file) {
+    if (importDatabaseBtn) importDatabaseBtn.disabled = true;
+    if (importDatabaseStatus) importDatabaseStatus.textContent = '';
+    return;
+  }
+  if (importDatabaseBtn) importDatabaseBtn.disabled = false;
+  if (importDatabaseStatus) {
+    const sizeMb = (file.size / 1024 / 1024).toFixed(1);
+    importDatabaseStatus.textContent = `Arquivo selecionado: ${file.name} (${sizeMb} MB)`;
+  }
+});
+
+importDatabaseBtn?.addEventListener('click', async () => {
+  const file = importDatabaseFile?.files?.[0];
+  if (!file) return;
+  if (!window.confirm(`Importar "${file.name}" e substituir o banco atual?\n\nO portal criará uma cópia automática antes da substituição e todas as sessões abertas serão encerradas.`)) return;
+
+  importDatabaseBtn.disabled = true;
+  if (importDatabaseStatus) importDatabaseStatus.textContent = 'Validando e enviando o banco...';
+  try {
+    const response = await fetch(`${window.PORTAL_API_BASE || ''}/api/admin/restore-database`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${Access.token}`,
+        'Content-Type': 'application/octet-stream',
+      },
+      body: file,
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(data.error || 'Não foi possível importar o banco.');
+    if (importDatabaseStatus) {
+      importDatabaseStatus.textContent = `Banco importado. Cópia anterior: ${data.backup || 'não informada'}. Recarregando o portal...`;
+    }
+    setTimeout(() => window.location.reload(), 1200);
+  } catch (error) {
+    if (importDatabaseStatus) importDatabaseStatus.textContent = error.message;
+    importDatabaseBtn.disabled = false;
+  }
+});
+
 $('#screenForm').addEventListener('submit', async event => {
   event.preventDefault();
   try {

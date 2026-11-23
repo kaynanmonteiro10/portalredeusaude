@@ -11927,6 +11927,11 @@ render();fromHash();
                 backup_path = DB_PATH.with_name(f"portal.before-restore-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db")
                 if DB_PATH.exists():
                     shutil.copy2(DB_PATH, backup_path)
+                    with sqlite3.connect(str(DB_PATH)) as old_db:
+                        old_db.execute("DELETE FROM sessions")
+                        old_db.commit()
+                    for suffix in ("-wal", "-shm"):
+                        Path(f"{DB_PATH}{suffix}").unlink(missing_ok=True)
                 os.replace(temp_path, DB_PATH)
             except Exception as exc:
                 if temp_path.exists():

@@ -2719,6 +2719,16 @@
             <div class="admin-actions"><button class="button button-primary" id="downloadBackupBtn" type="button">Baixar backup (.db)</button></div>
           </article>
           <article class="learning-card">
+            <div class="section-title"><div><p class="eyebrow">RESTAURAÇÃO</p><h3>Importar banco de dados</h3></div></div>
+            <p class="panel-help">Substitui os dados deste servidor por um arquivo `.db` válido. A operação cria automaticamente uma cópia do banco atual.</p>
+            <div class="admin-actions">
+              <input id="importDatabaseFile" type="file" accept=".db,application/octet-stream" hidden>
+              <button class="button button-secondary" id="selectImportDatabaseBtn" type="button">Selecionar arquivo .db</button>
+              <button class="button button-primary" id="importDatabaseBtn" type="button" disabled>Importar banco</button>
+            </div>
+            <p id="importDatabaseStatus" class="panel-help" aria-live="polite"></p>
+          </article>
+          <article class="learning-card">
             <div class="section-title"><div><p class="eyebrow">BLOQUEIO GERAL</p><h3>Bloquear o portal</h3><p class="panel-help">Suspende o acesso de todos ao sistema até que uma conta de administrador desbloqueie. As sessões abertas são encerradas na hora.</p></div></div>
             <form id="systemLockForm" class="quick-add">
               <label>Aviso na tela de bloqueio<input id="systemLockMessage" maxlength="200" placeholder="Ex.: Manutenção programada. Voltamos às 14h."></label>
@@ -4034,7 +4044,7 @@
   window.leaveFeedScreen = function () { window.__feedVisible = false; window.dispatchEvent(new Event('portal:feed-leave')); };
 </script>
 <script defer src="offline-demands.js?v=20261112o1"></script>
-<script defer src="access.js?v=20261119a"></script>
+<script defer src="access.js?v=20261123b"></script>
 <script defer src="sabi.js?v=20261118c"></script>
 <script defer src="retornos.js?v=20261112f1"></script>
 <script defer src="contract-notifications.js?v=20261112c1"></script>
