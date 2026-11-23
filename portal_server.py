@@ -11890,6 +11890,55 @@ render();fromHash();
         path = urlparse(self.path).path
         if deny_if_locked(self, path):
             return
+        if path == "/api/admin/restore-database":
+            with connection() as db:
+                if not require_admin(db, self):
+                    return
+            try:
+                length = int(self.headers.get("Content-Length") or 0)
+            except (TypeError, ValueError):
+                length = 0
+            if length <= 0:
+                self.send_json({"error": "O arquivo do banco está vazio."}, 400)
+                return
+            if length > 500 * 1024 * 1024:
+                self.send_json({"error": "O arquivo do banco excede o limite de 500 MB."}, 413)
+                return
+
+            temp_path = DB_PATH.with_name(f".portal-{secrets.token_hex(8)}.restore.db")
+            try:
+                with temp_path.open("wb") as output:
+                    remaining = length
+                    while remaining:
+                        chunk = self.rfile.read(min(1024 * 1024, remaining))
+                        if not chunk:
+                            raise ValueError("Transferência interrompida.")
+                        output.write(chunk)
+                        remaining -= len(chunk)
+
+                check = sqlite3.connect(str(temp_path))
+                try:
+                    if check.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
+                        raise ValueError("Arquivo SQLite inválido ou corrompido.")
+                    check.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+                finally:
+                    check.close()
+
+                backup_path = DB_PATH.with_name(f"portal.before-restore-{datetime.now().strftime('%Y%m%d-%H%M%S')}.db")
+                if DB_PATH.exists():
+                    shutil.copy2(DB_PATH, backup_path)
+                os.replace(temp_path, DB_PATH)
+            except Exception as exc:
+                if temp_path.exists():
+                    temp_path.unlink(missing_ok=True)
+                self.send_json({"error": f"Não foi possível restaurar o banco: {str(exc)}"}, 400)
+                return
+
+            self.send_json({
+                "ok": True,
+                "backup": backup_path.name if DB_PATH.exists() else None,
+            })
+            return
         if path == "/api/agent/events":
             try:
                 payload = read_json(self)
