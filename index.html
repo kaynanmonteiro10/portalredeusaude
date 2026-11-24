@@ -38,7 +38,7 @@
 <link rel="stylesheet" href="movimentacoes.css?v=20261117a">
 <link rel="stylesheet" href="email-center.css?v=20261111e1">
 <link rel="stylesheet" href="adesoes-conferencia.css?v=20261118p">
-<link rel="stylesheet" href="sabi.css?v=20261118f">
+<link rel="stylesheet" href="sabi.css?v=20261124a">
   <script defer src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" crossorigin="anonymous"></script>
   <style>
     /* ── Contratos ───────────────────────────────────────────── */
@@ -345,6 +345,7 @@
       </div>
       <nav class="sidebar-nav" id="sidebarNav" aria-label="Módulos">
         <button class="nav-button active" data-screen="homeScreen" title="Início"><span class="nav-icon">⌂</span><span class="nav-text">Início</span></button>
+        <button class="nav-button hidden" type="button" data-screen="sabiCenterScreen" data-admin-only="true" title="Central do Sabi"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-text">Central do Sabi</span></button>
         <div class="nav-group hidden" role="group" aria-labelledby="navRoutineTitle">
           <span class="nav-label" id="navRoutineTitle">Operação do dia</span>
           <button class="nav-button hidden" data-screen="tasksScreen" title="Demandas"><span class="nav-icon" aria-hidden="true">▦</span><span class="nav-text">Demandas</span></button>
@@ -562,6 +563,69 @@
           </span>
           <div><p>Gente que cuida, faz a diferença.</p><small>Rede Saúde · Portal do Setor</small></div>
         </section>
+      </section>
+    </div>
+
+    <div id="sabiCenterScreen" class="screen hidden">
+      <section class="sabi-center" aria-labelledby="sabiCenterTitle">
+        <header class="sabi-center-hero">
+          <div class="sabi-center-hero-copy">
+            <p class="eyebrow">CENTRAL DO SABI · ADMINISTRAÇÃO</p>
+            <h2 id="sabiCenterTitle">O que precisa de você hoje?</h2>
+            <p id="sabiCenterSummary">Estou reunindo os dados salvos do portal para organizar seu dia.</p>
+            <div class="sabi-center-hero-actions">
+              <button class="button button-primary" id="sabiCenterAsk" type="button">Perguntar ao Sabi</button>
+              <button class="button button-secondary" id="sabiCenterRefresh" type="button">Atualizar painel</button>
+            </div>
+          </div>
+          <div class="sabi-center-portrait" aria-hidden="true">
+            <div class="sabi-center-orbit"></div>
+            <img id="sabiCenterPortrait" src="assets/sabi/classico-stage.jpg" alt="">
+            <span class="sabi-center-live" id="sabiCenterLive"><i></i><span>Preparando o painel</span></span>
+          </div>
+        </header>
+
+        <div class="sabi-center-notice hidden" id="sabiCenterNotice" role="status"></div>
+        <section class="sabi-center-kpis" id="sabiCenterKpis" aria-label="Prioridades numéricas de hoje"></section>
+
+        <section class="sabi-center-section" aria-labelledby="sabiCenterPriorityTitle">
+          <div class="sabi-center-section-head">
+            <div><p class="eyebrow">FILA DO DIA</p><h3 id="sabiCenterPriorityTitle">O que merece sua atenção</h3></div>
+            <span class="sabi-center-count" id="sabiCenterPriorityCount">—</span>
+          </div>
+          <div class="sabi-center-priorities" id="sabiCenterPriorities">
+            <div class="sabi-center-loading"><span></span><span></span><span></span><p>Sabi está conferindo as prioridades…</p></div>
+          </div>
+        </section>
+
+        <section class="sabi-center-section" aria-labelledby="sabiCenterReportsTitle">
+          <div class="sabi-center-section-head sabi-center-reports-head">
+            <div><p class="eyebrow">TUDO EM UM SÓ LUGAR</p><h3 id="sabiCenterReportsTitle">Relatórios e rotinas</h3><p>Abra a tela completa ou baixe o arquivo quando ele já estiver disponível.</p></div>
+            <label class="sabi-center-search"><span class="sr-only">Buscar relatório ou rotina</span><input id="sabiCenterSearch" type="search" placeholder="Buscar relatório…" autocomplete="off"></label>
+          </div>
+          <div class="sabi-center-filters" id="sabiCenterFilters" role="group" aria-label="Filtrar relatórios por assunto">
+            <button type="button" class="active" data-sabi-filter="all" aria-pressed="true">Todos</button>
+            <button type="button" data-sabi-filter="attention" aria-pressed="false">Atenção</button>
+            <button type="button" data-sabi-filter="finance" aria-pressed="false">Financeiro</button>
+            <button type="button" data-sabi-filter="operation" aria-pressed="false">Operação</button>
+            <button type="button" data-sabi-filter="indicators" aria-pressed="false">Indicadores</button>
+          </div>
+          <div class="sabi-center-reports" id="sabiCenterReports">
+            <div class="sabi-center-loading"><span></span><span></span><span></span><p>Organizando os relatórios…</p></div>
+          </div>
+        </section>
+
+        <section class="sabi-center-section sabi-center-routines" aria-labelledby="sabiCenterRoutinesTitle">
+          <div class="sabi-center-section-head">
+            <div><p class="eyebrow">TRABALHO AUTOMÁTICO</p><h3 id="sabiCenterRoutinesTitle">Rotinas do Sabi</h3><p>Os agendamentos existentes continuam sendo executados pelo servidor do portal.</p></div>
+            <button class="button button-secondary" id="sabiCenterRoutineAsk" type="button">Pedir uma rotina</button>
+          </div>
+          <div class="sabi-center-schedule-list" id="sabiCenterSchedules">
+            <div class="sabi-center-loading"><span></span><span></span><p>Lendo os agendamentos…</p></div>
+          </div>
+        </section>
+
+        <p class="sabi-center-safe"><strong>Leitura segura:</strong> esta Central só reúne dados já salvos. Atualizar o painel não consulta o S4E, não envia mensagens e não altera cadastros.</p>
       </section>
     </div>
 
@@ -4044,8 +4108,9 @@
   window.leaveFeedScreen = function () { window.__feedVisible = false; window.dispatchEvent(new Event('portal:feed-leave')); };
 </script>
 <script defer src="offline-demands.js?v=20261123d"></script>
-<script defer src="access.js?v=20261123d"></script>
-<script defer src="sabi.js?v=20261118c"></script>
+<script defer src="access.js?v=20261124a"></script>
+<script defer src="sabi.js?v=20261124a"></script>
+<script defer src="sabi-central.js?v=20261124c"></script>
 <script defer src="retornos.js?v=20261112f1"></script>
 <script defer src="contract-notifications.js?v=20261112c1"></script>
 <script defer src="commission-notifications.js?v=20261113a2"></script>

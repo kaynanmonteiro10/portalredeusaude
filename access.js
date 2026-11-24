@@ -3,7 +3,7 @@ if (window.location.search && window.history.replaceState) window.history.replac
 const SESSION_KEY = 'portal-session-v1';
 const SHARED_SCREENS = ['homeScreen', 'tasksScreen', 'birthdaysScreen', 'chatScreen', 'feedScreen', 'learningScreen'];
 const DISABLED_SCREENS = ['managementScreen', 'mergeScreen', 'boardScreen'];
-const PRIVATE_SCREENS = ['vendasScreen', 'movimentacoesScreen', 'emailCenterScreen'];
+const PRIVATE_SCREENS = ['vendasScreen', 'movimentacoesScreen', 'emailCenterScreen', 'sabiCenterScreen'];
 const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5500' : '';
 window.PORTAL_API_BASE = API_BASE;
 
@@ -244,6 +244,7 @@ function clearSession() {
   window.resetVendas?.();
   window.resetMovimentacoes?.();
   window.resetEmailCenter?.();
+  window.resetSabiCenter?.();
 }
 
 function showLogin(message = '') {
@@ -283,6 +284,7 @@ function showSystemLock(state = {}) {
   window.resetVendas?.();
   window.resetMovimentacoes?.();
   window.resetEmailCenter?.();
+  window.resetSabiCenter?.();
 }
 
 async function checkSystemLock() {
@@ -303,6 +305,7 @@ function canSee(screenId) {
   if (Access.offline) return screenId === 'tasksScreen';
   if (DISABLED_SCREENS.includes(screenId)) return false;
   if (screenId === 'emailCenterScreen') return false;
+  if (screenId === 'sabiCenterScreen') return Access.user.role === 'admin';
   if (screenId === 'vendasScreen') return Access.user.role === 'admin' && Access.screens.some(screen => screen.id === screenId);
   if (screenId === 'movimentacoesScreen') return Access.user.role === 'admin';
   if (Access.user.role === 'admin') return true;
@@ -382,13 +385,14 @@ function openScreen(screenId) {
   else window.leaveFeedScreen?.();
   if (screenId === 'homeScreen') window.enterHomeScreen?.();
   else window.leaveHomeScreen?.();
+  if (screenId === 'sabiCenterScreen') window.enterSabiCenterScreen?.();
 }
 
 function applyAccess() {
   document.querySelectorAll('.nav-button').forEach(button => {
     let allowed;
     if (Access.offline) allowed = canSee(button.dataset.screen);
-    else if (['vendasScreen', 'emailCenterScreen'].includes(button.dataset.screen)) allowed = canSee(button.dataset.screen);
+    else if (['vendasScreen', 'emailCenterScreen', 'sabiCenterScreen'].includes(button.dataset.screen)) allowed = canSee(button.dataset.screen);
     else if (button.dataset.management) allowed = isManager();
     else if (button.dataset.adminOnly) allowed = Access.user?.role === 'admin';
     else allowed = canSee(button.dataset.screen);

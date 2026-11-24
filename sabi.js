@@ -13,6 +13,7 @@
   ];
   const TIPS = {
     homeScreen: 'este é o seu painel do dia. Os cartões mostram o que está acontecendo no setor, e o mural reúne os avisos da equipe.',
+    sabiCenterScreen: 'esta é a Central do Sabi: o resumo do que precisa de atenção, todos os relatórios e as rotinas automáticas em um só lugar. A leitura não consulta o S4E nem altera cadastros.',
     tasksScreen: 'aqui ficam as demandas. Os cartões do topo filtram a fila; o botão Nova demanda abre o formulário.',
     weeklyScreen: 'o Relatório Semanal lê os cadastros direto do S4E. Se os dados estiverem velhos, use Atualizar do S4E.',
     adesiScreen: 'a Conferência de Adesões compara lote, vidas e parcela. Clique em uma linha para ver o motivo de pendente ou divergente.',
@@ -39,7 +40,7 @@
   };
   const DEFAULT_TIP = 'eu sou o Sabi, seu assistente. Posso abrir telas, ensinar o passo a passo, responder números do portal, baixar relatórios automaticamente e executar ações complexas como apuração e conferência de notas.';
   const SCREEN_LABELS = {
-    homeScreen: 'Início', tasksScreen: 'Demandas', weeklyScreen: 'Relatório Semanal', adesiScreen: 'Conferência de Adesões',
+    homeScreen: 'Início', sabiCenterScreen: 'Central do Sabi', tasksScreen: 'Demandas', weeklyScreen: 'Relatório Semanal', adesiScreen: 'Conferência de Adesões',
     contractsScreen: 'Contratos', commissionsScreen: 'Comissões', financeScreen: 'Rateios P4X', cobrancaScreen: 'Cobranças',
     retornosScreen: 'Retorno Instituição', apuracaoScreen: 'Apuração', rateioScreen: 'Rateio de Faturamento',
     notasScreen: 'Conferência de Notas', recibosScreen: 'Recibos', vendasScreen: 'Acompanhamento de Vendas',
@@ -49,6 +50,7 @@
   };
   const SCREEN_ALIASES = {
     homeScreen: ['inicio', 'painel', 'home', 'tela inicial'],
+    sabiCenterScreen: ['central do sabi', 'central', 'painel do sabi', 'assistente'],
     tasksScreen: ['demanda', 'tarefa', 'quadro de demandas'],
     weeklyScreen: ['relatorio semanal', 'semanal', 'relatorio de cadastros'],
     adesiScreen: ['conferencia de adesoes', 'adesao', 'adesoes', 'conferencia de adesao'],
@@ -80,6 +82,14 @@
       { sel: '#homeQuick', text: 'Os atalhos abrem as telas que você mais usa. Eles mudam conforme o seu acesso.' },
       { sel: '#homeMural', text: 'O mural mostra as publicações da equipe. "Ver mural" abre a tela completa.' },
       { sel: '#homeUpdates', text: 'Aqui aparece o que mudou no sistema, com a data de cada novidade.' },
+    ],
+    sabiCenterScreen: [
+      { sel: '#sabiCenterKpis', text: 'Os quatro cartões mostram o resumo do dia. Clique para abrir a tela que detalha cada pendência.' },
+      { sel: '#sabiCenterPriorities', text: 'Esta fila reúne o que mais merece atenção, primeiro por urgência e depois pelo tipo de relatório.' },
+      { sel: '#sabiCenterSearch', text: 'Use a busca e os filtros para encontrar qualquer relatório do setor sem navegar por vários menus.' },
+      { sel: '#sabiCenterReports', text: 'Cada cartão mostra o último dado lido. Abrir tela leva ao relatório completo; Baixar exporta o que já está salvo.' },
+      { sel: '#sabiCenterSchedules', text: 'As rotinas automáticas ficam aqui. Peça a mim para agendar uma exportação, sem alterar o S4E.' },
+      { sel: '#sabiCenterAsk', text: 'Se quiser, peça em linguagem natural. Eu abro o assistente e preparo a pergunta para você.' },
     ],
     tasksScreen: [
       { sel: '[data-stat-filter="today"]', text: 'Os cartões do topo resumem a fila. Clique em um deles para filtrar a lista.' },
