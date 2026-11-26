@@ -39,6 +39,7 @@
 <link rel="stylesheet" href="email-center.css?v=20261111e1">
 <link rel="stylesheet" href="adesoes-conferencia.css?v=20261118p">
 <link rel="stylesheet" href="sabi.css?v=20261124a">
+<link rel="stylesheet" href="ponto.css?v=20261126a">
   <script defer src="https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js" crossorigin="anonymous"></script>
   <style>
     /* ── Contratos ───────────────────────────────────────────── */
@@ -348,6 +349,7 @@
         <button class="nav-button hidden" type="button" data-screen="sabiCenterScreen" data-admin-only="true" title="Central do Sabi"><span class="nav-icon" aria-hidden="true">✦</span><span class="nav-text">Central do Sabi</span></button>
         <div class="nav-group hidden" role="group" aria-labelledby="navRoutineTitle">
           <span class="nav-label" id="navRoutineTitle">Operação do dia</span>
+          <button class="nav-button hidden" data-screen="pontoScreen" title="Ponto eletrônico"><span class="nav-icon" aria-hidden="true">PT</span><span class="nav-text">Ponto eletrônico</span></button>
           <button class="nav-button hidden" data-screen="tasksScreen" title="Demandas"><span class="nav-icon" aria-hidden="true">▦</span><span class="nav-text">Demandas</span></button>
           <button class="nav-button hidden" type="button" data-screen="emailCenterScreen" data-admin-only="true" title="Central de E-mails"><span class="nav-icon" aria-hidden="true">EM</span><span class="nav-text">Central de E-mails</span><span class="chat-nav-badge hidden" id="emailNavBadge">0</span></button>
           <button class="nav-button hidden" data-screen="chatScreen" title="Conversas"><span class="nav-icon" aria-hidden="true">❝</span><span class="nav-text">Conversas</span><span class="chat-nav-badge hidden" id="chatNavBadge">0</span></button>
@@ -627,6 +629,91 @@
 
         <p class="sabi-center-safe"><strong>Leitura segura:</strong> esta Central só reúne dados já salvos. Atualizar o painel não consulta o S4E, não envia mensagens e não altera cadastros.</p>
       </section>
+    </div>
+
+    <div id="pontoScreen" class="screen hidden">
+      <section class="ponto" aria-labelledby="pontoTitle">
+        <header class="ponto-hero">
+          <div>
+            <p class="eyebrow">JORNADA CONSULTIVA</p>
+            <h2 id="pontoTitle">Ponto eletrônico</h2>
+            <p>Entradas e saídas são registradas pelo acesso ao portal. Pausas, escalas, férias e limites ficam reunidos para conferência.</p>
+          </div>
+          <div class="ponto-hero-actions">
+            <button class="button button-secondary hidden" id="pontoManage" type="button">Editar horários</button>
+            <button class="button button-secondary" id="pontoRefresh" type="button">Atualizar</button>
+            <button class="button button-primary" id="pontoExport" type="button">Exportar Excel</button>
+          </div>
+        </header>
+
+        <div class="ponto-policy" id="pontoPolicy"></div>
+        <div class="ponto-alert hidden" id="pontoAlert" role="status"></div>
+
+        <section class="ponto-kpis" id="pontoKpis" aria-label="Resumo da jornada"></section>
+
+        <section class="ponto-card ponto-myday">
+          <div class="ponto-section-head">
+            <div><p class="eyebrow">MEU DIA</p><h3>Registro de hoje</h3></div>
+            <span id="pontoLiveStatus" class="ponto-status">Carregando</span>
+          </div>
+          <div class="ponto-actions" id="pontoActions">
+            <button type="button" data-point-event="lunch_start">Iniciar almoço</button>
+            <button type="button" data-point-event="lunch_end">Voltar do almoço</button>
+            <button type="button" data-point-event="break_start">Iniciar intervalo</button>
+            <button type="button" data-point-event="break_end">Voltar do intervalo</button>
+          </div>
+          <div class="ponto-timeline" id="pontoTimeline"></div>
+        </section>
+
+        <section class="ponto-card">
+          <div class="ponto-section-head ponto-filters-head">
+            <div><p class="eyebrow">CONFERÊNCIA</p><h3>Jornada da equipe</h3></div>
+            <div class="ponto-filters">
+              <label>De<input type="date" id="pontoStart"></label>
+              <label>Até<input type="date" id="pontoEnd"></label>
+              <button class="button button-secondary" type="button" id="pontoApply">Aplicar</button>
+            </div>
+          </div>
+          <div class="ponto-people" id="pontoPeople"></div>
+        </section>
+
+        <div class="ponto-grid">
+          <section class="ponto-card">
+            <div class="ponto-section-head"><div><p class="eyebrow">PLANEJAMENTO</p><h3>Escala prevista</h3></div></div>
+            <div class="ponto-table-wrap"><table class="ponto-table"><thead><tr><th>Pessoa</th><th>Equipe</th><th>Seg</th><th>Ter</th><th>Qua</th><th>Qui</th><th>Sex</th><th>Sáb</th></tr></thead><tbody id="pontoSchedules"></tbody></table></div>
+          </section>
+          <section class="ponto-card">
+            <div class="ponto-section-head"><div><p class="eyebrow">DISPONIBILIDADE</p><h3>Férias previstas</h3></div></div>
+            <div class="ponto-vacations" id="pontoVacations"></div>
+          </section>
+        </div>
+
+        <section class="ponto-card">
+          <div class="ponto-section-head"><div><p class="eyebrow">RODÍZIO JUSTO</p><h3>Sugestões para esta semana</h3><p>As sugestões não alteram a escala automaticamente.</p></div></div>
+          <div class="ponto-rotations" id="pontoRotations"></div>
+        </section>
+
+        <p class="ponto-footnote"><strong>Importante:</strong> este painel é consultivo. Ajustes de jornada, férias, compensação e hora extra precisam de validação da gestão responsável.</p>
+      </section>
+      <dialog class="ponto-dialog" id="pontoScheduleDialog">
+        <form id="pontoScheduleForm">
+          <div class="ponto-dialog-head">
+            <div><p class="eyebrow">ADMINISTRAÇÃO</p><h3>Editar horários</h3><p>Vincule a pessoa ao usuário que faz login e configure cada dia da semana.</p></div>
+            <button type="button" id="pontoScheduleClose" aria-label="Fechar">×</button>
+          </div>
+          <div class="ponto-dialog-fields">
+            <label>Pessoa<select id="pontoSchedulePerson" required></select></label>
+            <label>Usuário do portal<select id="pontoScheduleUser"><option value="">Sem usuário vinculado</option></select></label>
+            <label>Equipe<input id="pontoScheduleTeam" maxlength="100" required></label>
+          </div>
+          <div class="ponto-edit-table-wrap">
+            <table class="ponto-edit-table"><thead><tr><th>Trabalha</th><th>Dia</th><th>Entrada</th><th>Início almoço</th><th>Fim almoço</th><th>Saída</th><th>Total</th></tr></thead><tbody id="pontoScheduleDays"></tbody></table>
+          </div>
+          <div class="ponto-edit-summary"><span>Total planejado na semana</span><strong id="pontoScheduleTotal">0h</strong><small id="pontoScheduleWarning"></small></div>
+          <p class="ponto-dialog-error hidden" id="pontoScheduleError"></p>
+          <div class="ponto-dialog-actions"><button class="button button-secondary" type="button" id="pontoScheduleCancel">Cancelar</button><button class="button button-primary" type="submit" id="pontoScheduleSave">Salvar horários</button></div>
+        </form>
+      </dialog>
     </div>
 
     <div id="tasksScreen" class="screen">
@@ -4108,9 +4195,10 @@
   window.leaveFeedScreen = function () { window.__feedVisible = false; window.dispatchEvent(new Event('portal:feed-leave')); };
 </script>
 <script defer src="offline-demands.js?v=20261123d"></script>
-<script defer src="access.js?v=20261124a"></script>
+<script defer src="access.js?v=20261126a"></script>
 <script defer src="sabi.js?v=20261124a"></script>
 <script defer src="sabi-central.js?v=20261124c"></script>
+<script defer src="ponto.js?v=20261126a"></script>
 <script defer src="retornos.js?v=20261112f1"></script>
 <script defer src="contract-notifications.js?v=20261112c1"></script>
 <script defer src="commission-notifications.js?v=20261113a2"></script>

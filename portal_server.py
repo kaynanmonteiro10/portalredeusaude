@@ -44,6 +44,7 @@ import s4e_notas
 import task_sync
 import recibos_pdf
 import relatorio_semanal
+import ponto
 
 mimetypes.add_type("application/x-chrome-extension", ".crx")
 
@@ -122,7 +123,7 @@ HTTPS_PORT = 5443
 HTTPS_CERT = ROOT / "portal-cert.pem"
 HTTPS_KEY = ROOT / "portal-key.pem"
 PBKDF2_ROUNDS = 120_000
-SHARED_SCREENS = ("homeScreen", "tasksScreen", "birthdaysScreen", "chatScreen", "feedScreen", "learningScreen")
+SHARED_SCREENS = ("homeScreen", "tasksScreen", "birthdaysScreen", "chatScreen", "feedScreen", "learningScreen", "pontoScreen")
 DISABLED_SCREENS = {"managementScreen", "mergeScreen", "boardScreen"}
 PRIVATE_SCREENS = {"vendasScreen", "movimentacoesScreen", "emailCenterScreen"}
 DEFAULT_SECTOR_ID = "cadastro-faturamento"
@@ -150,6 +151,7 @@ BUILTIN_SCREENS = (
     ("birthdaysScreen",  "Aniversariantes",      "Geral",               "Quem faz aniversário e quando é a próxima comemoração do setor."),
     ("chatScreen",       "Conversas",            "Geral",               "Chat da equipe, canais por setor, pessoas e grupos."),
     ("feedScreen",       "Mural da Equipe",      "Geral",               "Fotos de eventos, avisos e novidades publicadas pela equipe."),
+    ("pontoScreen",      "Ponto eletrônico",     "Geral",               "Jornada consultiva pelo login e logout, pausas, escalas, férias e relatórios."),
 )
 
 
@@ -399,6 +401,7 @@ def connection():
     if "photo" not in bd_cols:
         db.execute("ALTER TABLE birthdays ADD COLUMN photo TEXT")
     db.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
+    ponto.ensure_tables(db)
     db.execute(
         """CREATE TABLE IF NOT EXISTS chat_messages (
             id TEXT PRIMARY KEY,
@@ -9204,6 +9207,36 @@ class PortalHandler(BaseHTTPRequestHandler):
                 locked, message, since = system_lock_state(db)
             self.send_json({"locked": locked, "message": message, "since": since})
             return
+        if path in ("/api/ponto", "/api/ponto/exportar"):
+            query = parse_qs(urlparse(self.path).query)
+            start = (query.get("start") or [""])[0].strip() or None
+            end = (query.get("end") or [""])[0].strip() or None
+            try:
+                with connection() as db:
+                    user = require_user(db, self)
+                    if not user:
+                        return
+                    result = ponto.overview(db, user, start, end)
+                if path == "/api/ponto":
+                    self.send_json(result)
+                    return
+                summary, records, schedules, vacations = ponto.export_rows(result)
+                body = xlsx_simple.build([
+                    ("Resumo", summary), ("Registros", records),
+                    ("Escalas", schedules), ("Ferias", vacations),
+                ])
+                filename = f"ponto-eletronico-{result['range']['start']}-a-{result['range']['end']}.xlsx"
+                self.send_response(200)
+                self.send_header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+                self.send_header("Content-Length", str(len(body)))
+                self.send_header("Cache-Control", "no-store")
+                self.send_header("Access-Control-Expose-Headers", "Content-Disposition")
+                self.end_headers()
+                self.wfile.write(body)
+            except ValueError:
+                self.send_json({"error": "Período inválido para o relatório de ponto."}, 400)
+            return
         if path == "/api/sabi":
             with connection() as db:
                 if not require_admin(db, self):
@@ -13452,6 +13485,23 @@ render();fromHash();
         except (ValueError, json.JSONDecodeError):
             self.send_json({"error": "JSON inválido"}, 400)
             return
+        if path == "/api/ponto/evento":
+            event_type = str(payload.get("type") or "").strip()
+            allowed = {"break_start", "break_end", "lunch_start", "lunch_end"}
+            if event_type not in allowed:
+                self.send_json({"error": "Evento de ponto inválido."}, 400)
+                return
+            header = self.headers.get("Authorization", "")
+            token = header.replace("Bearer ", "", 1).strip() if header.startswith("Bearer ") else ""
+            with connection() as db:
+                user = require_user(db, self)
+                if not user:
+                    return
+                ponto.record_event(db, user["id"], event_type, token, "botao")
+                db.commit()
+                result = ponto.overview(db, user)
+            self.send_json(result)
+            return
         if path == "/api/feed":
             with connection() as db:
                 user = require_user(db, self)
@@ -13867,6 +13917,7 @@ render();fromHash();
                 token = secrets.token_hex(32)
                 db.execute("INSERT INTO sessions(token, user_id, created_at) VALUES (?, ?, ?)", (token, user["id"], now_iso()))
                 db.execute("UPDATE users SET last_login=? WHERE id=?", (now_iso(), user["id"]))
+                ponto.record_event(db, user["id"], "login", token, "login")
                 db.commit()
                 self.send_json({"token": token, "user": row_user(db, user)})
             return
@@ -13875,6 +13926,9 @@ render();fromHash();
             token = header.replace("Bearer ", "", 1).strip() if header.startswith("Bearer ") else ""
             with connection() as db:
                 if token:
+                    session = db.execute("SELECT user_id FROM sessions WHERE token=?", (token,)).fetchone()
+                    if session:
+                        ponto.record_event(db, session["user_id"], "logout", token, "logout")
                     db.execute("DELETE FROM sessions WHERE token = ?", (token,))
                     db.commit()
             self.send_json({"ok": True})
@@ -14063,6 +14117,21 @@ render();fromHash();
             payload = read_json(self)
         except (ValueError, json.JSONDecodeError):
             self.send_json({"error": "JSON inválido"}, 400)
+            return
+        if path.startswith("/api/ponto/pessoas/"):
+            employee_id = unquote(path[len("/api/ponto/pessoas/"):]).strip("/")
+            with connection() as db:
+                user = require_admin(db, self)
+                if not user:
+                    return
+                try:
+                    saved = ponto.save_employee_schedule(db, employee_id, payload)
+                except ValueError as exc:
+                    self.send_json({"error": str(exc)}, 400)
+                    return
+                db.commit()
+                result = ponto.overview(db, user)
+            self.send_json({"saved": saved, "data": result})
             return
         if path == "/api/vendas/vinculos":
             with connection() as db:

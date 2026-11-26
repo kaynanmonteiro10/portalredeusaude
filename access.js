@@ -1,7 +1,7 @@
 window.$ = window.$ || ((selector) => document.querySelector(selector));
 if (window.location.search && window.history.replaceState) window.history.replaceState({}, document.title, window.location.pathname + window.location.hash);
 const SESSION_KEY = 'portal-session-v1';
-const SHARED_SCREENS = ['homeScreen', 'tasksScreen', 'birthdaysScreen', 'chatScreen', 'feedScreen', 'learningScreen'];
+const SHARED_SCREENS = ['homeScreen', 'tasksScreen', 'birthdaysScreen', 'chatScreen', 'feedScreen', 'learningScreen', 'pontoScreen'];
 const DISABLED_SCREENS = ['managementScreen', 'mergeScreen', 'boardScreen'];
 const PRIVATE_SCREENS = ['vendasScreen', 'movimentacoesScreen', 'emailCenterScreen', 'sabiCenterScreen'];
 const API_BASE = window.location.protocol === 'file:' ? 'http://127.0.0.1:5500' : '';
@@ -386,6 +386,8 @@ function openScreen(screenId) {
   if (screenId === 'homeScreen') window.enterHomeScreen?.();
   else window.leaveHomeScreen?.();
   if (screenId === 'sabiCenterScreen') window.enterSabiCenterScreen?.();
+  if (screenId === 'pontoScreen') window.enterPontoScreen?.();
+  else window.leavePontoScreen?.();
 }
 
 function applyAccess() {
