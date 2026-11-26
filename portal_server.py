@@ -750,6 +750,27 @@ def connection():
         )"""
     )
     db.execute(
+        """CREATE TABLE IF NOT EXISTS cobranca_contact_attempts (
+            cd_associado TEXT PRIMARY KEY,
+            attempted_at TEXT NOT NULL
+        )"""
+    )
+    db.execute(
+        """CREATE TABLE IF NOT EXISTS automation_runs (
+            id TEXT PRIMARY KEY,
+            routine TEXT NOT NULL,
+            slot TEXT NOT NULL DEFAULT '',
+            reference_id TEXT NOT NULL DEFAULT '',
+            status TEXT NOT NULL DEFAULT 'running',
+            started_at TEXT NOT NULL,
+            finished_at TEXT,
+            duration_seconds REAL,
+            message TEXT NOT NULL DEFAULT '',
+            UNIQUE(routine, slot)
+        )"""
+    )
+    db.execute("CREATE INDEX IF NOT EXISTS automation_runs_started ON automation_runs(routine, started_at)")
+    db.execute(
         """CREATE TABLE IF NOT EXISTS apuracao_runs (
             id TEXT PRIMARY KEY,
             competencia TEXT NOT NULL,
@@ -5966,12 +5987,25 @@ def cobranca_import_rows(db, user, rows, source="extensao", period_start="", per
     }
 
 
-def s4e_import_into_cobranca(user_snapshot, rows, source="s4e-portal", period_start="", period_end="", full_scope=True):
+def s4e_import_into_cobranca(user_snapshot, rows, source="s4e-portal", period_start="", period_end="", full_scope=True,
+                            contact_codes=None):
     with connection() as db:
-        return cobranca_import_rows(
+        result = cobranca_import_rows(
             db, user_snapshot, rows, source=source,
             period_start=period_start, period_end=period_end, full_scope=full_scope,
         )
+        if source == "s4e-auto":
+            attempted_at = now_iso()
+            for code in dict.fromkeys(str(item).strip() for item in (contact_codes or []) if str(item).strip()):
+                db.execute(
+                    "INSERT INTO cobranca_contact_attempts(cd_associado, attempted_at) VALUES (?, ?) "
+                    "ON CONFLICT(cd_associado) DO UPDATE SET attempted_at = excluded.attempted_at",
+                    (code, attempted_at),
+                )
+            cutoff = (datetime.now(timezone.utc) - timedelta(days=30)).isoformat()
+            db.execute("DELETE FROM cobranca_contact_attempts WHERE attempted_at < ?", (cutoff,))
+        db.commit()
+        return result
 
 
 # ── Conta do S4E salva no portal ─────────────────────────────────────────────
@@ -7208,6 +7242,10 @@ def _apuracao_worker(run_id, competencia_label, user_name):
                 "UPDATE apuracao_runs SET file_path = ?, status = 'done', finished_at = ?, error = NULL, timings = ? WHERE id = ?",
                 (str(path), now_iso(), json.dumps(timings), run_id),
             )
+            automation_audit_finish_reference(
+                db, "apuracao", run_id, "done",
+                f"{stats['pagas']} de {stats['empresas']} empresas pagas.",
+            )
             stale_files = apuracao_prune_runs(db, competencia_label)
             db.commit()
         for stale_file in stale_files:
@@ -7233,6 +7271,7 @@ def _apuracao_worker(run_id, competencia_label, user_name):
                     "UPDATE apuracao_runs SET status = 'error', finished_at = ?, error = ?, timings = ? WHERE id = ?",
                     (now_iso(), message, json.dumps(timings), run_id),
                 )
+                automation_audit_finish_reference(db, "apuracao", run_id, "error", message)
                 db.commit()
         finally:
             _apuracao_job_update(
@@ -8753,13 +8792,15 @@ def _recibos_worker(run_id, start_day, end_day, centro, grupo):
 AUTO_TZ = timezone(timedelta(hours=-3))
 AUTO_WINDOW_START = 7
 AUTO_WINDOW_END = 19
-APURACAO_AUTO_INTERVAL = 30
-APURACAO_AUTO_BACKOFF = 60
-COBRANCA_AUTO_INTERVAL = 180
+AUTOMATION_SERVER_IP = os.environ.get("PORTAL_AUTOMATION_SERVER_IP", "192.168.1.28").strip()
+APURACAO_AUTO_HOURS = (8, 12, 16)
+APURACAO_AUTO_WINDOW_MINUTES = 90
+COBRANCA_AUTO_HOUR = 9
+COBRANCA_CONTACT_RETRY_DAYS = 7
 AUTO_RETRY_BLOCK = 15 * 60
-COBRANCA_AUTO_LAST_KEY = "cobranca_auto_last"
 COBRANCA_AUTO_USER = {"id": "sistema", "display_name": "Sistema (automático)", "username": "sistema"}
 ADESOES_AUTO_WINDOW_MINUTES = 90
+ADESOES_AUTO_HOURS = (10,)
 ADESOES_AUTO_FULL_START = "2025-12-01"
 ADESOES_AUTO_USER = "Sistema (automático)"
 
@@ -8782,6 +8823,21 @@ def _auto_window_open(now=None):
     return now.weekday() <= 4 and AUTO_WINDOW_START <= now.hour < AUTO_WINDOW_END
 
 
+def _automation_host_allowed():
+    """Somente o servidor 24h executa consultas automáticas; ações manuais continuam livres."""
+    return not AUTOMATION_SERVER_IP or ip_local() == AUTOMATION_SERVER_IP
+
+
+def _auto_slot(now, hours, window_minutes):
+    if now.weekday() > 4:
+        return None
+    for hour in reversed(tuple(hours)):
+        start = now.replace(hour=hour, minute=0, second=0, microsecond=0)
+        if start <= now < start + timedelta(minutes=window_minutes):
+            return start
+    return None
+
+
 def _auto_age_minutes(value, now=None):
     if not value:
         return None
@@ -8795,9 +8851,60 @@ def _auto_age_minutes(value, now=None):
     return max(0.0, (now - at.astimezone(timezone.utc)).total_seconds() / 60)
 
 
-def _auto_due(last_at, interval_minutes, now=None):
-    age = _auto_age_minutes(last_at, now)
-    return age is None or age >= interval_minutes
+def automation_audit_start(db, routine, slot, message=""):
+    audit_id = uuid.uuid4().hex
+    cursor = db.execute(
+        "INSERT INTO automation_runs(id, routine, slot, status, started_at, message) "
+        "VALUES (?, ?, ?, 'running', ?, ?) "
+        "ON CONFLICT(routine, slot) DO UPDATE SET "
+        "id = excluded.id, reference_id = '', status = 'running', started_at = excluded.started_at, "
+        "finished_at = NULL, duration_seconds = NULL, message = excluded.message "
+        "WHERE automation_runs.status = 'skipped'",
+        (audit_id, routine, slot, now_iso(), message),
+    )
+    db.commit()
+    return audit_id if cursor.rowcount else None
+
+
+def automation_audit_reference(db, audit_id, reference_id):
+    db.execute("UPDATE automation_runs SET reference_id = ? WHERE id = ?", (reference_id, audit_id))
+    db.commit()
+
+
+def automation_audit_finish(db, audit_id, status, message=""):
+    row = db.execute("SELECT started_at FROM automation_runs WHERE id = ?", (audit_id,)).fetchone()
+    duration = None
+    if row:
+        age = _auto_age_minutes(row["started_at"])
+        duration = round(age * 60, 1) if age is not None else None
+    db.execute(
+        "UPDATE automation_runs SET status = ?, finished_at = ?, duration_seconds = ?, message = ? WHERE id = ?",
+        (status, now_iso(), duration, str(message or "")[:500], audit_id),
+    )
+    db.commit()
+
+
+def automation_audit_finish_reference(db, routine, reference_id, status, message=""):
+    row = db.execute(
+        "SELECT id FROM automation_runs WHERE routine = ? AND reference_id = ? AND status = 'running' "
+        "ORDER BY started_at DESC LIMIT 1",
+        (routine, reference_id),
+    ).fetchone()
+    if row:
+        automation_audit_finish(db, row["id"], status, message)
+
+
+def _automation_watch_s4e(job_id, audit_id):
+    """Finaliza o histórico sem fazer nenhuma consulta adicional ao S4E."""
+    while True:
+        state = s4e.job_status()
+        if state.get("id") != job_id or not state.get("running"):
+            status = "error" if state.get("error") else "done"
+            message = state.get("error") or state.get("message") or "Importação concluída."
+            with connection() as db:
+                automation_audit_finish(db, audit_id, status, message)
+            return
+        time.sleep(2)
 
 
 def _s4e_auto_busy():
@@ -8830,7 +8937,8 @@ def _apuracao_recover_stale(db):
 def apuracao_scheduler_maybe(now=None):
     global _apuracao_auto_block_until
     now = now or _auto_now()
-    if not _auto_window_open(now):
+    slot = _auto_slot(now, APURACAO_AUTO_HOURS, APURACAO_AUTO_WINDOW_MINUTES)
+    if not slot or not _automation_host_allowed():
         return
     if not _apuracao_scheduler_lock.acquire(blocking=False):
         return
@@ -8838,25 +8946,27 @@ def apuracao_scheduler_maybe(now=None):
         if time.monotonic() < _apuracao_auto_block_until or _s4e_auto_busy():
             return
         competencia = apuracao_competencia_label(now.year, now.month)
+        slot_key = slot.strftime("%Y-%m-%dT%H:%M")
         with connection() as db:
             if system_lock_state(db)[0]:
                 return
             _apuracao_recover_stale(db)
-            last = db.execute(
-                "SELECT status, started_at FROM apuracao_runs WHERE competencia_label = ? "
-                "ORDER BY started_at DESC LIMIT 1",
-                (competencia,),
-            ).fetchone()
-        interval = APURACAO_AUTO_BACKOFF if last and last["status"] == "error" else APURACAO_AUTO_INTERVAL
-        if last and not _auto_due(last["started_at"], interval):
+            audit_id = automation_audit_start(db, "apuracao", slot_key, "Apuração automática agendada.")
+        if not audit_id:
             return
         with _auto_start_lock:
             if _s4e_auto_busy():
+                with connection() as db:
+                    automation_audit_finish(db, audit_id, "skipped", "Outra consulta do S4E estava em andamento.")
                 return
             try:
-                apuracao_start_run(competencia, mode="auto", user_name="Sistema (automático)")
+                run_id = apuracao_start_run(competencia, mode="auto", user_name="Sistema (automático)")
+                with connection() as db:
+                    automation_audit_reference(db, audit_id, run_id)
             except Exception as error:
                 _apuracao_auto_block_until = time.monotonic() + AUTO_RETRY_BLOCK
+                with connection() as db:
+                    automation_audit_finish(db, audit_id, "error", error)
                 print(f"Falha na apuração automática: {error}", flush=True)
     finally:
         _apuracao_scheduler_lock.release()
@@ -8878,15 +8988,10 @@ def cobranca_existing_contacts(db):
     return contacts
 
 
-def _meta_value(db, key):
-    row = db.execute("SELECT value FROM meta WHERE key = ?", (key,)).fetchone()
-    return row["value"] if row else ""
-
-
 def cobranca_auto_maybe(now=None):
     global _cobranca_auto_block_until
     now = now or _auto_now()
-    if not _auto_window_open(now):
+    if not _auto_window_open(now) or now.hour < COBRANCA_AUTO_HOUR or not _automation_host_allowed():
         return
     if not _cobranca_scheduler_lock.acquire(blocking=False):
         return
@@ -8898,39 +9003,45 @@ def cobranca_auto_maybe(now=None):
                 return
             if not s4e_account_config(db).get("password"):
                 return
-            last_import = db.execute("SELECT MAX(at) AS at FROM cobranca_imports").fetchone()
-            last_attempt = max(
-                [value for value in (_meta_value(db, COBRANCA_AUTO_LAST_KEY), last_import["at"] if last_import else "") if value],
-                key=str,
-                default="",
-            )
-            if last_attempt and not _auto_due(last_attempt, COBRANCA_AUTO_INTERVAL):
+            slot_key = now.date().isoformat()
+            audit_id = automation_audit_start(db, "cobranca", slot_key, "Cobrança automática diária.")
+            if not audit_id:
                 return
             contacts = cobranca_existing_contacts(db)
+            retry_cutoff = (datetime.now(timezone.utc) - timedelta(days=COBRANCA_CONTACT_RETRY_DAYS)).isoformat()
+            skip_contact_codes = [
+                row["cd_associado"] for row in db.execute(
+                    "SELECT cd_associado FROM cobranca_contact_attempts WHERE attempted_at >= ?", (retry_cutoff,)
+                )
+            ]
         with _auto_start_lock:
             if _s4e_auto_busy():
+                with connection() as db:
+                    automation_audit_finish(db, audit_id, "skipped", "Outra consulta do S4E estava em andamento.")
                 return
             try:
-                s4e.start_import(
+                job_id = s4e.start_import(
                     {
                         "withContacts": True,
                         "dryRun": False,
                         "source": "s4e-auto",
                         "existingContacts": contacts,
+                        "skipContactCodes": skip_contact_codes,
                     },
                     lambda rows, **kwargs: s4e_import_into_cobranca(COBRANCA_AUTO_USER, rows, **kwargs),
                 )
+                with connection() as db:
+                    automation_audit_reference(db, audit_id, job_id)
+                threading.Thread(
+                    target=_automation_watch_s4e, args=(job_id, audit_id),
+                    name="auditoria-cobranca-s4e", daemon=True,
+                ).start()
             except Exception as error:
                 _cobranca_auto_block_until = time.monotonic() + AUTO_RETRY_BLOCK
+                with connection() as db:
+                    automation_audit_finish(db, audit_id, "error", error)
                 print(f"Falha na importação automática da cobrança: {error}", flush=True)
                 return
-        with connection() as db:
-            db.execute(
-                "INSERT INTO meta (key, value) VALUES (?, ?) "
-                "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-                (COBRANCA_AUTO_LAST_KEY, now_iso()),
-            )
-            db.commit()
     finally:
         _cobranca_scheduler_lock.release()
 
@@ -8953,7 +9064,7 @@ def cobranca_scheduler_worker():
         time.sleep(60)
 
 
-# ── Atualização automática da Conferência de Adesões (10h e 16h) ─────────────
+# ── Atualização automática da Conferência de Adesões (10h) ──────────────────
 def _adesoes_auto_busy():
     """Qualquer outra leitura do S4E em andamento tem prioridade."""
     return bool(
@@ -8965,9 +9076,11 @@ def _adesoes_auto_busy():
 
 
 def _adesoes_auto_slot(now=None):
-    """A rodada que está em aberto agora: 10h ou 16h, por até 90 minutos."""
+    """A rodada diária que está em aberto, por até 90 minutos."""
     now = now or _auto_now()
-    for hora in reversed(adesoes_conferencia.AUTO_HORARIOS):
+    if now.weekday() > 4:
+        return None
+    for hora in reversed(ADESOES_AUTO_HOURS):
         inicio = now.replace(hour=hora, minute=0, second=0, microsecond=0)
         if inicio <= now < inicio + timedelta(minutes=ADESOES_AUTO_WINDOW_MINUTES):
             return inicio
@@ -9050,11 +9163,12 @@ def _adesoes_auto_run(slot):
     hoje = inicio_em.date()
     inicio_mes = hoje.replace(day=1)
     estado_vendas = _adesoes_atualizar_vendas(inicio_mes, hoje)
-    if slot.hour >= max(adesoes_conferencia.AUTO_HORARIOS):
-        # À tarde basta a ponta recente: novas faturas e pagamentos do mês.
-        inicio_faturamento = (inicio_mes - timedelta(days=1)).replace(day=1)
-    else:
+    if slot.weekday() == 0:
+        # Uma leitura histórica por semana é suficiente para captar correções antigas.
         inicio_faturamento = date.fromisoformat(ADESOES_AUTO_FULL_START)
+    else:
+        # Nos demais dias, atualiza apenas o mês atual e o anterior.
+        inicio_faturamento = (inicio_mes - timedelta(days=1)).replace(day=1)
     faturamento = _adesoes_atualizar_faturamento(inicio_faturamento, hoje)
     with connection() as db:
         _adesoes_vendas_guardar_recente(db, inicio_mes)
@@ -9083,7 +9197,7 @@ def adesoes_auto_maybe(now=None):
     global _adesoes_auto_block_until
     now = now or _auto_now()
     slot = _adesoes_auto_slot(now)
-    if not slot:
+    if not slot or not _automation_host_allowed():
         return
     if not _adesoes_scheduler_lock.acquire(blocking=False):
         return
@@ -9099,8 +9213,14 @@ def adesoes_auto_maybe(now=None):
             estado = adesoes_conferencia.auto_estado(db)
         if estado.get("slot") == chave and estado.get("ok"):
             return
+        with connection() as db:
+            audit_id = automation_audit_start(db, "adesoes", chave, "Atualização automática diária das adesões.")
+        if not audit_id:
+            return
         with _auto_start_lock:
             if _adesoes_auto_busy():
+                with connection() as db:
+                    automation_audit_finish(db, audit_id, "skipped", "Outra consulta do S4E estava em andamento.")
                 return
             try:
                 resultado = _adesoes_auto_run(slot)
@@ -9114,10 +9234,12 @@ def adesoes_auto_maybe(now=None):
                         "erro": str(error)[:300],
                     })
                     adesoes_conferencia.auto_registrar(db, falha)
+                    automation_audit_finish(db, audit_id, "error", error)
                 print(f"Falha na atualização automática das adesões: {error}", flush=True)
                 return
             with connection() as db:
                 adesoes_conferencia.auto_registrar(db, resultado)
+                automation_audit_finish(db, audit_id, "done", "Adesões atualizadas e conferidas.")
     finally:
         _adesoes_scheduler_lock.release()
 
@@ -15140,7 +15262,12 @@ def recurring_worker():
         time.sleep(900)
 
 
-retornos.configure(connection, s4e_saved_credentials, lambda: apuracao_job_status().get("running") or s4e.job_status().get("running") or vendas.job_status().get("running") or vidas.job_status().get("running") or s4e_notas.job_status().get("running") or relatorio_semanal.job_status().get("running"))
+retornos.configure(
+    connection,
+    s4e_saved_credentials,
+    lambda: apuracao_job_status().get("running") or s4e.job_status().get("running") or vendas.job_status().get("running") or vidas.job_status().get("running") or s4e_notas.job_status().get("running") or relatorio_semanal.job_status().get("running"),
+    _automation_host_allowed,
+)
 vendas.configure(connection, s4e_saved_credentials, lambda: apuracao_job_status().get("running") or s4e.job_status().get("running") or retornos._state.get("running") or vidas.job_status().get("running") or s4e_notas.job_status().get("running") or relatorio_semanal.job_status().get("running"))
 vidas.configure(connection, s4e_saved_credentials, lambda: apuracao_job_status().get("running") or s4e.job_status().get("running") or retornos._state.get("running") or vendas.job_status().get("running") or s4e_notas.job_status().get("running") or relatorio_semanal.job_status().get("running"))
 s4e_notas.configure(connection, s4e_saved_credentials, lambda: apuracao_job_status().get("running") or s4e.job_status().get("running") or retornos._state.get("running") or vendas.job_status().get("running") or vidas.job_status().get("running") or relatorio_semanal.job_status().get("running"))
@@ -15163,6 +15290,10 @@ if __name__ == "__main__":
     print("=" * 50, flush=True)
     print(f"Neste computador:      http://127.0.0.1:5500", flush=True)
     print(f"Nos outros aparelhos:  http://{ip}:5500", flush=True)
+    print(
+        "Consultas automáticas: " + ("ATIVAS neste servidor" if _automation_host_allowed() else f"DESATIVADAS (servidor autorizado: {AUTOMATION_SERVER_IP})"),
+        flush=True,
+    )
     print("=" * 50, flush=True)
     http_server = ThreadingHTTPServer(("0.0.0.0", 5500), PortalHandler)
     if HTTPS_CERT.exists() and HTTPS_KEY.exists():

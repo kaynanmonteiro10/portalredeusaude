@@ -12,12 +12,23 @@ _state = {'running': False, 'message': '', 'error': '', 'nextCheck': None, 'peri
 _connection = None
 _credentials = None
 _busy = None
+_auto_enabled = lambda: True
 _http = None
+AUTO_TZ = timezone(timedelta(hours=-3))
+AUTO_INTERVAL_MINUTES = 30
+AUTO_WINDOW_START = 7
+AUTO_WINDOW_END = 19
 
 
-def configure(connection, credentials, busy):
-    global _connection, _credentials, _busy
+def configure(connection, credentials, busy, auto_enabled=None):
+    global _connection, _credentials, _busy, _auto_enabled
     _connection, _credentials, _busy = connection, credentials, busy
+    _auto_enabled = auto_enabled or (lambda: True)
+
+
+def _auto_window_open(now=None):
+    now = now or datetime.now(AUTO_TZ)
+    return now.weekday() <= 4 and AUTO_WINDOW_START <= now.hour < AUTO_WINDOW_END
 
 
 def stamp():
@@ -382,13 +393,13 @@ def _worker(start, end, force=True):
         error = ''
         if failures or deferred:
             error = f'Consulta parcial: {failures} lote(s) sem detalhes confirmados; {deferred} leitura(s) pendentes. Os dados anteriores foram preservados e o monitor tentará novamente.'
-        _update(message=f'{len(files)} arquivo(s) consultado(s). Monitoramento a cada 5 minutos.', error=error)
+        _update(message=f'{len(files)} arquivo(s) consultado(s). Monitoramento a cada 30 minutos, em horário comercial.', error=error)
     except Exception as exc:
         failures += 1
         _http = None
         _update(message='Não foi possível concluir a consulta; os dados anteriores foram preservados.', error=str(exc))
     finally:
-        _update(running=False, nextCheck=(datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat(),
+        _update(running=False, nextCheck=(datetime.now(timezone.utc) + timedelta(minutes=AUTO_INTERVAL_MINUTES)).isoformat(),
                 pendingStart=start.isoformat() if failures or deferred else None,
                 pendingEnd=end.isoformat() if failures or deferred else None)
 
@@ -397,7 +408,7 @@ def activate():
     with _connection() as db:
         db.execute('UPDATE retornos_control SET enabled=1 WHERE id=1')
         db.commit()
-    if not _busy():
+    if _auto_enabled() and _auto_window_open() and not _busy():
         start_sync(date.today(), date.today())
 
 
@@ -407,7 +418,7 @@ def scheduler():
         try:
             with _connection() as db:
                 state = monitor(db)
-            if not state['enabled'] or state['running'] or _busy():
+            if not state['enabled'] or state['running'] or not _auto_enabled() or not _auto_window_open() or _busy():
                 continue
             if state['nextCheck'] and datetime.now(timezone.utc) < datetime.fromisoformat(state['nextCheck']):
                 continue
@@ -416,4 +427,4 @@ def scheduler():
             else:
                 start_sync(date.today(), date.today())
         except Exception as exc:
-            _update(error=str(exc), nextCheck=(datetime.now(timezone.utc) + timedelta(minutes=5)).isoformat())
+            _update(error=str(exc), nextCheck=(datetime.now(timezone.utc) + timedelta(minutes=AUTO_INTERVAL_MINUTES)).isoformat())

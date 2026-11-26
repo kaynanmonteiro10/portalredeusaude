@@ -1033,6 +1033,9 @@ def _import_worker(options, importer):
         with_contacts = bool(options.get("withContacts"))
         source = str(options.get("source") or "s4e-portal")
         existing_contacts = options.get("existingContacts") or {}
+        skip_contact_codes = {
+            str(code).strip() for code in (options.get("skipContactCodes") or []) if str(code).strip()
+        }
 
         _job_update(
             phase="relatorio",
@@ -1059,19 +1062,19 @@ def _import_worker(options, importer):
             unique.setdefault(row["cdAssociado"], row["documento"])
         clients = list(unique.items())
         warning = ""
-        targets = clients
         if existing_contacts:
             for row in rows:
                 known = existing_contacts.get(row["cdAssociado"]) or {}
                 row["emails"] = list(known.get("emails") or [])
                 row["phones"] = list(known.get("phones") or [])
-            targets = [
-                (code, documento) for code, documento in clients
-                if not (
-                    (existing_contacts.get(code) or {}).get("emails")
-                    and (existing_contacts.get(code) or {}).get("phones")
-                )
-            ]
+        targets = [
+            (code, documento) for code, documento in clients
+            if not (
+                (existing_contacts.get(code) or {}).get("emails")
+                and (existing_contacts.get(code) or {}).get("phones")
+            )
+            and code not in skip_contact_codes
+        ]
         if with_contacts and len(targets) > MAX_CONTACT_CLIENTS:
             warning = f"contatos lidos só para {MAX_CONTACT_CLIENTS} de {len(targets)} empresas sem contato salvo"
             targets = targets[:MAX_CONTACT_CLIENTS]
@@ -1128,6 +1131,7 @@ def _import_worker(options, importer):
                 period_start=start,
                 period_end=end,
                 full_scope=full_scope,
+                contact_codes=[code for code, _ in targets] if with_contacts else [],
             )
             if warning:
                 result["aviso"] = warning
